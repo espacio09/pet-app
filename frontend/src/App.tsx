@@ -1,4 +1,4 @@
-import PetsList from "./components/PetsList";
+import { PetsList } from "./pages/PetsPage/PetsList";
 
 function App() {
   return <PetsList />;
