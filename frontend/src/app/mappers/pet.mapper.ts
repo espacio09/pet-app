@@ -11,17 +11,14 @@ export type PetApi = {
   pet_type_id?: number;
   petTypeId?: number;
 
-  birthDate?: string | Date | null;
-  birth_date?: string | Date | null;
+  birthdate?: string | Date | null;
+ 
 };
 
 export function mapPetFromApi(raw: PetApi, index: number): PetDto {
 
   // ✅ definir variable aquí (ANTES del return)
-  const dateValue =
-  raw.birthDate ??
-  raw.birth_date ??
-  raw.birthdate;
+  const dateValue = raw.birthdate;
 
   return {
     petId: raw.pet_id ?? raw.petId ?? index,
@@ -30,7 +27,6 @@ export function mapPetFromApi(raw: PetApi, index: number): PetDto {
 
     // ✅ usar variable aquí
     birthDate: dateValue ? new Date(dateValue) : undefined
- 
   };
 }
 
