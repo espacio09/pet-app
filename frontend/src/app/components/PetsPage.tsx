@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { usePets } from "../../pages/PetsPage/hooks/usePets";
-import type { Pet } from "./types/Pet";
-import { PetList } from "./PetsList";
-import { PetDetailModal } from "./PetDetailModal";
+import { usePets } from "../pages/PetsPage/hooks/usePets";
+
+import PetDetailModal from "./PetDetailModal";
+import PetsList from "./PetsList";
+
+
 
 export const PetsPage = () => {
   const { pets, loading, error } = usePets();
@@ -24,10 +26,13 @@ export const PetsPage = () => {
   if (error) return <p>Error al cargar mascotas</p>;
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Mascotas</h1>
+    <div>
+      <h1>Mascotas</h1>
 
-      <PetList pets={pets} onSelect={handleSelectPet} />
+      <PetsList
+        Pet={pets}
+        onSelect={handleSelectPet}
+      />
 
       <PetDetailModal
         pet={selectedPet}

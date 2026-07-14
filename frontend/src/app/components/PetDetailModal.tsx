@@ -4,7 +4,10 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import type { Pet } from "./types/Pet";
+import type { Pet } from "../types/Pet";
+
+
+//    muestra detalles de una mascota
 
 interface PetDetailModalProps {
   open: boolean;
@@ -16,30 +19,61 @@ export default function PetDetailModal({
   open,
   onClose,
   pet,
+
+  
 }: PetDetailModalProps) {
   if (!pet) return null;
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>{pet.name}</DialogTitle>
+      <DialogTitle>{pet.petName}</DialogTitle>
+<DialogTitle>{pet.petName}</DialogTitle>
 
-      <DialogContent>
-        <Typography>
-          <strong>Species:</strong> {pet.species}
-        </Typography>
+<DialogContent>
+  <Typography>
+    <strong>ID:</strong> {pet.petId}
+  </Typography>
 
-        <Typography>
-          <strong>Breed:</strong> {pet.breed}
-        </Typography>
+  <Typography>
+    <strong>Color:</strong> {pet.color}
+  </Typography>
 
-        <Typography>
-          <strong>Age:</strong> {pet.age}
-        </Typography>
-      </DialogContent>
+  <Typography>
+    <strong>Sex:</strong> {pet.sex}
+  </Typography>
+
+  <Typography>
+    <strong>Birth Date:</strong> {pet.birthDate}
+  </Typography>
+
+  <Typography>
+    <strong>Age:</strong> {pet.age}
+  </Typography>
+
+  <Typography>
+    <strong>Weight:</strong> {pet.weight}
+  </Typography>
+
+  <Typography>
+    <strong>Breed ID:</strong> {pet.breed_id}
+  </Typography>
+
+  <Typography>
+    <strong>Owner ID:</strong> {pet.owner_id}
+  </Typography>
+</DialogContent>
+
+<Typography>
+  <strong>Species:</strong> {pet.petId}
+</Typography>
+
+<DialogContent>
 
       <DialogActions>
         <Button onClick={onClose}>Close</Button>
       </DialogActions>
+    
+        </DialogContent>
     </Dialog>
   );
 }

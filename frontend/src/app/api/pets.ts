@@ -5,3 +5,9 @@ export async function getPets() {
 
   return res.json();
 }
+
+
+
+//   getPets()
+//createPet()
+//deletePet()
