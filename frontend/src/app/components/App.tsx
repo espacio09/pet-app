@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import PetsList from "./pages/PetsPage/PetsList";
-import type { Pet } from "./pages/PetsPage/types/Pet";
+import type { Pet } from "./types/Pet";
 
 function App() {
   const [pets, setPets] = useState<Pet[]>([]);
