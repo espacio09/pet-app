@@ -1,12 +1,12 @@
 export interface Pet {
-  petId: string;
   petName: string;
-  color: string;
-  sex: string;
-  birthDate: string;
-  pet_type_id: number;
-  age: number;
-  breed_id: number;
-  weight: number;
+  petId: number;
   owner_id: number;
+  birthdate: string;
+  sex: string;
+  color: string | null;
+  microchip_no: string | null;
+  weight: string;
+  pet_type_id: string;
+  breed_id: string | null;
 }

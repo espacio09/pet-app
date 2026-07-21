@@ -10,19 +10,18 @@ import PetDetailModal from "../components/PetDetailModal";
 
 export const PetsPage = () => {
   const { pets, loading, error } = usePets();
-
   const [selectedPet, setSelectedPet] = useState<Pet | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
 
-  const handleSelectPet = (pet: Pet) => {
-    setSelectedPet(pet);
-    setIsDetailOpen(true);
-  };
 
   const handleCloseModal = () => {
     setIsDetailOpen(false);
     setSelectedPet(null);
   };
+
+console.log("PETS EN PETSPAGE:", pets);
+console.log("LOADING:", loading);
+console.log("ERROR:", error);
 
   if (loading) {
     return <p>Cargando mascotas...</p>;
@@ -37,11 +36,13 @@ export const PetsPage = () => {
     <div>
       <h1>Mascotas</h1>
 
-      <PetsList
-        pets={pets}
-        onSelect={handleSelectPet}
-      />
-
+  <PetsList
+    pets={pets}
+    onSelect={(pet) => {
+      console.log("Mascota seleccionada:", pet);
+    }}
+  />
+ 
       <PetDetailModal
         pet={selectedPet}
         open={isDetailOpen}
