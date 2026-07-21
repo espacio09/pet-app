@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { Pet } from "../../../types/Pet";
+import type { Pet, PetApi } from "../../../types/Pet";
 import { getPets } from "../../../api/pets";
 
 export function usePets() {
@@ -15,7 +15,7 @@ export function usePets() {
       .then((data) => {
 
  setPets(
-  data.map((pet: any) => ({
+  data.map((pet: PetApi) => ({
     petId: pet.pet_id,
     petName: pet.pet_name,
     sex: pet.sex,
