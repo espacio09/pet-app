@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import type { Pet, PetApi } from "../../../types/Pet";
-import { getPets } from "../../../api/pets";
+import type { Pet, PetApi } from "../models/Pet";
+import { getPets } from "../models/pets";
 
 export function usePets() {
   const [pets, setPets] = useState<Pet[]>([]);
@@ -20,6 +20,7 @@ export function usePets() {
     petName: pet.pet_name,
     sex: pet.sex,
     weight: pet.weight,
+   
     birthdate: pet.birthdate,
   }))
 

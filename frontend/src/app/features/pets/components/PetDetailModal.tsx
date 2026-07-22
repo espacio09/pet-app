@@ -4,7 +4,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import type { Pet } from "../types/Pet";
+import type { Pet } from "../models/Pet";
 
 
 //    muestra detalles de una mascota
@@ -43,7 +43,7 @@ export default function PetDetailModal({
   </Typography>
 
   <Typography>
-    <strong>Birth Date:</strong> {pet.birthDate}
+    <strong>Birth Date:</strong> {pet.birthdate}
   </Typography>
 
   <Typography>

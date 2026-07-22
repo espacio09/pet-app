@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { usePets } from "../pages/PetsPage/hooks/usePets";
+import { usePets } from "./usePets";
 
-import type { Pet } from "../types/Pet";
+import type { Pet } from "../models/Pet";
 
 import PetsList from "../components/PetsList";
 import PetDetailModal from "../components/PetDetailModal";

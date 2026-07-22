@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import { DataGrid, type GridColDef } from "@mui/x-data-grid";
-import type { Pet } from "../types/Pet";
+import type { Pet } from "../models/Pet";
 
 
 interface PetsListProps {

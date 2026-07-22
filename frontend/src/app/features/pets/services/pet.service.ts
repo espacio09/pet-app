@@ -1,4 +1,4 @@
-import type { Pet } from "../../types/Pet";
+import type { Pet } from "../models/Pet";
 
 const API_URL = "http://localhost:3002/pets"; // ajusta tu backend
 

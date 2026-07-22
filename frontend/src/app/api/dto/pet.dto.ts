@@ -3,4 +3,5 @@ export class PetDto {
   petName!: string;
   petTypeId!: number;
   birthDate?: Date;
+  age?: number;
 }

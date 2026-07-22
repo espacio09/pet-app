@@ -1,4 +1,4 @@
-import { PetDto } from "../models/pet.dto";
+import { PetDto } from "../../../api/dto/pet.dto";
 
 export type PetApi = {
   pet_id?: number;

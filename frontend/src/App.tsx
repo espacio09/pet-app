@@ -1,4 +1,4 @@
-import { PetsPage } from "./app/pages/PetsPage";
+import { PetsPage } from "./app/features/pets/pages/PetsPage";
 
 function App() {
   return <PetsPage />;

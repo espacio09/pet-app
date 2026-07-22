@@ -3,6 +3,7 @@ export interface Pet {
   petId: number;
   owner_id: number;
   birthdate: string;
+  age: number;
   sex: string;
   color: string | null;
   microchip_no: string | null;
