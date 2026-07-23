@@ -1,40 +1,14 @@
 import { Box } from "@mui/material";
-import { DataGrid, type GridColDef } from "@mui/x-data-grid";
+import { DataGrid} from "@mui/x-data-grid";
 import type { Pet } from "../models/Pet";
+import { PET_TABLE_COLUMNS } from "./pets-table.columns";
+import { germanDateFormatter } from "../../../shared/formatters";
 
 
 interface PetsListProps {
   pets: Pet[];
   onSelect: (pet: Pet) => void;
 }
-
-const columns: GridColDef[] = [
-  {
-    field: "id",
-    headerName: "Pet ID",
-    width: 250,
-  },
-  {
-    field: "name",
-    headerName: "Name",
-    width: 250,
-  },
-  {
-    field: "sex",
-    headerName: "Sex",
-    width: 120,
-  },
-  {
-    field: "weight",
-    headerName: "Weight",
-    width: 120,
-  },
-  {
-    field: "birthdate",
-    headerName: "Birthdate",
-    width: 180,
-  },
-];
 
 
 export default function PetsList({
@@ -49,7 +23,8 @@ const rows = pets.map((pet) => ({
   name: pet.petName,
   sex: pet.sex,
   weight: pet.weight,
-  birthdate: new Date(pet.birthdate).toLocaleDateString("de-DE"),
+  birthdate: germanDateFormatter(pet.birthdate),
+
 }));
 
 
@@ -57,7 +32,13 @@ const rows = pets.map((pet) => ({
     <Box sx={{ height: 400, width: "100%" }}>
       <DataGrid
         rows={rows}
-        columns={columns}
+        columns={PET_TABLE_COLUMNS}
+        sx={{
+  "& .MuiDataGrid-row:nth-of-type(even)": {
+    backgroundColor: "#e6f023",
+  },
+}}
+
         onRowClick={(params) => {
          const pet = pets.find(
         (p) => p.petId === params.row.id

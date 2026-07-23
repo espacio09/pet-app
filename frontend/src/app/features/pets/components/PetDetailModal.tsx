@@ -5,6 +5,7 @@ import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import type { Pet } from "../models/Pet";
+import { germanDateFormatter } from "../../../shared/formatters";
 
 
 //    muestra detalles de una mascota
@@ -27,7 +28,6 @@ export default function PetDetailModal({
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>{pet.petName}</DialogTitle>
-<DialogTitle>{pet.petName}</DialogTitle>
 
 <DialogContent>
   <Typography>
@@ -43,7 +43,7 @@ export default function PetDetailModal({
   </Typography>
 
   <Typography>
-    <strong>Birth Date:</strong> {pet.birthdate}
+    <strong>Birth Date:</strong> {germanDateFormatter(pet.birthdate)}
   </Typography>
 
   <Typography>
@@ -63,9 +63,6 @@ export default function PetDetailModal({
   </Typography>
 </DialogContent>
 
-<Typography>
-  <strong>Species:</strong> {pet.petId}
-</Typography>
 
 <DialogContent>
 
