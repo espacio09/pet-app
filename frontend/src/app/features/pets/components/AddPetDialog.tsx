@@ -7,6 +7,7 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
+import { useState } from "react";
 
 interface AddPetDialogProps {
   open: boolean;
@@ -17,6 +18,29 @@ export default function AddPetDialog({
   open,
   onClose,
 }: AddPetDialogProps) {
+
+  const [name, setName] = useState("");
+  const [sex, setSex] = useState("");
+  const [weight, setWeight] = useState("");
+  const [birthdate, setBirthdate] = useState("");
+
+  const [microchipNo, setMicrochipNo] = useState("");
+  const [color, setColor] = useState("");
+  const [ownerId, setOwnerId] = useState("");
+
+
+
+console.log({
+  name,
+  sex,
+  weight,
+  birthdate,
+  microchipNo,
+  color,
+  ownerId
+});
+
+
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>Add Pet</DialogTitle>
@@ -31,30 +55,58 @@ export default function AddPetDialog({
         >
           <TextField
             label="Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             fullWidth
           />
 
           <TextField
-            label="Sex"
+            label="Microchip No"
+            value={microchipNo}
+            onChange={(e) => setMicrochipNo(e.target.value)}
             fullWidth
           />
 
+          <TextField
+            label="Birthdate"
+            type="date"
+            value={birthdate}
+            onChange={(e) => setBirthdate(e.target.value)}
+            fullWidth
+            slotProps={{
+              inputLabel: {
+                shrink: true,
+              },
+            }}
+          />
+            
+          <TextField
+            label="Sex"
+            value={sex}
+            onChange={(e) => setSex(e.target.value)}
+            fullWidth
+          />  
           <TextField
             label="Weight"
             type="number"
+            value={weight}
+            onChange={(e) => setWeight(e.target.value)}
             fullWidth
           />
-
-         <TextField
-  label="Birthdate"
-  type="date"
-  fullWidth
-  slotProps={{
-    inputLabel: {
-      shrink: true,
-    },
-  }}
-/>
+          
+          <TextField
+            label="Color"
+            value={color}
+            onChange={(e) => setColor(e.target.value)}
+            fullWidth
+          />
+        
+   <TextField
+            label="Owner ID"
+            value={ownerId}
+            onChange={(e) => setOwnerId(e.target.value)}
+            fullWidth
+          />
 
         </Stack>
       </DialogContent>

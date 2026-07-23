@@ -24,7 +24,9 @@ const rows = pets.map((pet) => ({
   sex: pet.sex,
   weight: pet.weight,
   birthdate: germanDateFormatter(pet.birthdate),
-
+  microchip_no: pet.microchip_no,
+  color: pet.color,
+  owner_id: pet.owner_id,
 }));
 
 
@@ -33,13 +35,29 @@ const rows = pets.map((pet) => ({
       <DataGrid
         rows={rows}
         columns={PET_TABLE_COLUMNS}
-        sx={{
+
+        
+sx={{
+  "& .MuiDataGrid-columnHeaders": {
+    backgroundColor: "#73aafe",
+    color: "black",
+  },
+
   "& .MuiDataGrid-row:nth-of-type(even)": {
-    backgroundColor: "#e6f023",
+    backgroundColor: "#eaf826",
+  },
+
+  "& .MuiDataGrid-row:nth-of-type(odd)": {
+    backgroundColor: "#d30f0f",
+  },
+
+  "& .MuiDataGrid-row:hover": {
+    backgroundColor: "#0eb6f3",
   },
 }}
 
-        onRowClick={(params) => {
+  
+       onRowClick={(params) => {
          const pet = pets.find(
         (p) => p.petId === params.row.id
 );
