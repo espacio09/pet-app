@@ -25,9 +25,9 @@ export function usePets() {
     ownerId: pet.owner_id,
     color: pet.color,
     petTypeId: pet.pet_type_id,
-    breedId: pet.breed_id,
+    breedTypeId: pet.breed_id,
     age: Math.floor(
-      (new Date().getTime() - new Date(pet.birthdate).getTime()) /
+      (new Date().getTime() - new Date(pet.birthdate as Date).getTime()) /
         (1000 * 60 * 60 * 24 * 365.25)
     ),
   }))

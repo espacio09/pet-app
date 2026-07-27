@@ -15,7 +15,6 @@ export const PetsPage = () => {
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isAddPetOpen, setIsAddPetOpen] = useState(false);
 
-
   const handleCloseModal = () => {
     setIsDetailOpen(false);
     setSelectedPet(null);

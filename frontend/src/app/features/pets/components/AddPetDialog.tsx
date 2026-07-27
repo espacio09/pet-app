@@ -8,12 +8,13 @@ import {
   TextField,
 } from "@mui/material";
 import { useState } from "react";
+import { createPet } from "../models/pets";
+
 
 interface AddPetDialogProps {
   open: boolean;
   onClose: () => void;
 }
-
 export default function AddPetDialog({
   open,
   onClose,
@@ -28,17 +29,38 @@ export default function AddPetDialog({
   const [color, setColor] = useState("");
   const [ownerId, setOwnerId] = useState("");
 
+  const handleSave = async () => {
 
 
-console.log({
-  name,
-  sex,
-  weight,
-  birthdate,
-  microchipNo,
+console.log("PET A ENVIAR", {
+  pet_name: name,
+  ownerId: Number(ownerId),
   color,
-  ownerId
+  sex,
+  birthdate,
+  microchip_no: Number(microchipNo),
+  weight: Number(weight),
+  breed_id: 1,
+  pet_typeId: 1,
 });
+
+  await createPet({
+    pet_name: name,
+    
+    ownerId: Number(ownerId),
+    color,
+    sex,
+    birthdate: new Date(birthdate),
+    microchip_no: Number(microchipNo),
+    weight: Number(weight),
+    pet_typeId: 1, // Default value, you can change it as needed
+    breed_id: 1, // Default value, you can change it as needed
+  });
+
+
+  onClose();
+
+};
 
 
   return (
@@ -116,9 +138,12 @@ console.log({
           Cancel
         </Button>
 
-        <Button variant="contained">
-          Save
-        </Button>
+        <Button
+  variant="contained"
+  onClick={handleSave}
+>
+  Save
+</Button>
       </DialogActions>
     </Dialog>
   );
