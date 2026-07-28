@@ -1,6 +1,6 @@
 export interface Pet {
   petName: string | null;
-  petId: number | null;
+  petId: number;
   ownerId: number | null;
   birthdate: string | null;
   age: number;
@@ -13,15 +13,15 @@ export interface Pet {
 }
 
 export interface PetApi {
-  pet_id: number | null;
+  pet_id: number;
   pet_name: string | null;
   sex: string | null;
   weight: number;
-  birthdate: string | null;
+  birthdate: Date | null;
   ownerId: number | null;
   color: string;
   microchip_no: number | null;
-  pet_typId: number | null;
+  pet_typeId: number | null;
   breed_id: number | null;
 }
 
@@ -29,7 +29,7 @@ export interface CreatePetRequest {
   pet_name: string | null;
   sex: string;
   weight: number;
-  birthdate: string | null;
+  birthdate: Date | null;
   ownerId: number | null;
   color: string;
   microchip_no: number  | null;
@@ -38,13 +38,13 @@ export interface CreatePetRequest {
 }
 
 export interface UpdatePetRequest {
-  pet_name: string | null;
-  sex: string;
-  weight: number;
-  birthdate: string | null;
-  ownerId: number | null;
-  color: string;
-  microchip_no: number  | null;
-  pet_typeId: number;
-  breed_id: number | null;
+  pet_name?: string;
+  color?: string;
+  sex?: string;
+  weight?: number;
+  birthdate?: Date | null;
+  ownerId?: number;
+  microchip_no?: string;
+  pet_typeId?: number;
+  breed_id?: number;
 }

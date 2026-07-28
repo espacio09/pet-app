@@ -10,10 +10,11 @@ import { Button } from "@mui/material";
 
 
 export const PetsPage = () => {
-  const { pets, loading, error } = usePets();
   const [selectedPet, setSelectedPet] = useState<Pet | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isAddPetOpen, setIsAddPetOpen] = useState(false);
+  
+  const { pets, loading, error, loadPets } = usePets();
 
   const handleCloseModal = () => {
     setIsDetailOpen(false);
@@ -71,11 +72,12 @@ console.log("ERROR:", error);
       />
 
       
-      <PetDetailModal
-        pet={selectedPet}
-        open={isDetailOpen}
-        onClose={handleCloseModal}
-      />
+  <PetDetailModal
+  pet={selectedPet}
+  open={isDetailOpen}
+  onClose={handleCloseModal}
+  onSaved={loadPets}
+/>
     </div>
   );
 };

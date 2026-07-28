@@ -31,10 +31,10 @@ if (!res.ok) {
   console.error(error);
   throw new Error(error);
 }
-
-
- 
+  return res.json();
 }
+
+
 export async function updatePet(
   id: number,
   pet: UpdatePetRequest,

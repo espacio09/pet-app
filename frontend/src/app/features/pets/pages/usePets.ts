@@ -7,44 +7,48 @@ export function usePets() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
+ const loadPets = async () => {
+  try {
+    const data = await getPets();
 
-  useEffect(() => {
-    console.log("usePets iniciado");
+    setPets(
+      data.map((pet: PetApi) => ({
+        petId: pet.pet_id,
+        petName: pet.pet_name,
+        sex: pet.sex,
+        weight: pet.weight,
+        birthdate: pet.birthdate,
+        microchipNo: pet.microchip_no,
+        ownerId: pet.ownerId,
+        color: pet.color,
+        petTypeId: pet.pet_typeId,
+        breedTypeId: pet.breed_id,
+        age: pet.birthdate
+          ? Math.floor(
+              (Date.now() -
+                new Date(pet.birthdate).getTime()) /
+                (1000 * 60 * 60 * 24 * 365.25)
+            )
+          : 0,
+      }))
+    );
+  } catch (err) {
+    console.error(err);
+    setError(true);
+  } finally {
+    setLoading(false);
+  }
+};
+useEffect(() => {
+loadPets();
 
-    getPets()
-      .then((data) => {
 
- setPets(
-  data.map((pet: PetApi) => ({
-    petId: pet.pet_id,
-    petName: pet.pet_name,
-    sex: pet.sex,
-    weight: pet.weight,
-    birthdate: pet.birthdate,
-    microchipNo: pet.microchip_no,
-    ownerId: pet.ownerId,
-    color: pet.color,
-    petTypeId: pet.pet_typeId,
-    breedTypeId: pet.breed_id,
-    age: Math.floor(
-      (new Date().getTime() - new Date(pet.birthdate).getTime()) /
-        (1000 * 60 * 60 * 24 * 365.25)
-    ),
-  }))
+}, []);
+ return {
+  pets,
+  loading,
+  error,
+  loadPets,
 
-);
-
-      })
-      .catch((err) => {
-        console.error("error:", err);
-        setError(true);
-      })
-      .finally(() => setLoading(false));
-  }, []);
-
-  return {
-    pets,
-    loading,
-    error,
-  };
+};
 }
