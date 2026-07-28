@@ -50,7 +50,7 @@ console.log("PET A ENVIAR", {
     ownerId: Number(ownerId),
     color,
     sex,
-    birthdate: new Date(birthdate),
+    birthdate,
     microchip_no: Number(microchipNo),
     weight: Number(weight),
     pet_typeId: 1, // Default value, you can change it as needed

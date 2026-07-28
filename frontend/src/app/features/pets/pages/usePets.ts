@@ -22,12 +22,12 @@ export function usePets() {
     weight: pet.weight,
     birthdate: pet.birthdate,
     microchipNo: pet.microchip_no,
-    ownerId: pet.owner_id,
+    ownerId: pet.ownerId,
     color: pet.color,
-    petTypeId: pet.pet_type_id,
+    petTypeId: pet.pet_typeId,
     breedTypeId: pet.breed_id,
     age: Math.floor(
-      (new Date().getTime() - new Date(pet.birthdate as Date).getTime()) /
+      (new Date().getTime() - new Date(pet.birthdate).getTime()) /
         (1000 * 60 * 60 * 24 * 365.25)
     ),
   }))
