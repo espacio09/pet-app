@@ -41,12 +41,9 @@ console.log("ERROR:", error);
     return <p>Error al cargar mascotas.</p>;
   }
 
-
   return (
     <div>
       <h1>Mascotas</h1>
-
-    
 
       <Button
   variant="contained"
@@ -54,8 +51,6 @@ console.log("ERROR:", error);
 >
   Add Pet
 </Button>
-
-
 
   <PetsList
   pets={pets}
@@ -65,7 +60,6 @@ console.log("ERROR:", error);
   }}
 />
  
-
    <AddPetDialog
         open={isAddPetOpen}
         onClose={handleCloseAddPetDialog}

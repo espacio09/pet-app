@@ -9,7 +9,7 @@ import type { Pet } from "../models/Pet";
 import { germanDateFormatter } from "../../../shared/formatters";
 import { useState } from "react";
 import { updatePet } from "../models/pets";
-
+import Stack from "@mui/material/Stack";
 
 
 //    muestra detalles de una mascota
@@ -29,31 +29,43 @@ export default function PetDetailModal({
 }: PetDetailModalProps) {
 
    
-
     const [isEditing, setIsEditing] = useState(false);
+    const [name, setName] = useState(pet?.petName ?? "");
     const [color, setColor] = useState(pet?.color ?? "");
+    const [sex, setSex] = useState(pet?.sex ?? "");
+    const [weight, setWeight] = useState<number>(
+  pet?.weight ?? 0
+);
+    const [birthdate, setBirthdate] = useState(pet?.birthdate ?? "");
+   const [microchip_no, setMicrochip] = useState<number>(
+  pet?.microchip_no ?? 0
+);
 
   if (!pet) return null;
 
 
 const handleSave = async () => {
+  console.log("SAVE CLICKED");
+
   try {
     
+        console.log("SAVE CLICKED");
+
   await updatePet(
   pet.petId,
   {
     color,
+    pet_name: name,
+    sex,
+    birthdate: new Date(birthdate),
+    microchip_no,
+    weight: Number(weight)
   }
 );
 
 await onSaved();
 
 setIsEditing(false);
-
-
-    await onSaved();
-
-    setIsEditing(false);
   } catch (error) {
     console.error(error);
   }
@@ -61,15 +73,34 @@ setIsEditing(false);
 
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
       <DialogTitle>{pet.petName}</DialogTitle>
     <Typography>
   Editing: {isEditing ? "YES" : "NO"}
 </Typography>
+
+
 <DialogContent>
+      <Stack spacing={2}>
+
   <Typography>
     <strong>ID:</strong> {pet.petId}
   </Typography>
+
+
+{isEditing ? (
+  <TextField
+    label="Name"
+    value={name}
+    onChange={(e) => setName(e.target.value)}
+    fullWidth
+  />
+) : (
+  <Typography>
+    <strong>Name:</strong> {pet.petName}
+  </Typography>
+)}
+
 
 {isEditing ? (
   <TextField
@@ -84,22 +115,76 @@ setIsEditing(false);
   </Typography>
 )}
 
-
+{isEditing ? (
+  <TextField
+    label="Sex"
+    value={sex}
+    onChange={(e) => setSex(e.target.value)}
+    fullWidth
+  />
+) : (
   <Typography>
     <strong>Sex:</strong> {pet.sex}
   </Typography>
+)}
 
+{isEditing ? (
+  <TextField
+  label="Birthdate"
+  type="date"
+  value={birthdate}
+  onChange={(e) => setBirthdate(e.target.value)}
+  fullWidth
+  slotProps={{
+    inputLabel: {
+      shrink: true,
+    },
+  }}
+
+  />
+) : (
   <Typography>
-    <strong>Birth Date:</strong> {germanDateFormatter(pet.birthdate)}
+    <strong>Birthdate:</strong>{" "}
+    {germanDateFormatter(pet.birthdate)}
   </Typography>
+)}
+
+
+{isEditing ? (
+  <TextField
+    label="Weight"
+    type="number"
+    onChange={(e) => setWeight(Number(e.target.value))}
+    fullWidth
+  />
+) : (
+  <Typography>
+    <strong>Weight:</strong> {pet.weight}
+  </Typography>
+)}
+
 
   <Typography>
     <strong>Age:</strong> {pet.age}
   </Typography>
 
+
+{isEditing ? (
+ <TextField
+  label="Microchip No"
+  type="number"
+  value={microchip_no}
+  onChange={(e) =>
+    setMicrochip(Number(e.target.value))
+  }
+  fullWidth
+/>
+) : (
   <Typography>
-    <strong>Weight:</strong> {pet.weight}
+    <strong>Microchip No:</strong> {pet.microchip_no}
   </Typography>
+)}
+
 
   <Typography>
     <strong>Breed ID:</strong> {pet.breed_id}
@@ -108,10 +193,7 @@ setIsEditing(false);
   <Typography>
     <strong>Owner ID:</strong> {pet.ownerId}
   </Typography>
-</DialogContent>
 
-
-<DialogContent>
 
       <DialogActions>
   <Button onClick={onClose}>
@@ -128,8 +210,9 @@ setIsEditing(false);
   </Button>
 )}
 </DialogActions>
-    
+    </Stack>
+
         </DialogContent>
-    </Dialog>
+ </Dialog>
   );
-}
+  }

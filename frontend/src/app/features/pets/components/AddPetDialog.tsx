@@ -24,7 +24,6 @@ export default function AddPetDialog({
   const [sex, setSex] = useState("");
   const [weight, setWeight] = useState("");
   const [birthdate, setBirthdate] = useState("");
-
   const [microchipNo, setMicrochipNo] = useState("");
   const [color, setColor] = useState("");
   const [ownerId, setOwnerId] = useState("");
@@ -50,18 +49,16 @@ console.log("PET A ENVIAR", {
     ownerId: Number(ownerId),
     color,
     sex,
-    birthdate: birthdate ? new Date(birthdate) : null,
-    microchip_no: Number(microchipNo),
+    birthdate: new Date(birthdate),
+    microchip_no: String(microchipNo),
     weight: Number(weight),
     pet_typeId: 1, // Default value, you can change it as needed
     breed_id: 1, // Default value, you can change it as needed
   });
 
-
   onClose();
 
 };
-
 
   return (
     <Dialog open={open} onClose={onClose}>
@@ -84,22 +81,18 @@ console.log("PET A ENVIAR", {
 
           <TextField
             label="Microchip No"
+            type="string"
             value={microchipNo}
             onChange={(e) => setMicrochipNo(e.target.value)}
             fullWidth
           />
 
           <TextField
-            label="Birthdate"
-            type="date"
-            value={birthdate}
-            onChange={(e) => setBirthdate(e.target.value)}
-            fullWidth
-            slotProps={{
-              inputLabel: {
-                shrink: true,
-              },
-            }}
+  label="Birthdate"
+  type="date"
+  value={birthdate}
+  onChange={(e) => setBirthdate(e.target.value)}
+  fullWidth
           />
             
           <TextField
