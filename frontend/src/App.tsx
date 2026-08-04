@@ -1,7 +1,20 @@
+import { useState } from "react";
 import { PetsPage } from "./app/features/pets/pages/PetsPage";
+import HomePage from "./app/pages/HomePage";
 
 function App() {
-  return <PetsPage />;
+  const [activePage, setActivePage] =
+    useState("home");
+
+  if (activePage === "pets") {
+    return <PetsPage />;
+  }
+
+  return (
+    <HomePage
+      onOpenPets={() => setActivePage("pets")}
+    />
+  );
 }
 
 export default App;

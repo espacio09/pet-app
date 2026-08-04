@@ -21,7 +21,8 @@ export interface PetApi {
   ownerId: number | null;
   color: string;
   microchip_no: number;
-  breed_id: number | null;
+  breed_id: number
+  pet_typeId: number
 }
 
 export interface CreatePetRequest {

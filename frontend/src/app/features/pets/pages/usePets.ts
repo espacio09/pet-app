@@ -40,10 +40,15 @@ export function usePets() {
   }
 };
 useEffect(() => {
-loadPets();
+  const load = async () => {
+    await loadPets();
+  };
 
-
+  void load();
 }, []);
+
+
+
  return {
   pets,
   loading,
