@@ -9,7 +9,13 @@ import { Button } from "@mui/material";
 
 
 
-export const PetsPage = () => {
+type PetsPageProps = {
+  onGoHome: () => void;
+};
+
+export const PetsPage = ({
+  onGoHome,
+}: PetsPageProps) => {
   const [selectedPet, setSelectedPet] = useState<Pet | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isAddPetOpen, setIsAddPetOpen] = useState(false);
@@ -45,12 +51,25 @@ console.log("ERROR:", error);
     <div>
       <h1>Mascotas</h1>
 
-      <Button
-  variant="contained"
-  onClick={handleOpenAddPetDialog}
->
-  Add Pet
-</Button>
+      <div style={{ marginBottom: "20px" }}>
+  
+ <div style={{ marginBottom: "20px" }}>
+  <Button
+    variant="outlined"
+    onClick={onGoHome}
+  >
+    🏠 Home
+  </Button>
+
+  <Button
+    variant="contained"
+    onClick={handleOpenAddPetDialog}
+    style={{ marginLeft: "10px" }}
+  >
+    🐾 Add Pet
+  </Button>
+</div>
+</div>
 
   <PetsList
   pets={pets}

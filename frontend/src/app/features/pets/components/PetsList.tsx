@@ -26,7 +26,7 @@ const rows = pets.map((pet) => ({
   birthdate: germanDateFormatter(pet.birthdate),
   microchip_no: pet.microchip_no,
   color: pet.color,
-  owner_id: pet.owner_id,
+  owner_id: pet.ownerId,
 }));
 
 
