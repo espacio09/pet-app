@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { usePets } from "../hooks/usePets";
-import type { Pet } from "../models/Pet";
+import { usePets } from "./useOwners";
+import type { Pet } from "../models/Owner";
 
-import PetsList from "../components/PetsList";
-import PetDetailModal from "../components/PetDetailModal";
-import AddPetDialog from "../components/AddPetDialog";
+import PetsList from "../components/OwnerList";
+import PetDetailModal from "../components/OwnerDetailModal";
+import AddPetDialog from "../components/AddOwnerDialog";
 import {
   Paper,
   Box,
@@ -21,49 +21,51 @@ import PeopleIcon from "@mui/icons-material/People";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import HomeIcon from "@mui/icons-material/Home";
 import AddIcon from "@mui/icons-material/Add";
+import vetAvatar from "../../../../assets/vet-avatar.png";
 
 
-type PetsPageProps = {
+
+type OwnersPageProps = {
   onGoHome: () => void;
 };
 
-export const PetsPage = ({
+export const OwnersPage = ({
   onGoHome,
-}: PetsPageProps) => {
-  const [selectedPet, setSelectedPet] = useState<Pet | null>(null);
+}: OwnersPageProps) => {
+  const [selectedPet, setSelectedPet] = useState<Owner | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isAddPetOpen, setIsAddPetOpen] = useState(false);
   
-  const { pets, loading, error, loadPets } = usePets();
+  const { pets, loading, error, loadPets } = useOwners();
 
   const handleCloseModal = () => {
     setIsDetailOpen(false);
     setSelectedPet(null);
   };
 
-  const handleOpenAddPetDialog = () => {
+  const handleOpenAddOwnerDialog = () => {
   setIsAddPetOpen(true);
 };
 
-   const handleCloseAddPetDialog = () => {
+   const handleCloseAddOwnerDialog = () => {
   setIsAddPetOpen(false);
 };
 
-console.log("PETS EN PETSPAGE:", pets);
+console.log("OWNERS EN OWNERSPAGE:", owners);
 console.log("LOADING:", loading);
 console.log("ERROR:", error);
 
   if (loading) {
-    return <p>Cargando mascotas...</p>;
+    return <p>Cargando propietarios...</p>;
   }
 
   if (error) {
-    return <p>Error al cargar mascotas.</p>;
+    return <p>Error al cargar propietarios.</p>;
   }
 
   return (
   <div>
-    <h1>Mascotas</h1>
+    <h1>Propietarios</h1>
 
     <div style={{ marginBottom: "20px" }}>
 <Button
@@ -79,10 +81,10 @@ console.log("ERROR:", error);
   variant="contained"
   size="small"
   startIcon={<AddIcon />}
-  onClick={handleOpenAddPetDialog}
+  onClick={handleOpenAddOwnerDialog}
   sx={{ ml: 1 }}
 >
-  Add Pet
+  Add Owner
 </Button>
 
     </div>
@@ -105,7 +107,14 @@ console.log("ERROR:", error);
     mb: 3,
   }}
 >
-    
+  <Avatar
+    src={ownerAvatar}
+    alt="Dr. Smith"
+    sx={{
+      width: 100,
+      height: 100,
+    }}
+  />
   <Typography
     variant="h5"
     fontWeight="bold"
@@ -160,7 +169,7 @@ console.log("ERROR:", error);
             color="success.main"
             fontWeight="bold"
           >
-            {owners.length}
+            {pets.length}
           </Typography>
 
           <Typography color="text.secondary">
@@ -220,24 +229,24 @@ console.log("ERROR:", error);
 </Paper>
 
 
-    <OwnersList
-      owners={pets}
+    <PetsList
+      pets={pets}
       onSelect={(pet) => {
-        setSelectedPet(owner);
+        setSelectedPet(pet);
         setIsDetailOpen(true);
       }}
     />
 
     <AddPetDialog
       open={isAddPetOpen}
-      onClose={handleCloseAddOwnerDialog}
+      onClose={handleCloseAddPetDialog}
     />
 
     <PetDetailModal
-      pet={selectedOwner}
+      pet={selectedPet}
       open={isDetailOpen}
       onClose={handleCloseModal}
-      onSaved={loadOwners}
+      onSaved={loadPets}
     />
   </div>
 );}
