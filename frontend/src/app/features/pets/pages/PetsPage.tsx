@@ -20,7 +20,7 @@ import PetsIcon from "@mui/icons-material/Pets";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import HomeIcon from "@mui/icons-material/Home";
 import AddIcon from "@mui/icons-material/Add";
-import vetAvatar from "../../../../assets/vet-avatar.jpg";
+import vetAvatar from "../../../../assets/vet-avatar.png";
 
 
 
@@ -110,8 +110,8 @@ console.log("ERROR:", error);
     src={vetAvatar}
     alt="Dr. Smith"
     sx={{
-      width: 56,
-      height: 56,
+      width: 100,
+      height: 100,
     }}
   />
   <Typography
@@ -141,7 +141,7 @@ console.log("ERROR:", error);
           />
 
           <Typography
-            variant="h4"
+            variant="h5"
             color="primary"
             fontWeight="bold"
           >
@@ -164,7 +164,7 @@ console.log("ERROR:", error);
           />
 
           <Typography
-            variant="h4"
+            variant="h5"
             color="success.main"
             fontWeight="bold"
           >
@@ -187,7 +187,7 @@ console.log("ERROR:", error);
           />
 
           <Typography
-            variant="h4"
+            variant="h5"
             color="warning.main"
             fontWeight="bold"
           >
