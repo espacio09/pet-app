@@ -1,20 +1,18 @@
 import { useState } from "react";
-import { PetsPage } from "./app/features/pets/pages/PetsPage";
+import  {PetsPage}  from "./app/pages/PetsPage";
 import HomePage from "./app/pages/HomePage";
 
-
-
+type Page = "home" | "pets";
 
 function App() {
-  const [activePage, setActivePage] =
-    useState("home");
+  const [activePage, setActivePage] = useState<Page>("home");
 
   if (activePage === "pets") {
     return (
-  <PetsPage
-    onGoHome={() => setActivePage("home")}
-  />
-);
+      <PetsPage
+        onGoHome={() => setActivePage("home")}
+      />
+    );
   }
 
   return (

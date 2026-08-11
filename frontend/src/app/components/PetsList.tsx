@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import { DataGrid} from "@mui/x-data-grid";
-import type { Pet } from "../models/Pet";
+import type { Pet } from "../../../types/Pet";
 import { PET_TABLE_COLUMNS } from "./pets-table.columns";
 import { germanDateFormatter } from "../../../shared/formatters";
 

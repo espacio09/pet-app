@@ -1,7 +1,7 @@
 import type {
   CreatePetRequest,
   UpdatePetRequest,
-} from "../models/Pet";
+} from "../types/Pet";
 
 
 

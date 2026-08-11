@@ -1,6 +1,6 @@
-import type { Pet } from "../models/Pet";
+import type { Pet } from "../types/Pet";
 
-const API_URL = "http://localhost:3002/pets"; // ajusta tu backend
+const API_URL = "http://localhost:3002/pets";
 
 export const petService = {
   getAll: async (): Promise<Pet[]> => {

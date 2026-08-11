@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import type { Pet, PetApi } from "../models/Pet";
-import { getPets } from "../models/pets";
+import type { Pet, PetApi } from "../types/Pet";
+import { getPets } from "../types/pets";
 
 export function usePets() {
   const [pets, setPets] = useState<Pet[]>([]);

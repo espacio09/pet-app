@@ -1,44 +1,21 @@
-import { Card, CardContent, Typography } from "@mui/material";
-
-interface HomePageProps {
+type HomePageProps = {
   onOpenPets: () => void;
-}
+};
 
-export default function HomePage({ onOpenPets }: HomePageProps) {
+export default function HomePage({
+  onOpenPets,
+}: HomePageProps) {
   return (
-    <div style={{ padding: "2rem" }}>
-      <Typography variant="h4" gutterBottom>
-        🐾 Welcome to Pet Care Manager
-      </Typography>
+    <div>
+      <h1>🐾 Bienvenido a PetCare</h1>
 
-      <Typography variant="body1" gutterBottom>
-        Please Select a module to continue.
+      <p>
+        Gestiona tus mascotas de forma fácil y rápida.
+      </p>
 
-      </Typography>
-
-      <Card sx={{ mt: 2, cursor: "pointer" }} onClick={onOpenPets}>
-        <CardContent>
-          <Typography variant="h6">
-            🐾 Pets
-          </Typography>
-        </CardContent>
-      </Card>
-
-      <Card sx={{ mt: 2 }}>
-        <CardContent>
-          <Typography variant="h6">
-            👨 Owners
-          </Typography>
-        </CardContent>
-      </Card>
-
-      <Card sx={{ mt: 2 }}>
-        <CardContent>
-          <Typography variant="h6">
-            🩺 Vets
-          </Typography>
-        </CardContent>
-      </Card>
+      <button onClick={onOpenPets}>
+        Ver mis mascotas
+      </button>
     </div>
   );
 }

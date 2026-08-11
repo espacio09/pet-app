@@ -5,10 +5,10 @@ import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import type { Pet } from "../models/Pet";
-import { germanDateFormatter } from "../../../shared/formatters";
+import type { Pet } from "../types/Pet";
+import { germanDateFormatter } from "../shared/formatters";
 import { useState } from "react";
-import { updatePet } from "../models/pets";
+import { updatePet } from "../types/pets";
 import Stack from "@mui/material/Stack";
 
 
