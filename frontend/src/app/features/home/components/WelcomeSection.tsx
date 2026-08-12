@@ -3,12 +3,12 @@ import { Box, Typography } from "@mui/material";
 export default function WelcomeSection() {
   return (
     <Box sx={{ mb: 4 }}>
-      <Typography
-        variant="h4"
-        fontWeight="bold"
-        color="primary"
-        gutterBottom
-      >
+     <Typography
+variant="h4"
+color="primary"
+gutterBottom
+sx={{ fontWeight: 'bold' }}
+>
         🐾 Bienvenida Dra. Smith!
       </Typography>
 

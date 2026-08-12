@@ -3,7 +3,17 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 
-export default function DashboardCards() {
+
+
+type DashboardCardsProps = {
+  onOpenPets: () => void;
+};
+
+export default function DashboardCards({
+  onOpenPets,
+}: DashboardCardsProps) {
+
+
   const cards = [
     {
       title: "Appointments",
@@ -19,6 +29,7 @@ export default function DashboardCards() {
       title: "Patients",
       value: 15,
       icon: "🐾",
+      
     },
     {
       title: "Follow-Ups",
@@ -31,12 +42,22 @@ export default function DashboardCards() {
     <Grid container spacing={3}>
       {cards.map((card) => (
         <Grid size={{ xs: 12, sm: 6, md: 3 }} key={card.title}>
+          
           <Card
+  onClick={() => {
+    if (card.title === "Patients") {
+      onOpenPets();
+    }
+  }}
   sx={{
     borderRadius: 4,
     textAlign: "center",
     height: "100%",
     boxShadow: 3,
+    cursor: card.title === "Patients"
+      ? "pointer"
+      : "default",
+
     transition: "all 0.3s ease",
 
     "&:hover": {
@@ -50,13 +71,13 @@ export default function DashboardCards() {
                 {card.icon}
               </Typography>
 
-              <Typography
-                variant="h4"
-                fontWeight="bold"
-                color="primary"
-              >
-                {card.value}
-              </Typography>
+             <Typography
+  variant="h4"
+  color="primary"
+  sx={{ fontWeight: 700 }}
+>
+  {card.value}
+</Typography>
 
               <Typography
                 variant="body1"

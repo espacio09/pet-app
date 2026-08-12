@@ -4,7 +4,14 @@ import DashboardCards from "./components/DashboardCards";
 import HeroImage from "./components/HeroImage";
 
 
-export default function HomePage() {
+ type HomePageProps = {
+  onOpenPets: () => void;
+};
+
+export default function HomePage({
+  onOpenPets,
+}: HomePageProps) {
+
   return (
     <Box
   sx={{
@@ -23,7 +30,8 @@ export default function HomePage() {
           }}
         >
           <WelcomeSection />
-          <DashboardCards />
+          <DashboardCards onOpenPets={onOpenPets} />
+
           <HeroImage />
         </Paper>
       </Container>

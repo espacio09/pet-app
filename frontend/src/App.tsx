@@ -17,8 +17,8 @@ function App() {
 
   return (
     <HomePage
-      onOpenPets={() => setActivePage("pets")}
-    />
+  onOpenPets={() => setActivePage("pets")}
+/>
   );
 }
 
