@@ -32,12 +32,19 @@ export default function DashboardCards() {
       {cards.map((card) => (
         <Grid size={{ xs: 12, sm: 6, md: 3 }} key={card.title}>
           <Card
-            sx={{
-              borderRadius: 4,
-              textAlign: "center",
-              height: "100%",
-            }}
-          >
+  sx={{
+    borderRadius: 4,
+    textAlign: "center",
+    height: "100%",
+    boxShadow: 3,
+    transition: "all 0.3s ease",
+
+    "&:hover": {
+      transform: "translateY(-5px)",
+      boxShadow: 6,
+    },
+  }}
+>
             <CardContent>
               <Typography variant="h3">
                 {card.icon}
