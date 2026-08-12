@@ -1,6 +1,6 @@
 import { useState } from "react";
 import  {PetsPage}  from "./app/pages/PetsPage";
-import HomePage from "./app/pages/HomePage";
+import HomePage from "./app/features/home/HomePage";
 
 type Page = "home" | "pets";
 

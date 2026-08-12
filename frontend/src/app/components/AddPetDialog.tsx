@@ -8,7 +8,7 @@ import {
   TextField,
 } from "@mui/material";
 import { useState } from "react";
-import { createPet } from "../models/pets";
+import { createPet } from "../types/pets";
 
 
 interface AddPetDialogProps {
