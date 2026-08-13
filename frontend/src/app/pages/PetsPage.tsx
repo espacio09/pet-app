@@ -6,7 +6,12 @@ import PetsList from "../components/PetsList";
 import PetDetailModal from "../components/PetDetailModal";
 import AddPetDialog from "../components/AddPetDialog";
 
-import { Box, Button, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Typography,
+  TextField,
+} from "@mui/material";
 
 type PetsPageProps = {
   onGoHome: () => void;
@@ -16,8 +21,23 @@ export const PetsPage = ({ onGoHome }: PetsPageProps) => {
   const [selectedPet, setSelectedPet] = useState<Pet | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isAddPetOpen, setIsAddPetOpen] = useState(false);
+  const [nameSearch, setNameSearch] = useState("");
+const [birthSearch, setBirthSearch] = useState("");
 
   const { pets, loading, error, loadPets } = usePets();
+
+  const filteredPets = pets.filter((pet) => {
+  const matchesName =
+    pet.petName
+      .toLowerCase()
+      .includes(nameSearch.toLowerCase());
+
+  const matchesBirth =
+    birthSearch === "" ||
+    pet.birthdate === birthSearch;
+
+  return matchesName && matchesBirth;
+});
 
   const handleCloseModal = () => {
     setSelectedPet(null);
@@ -31,6 +51,11 @@ export const PetsPage = ({ onGoHome }: PetsPageProps) => {
   const handleCloseAddPetDialog = () => {
     setIsAddPetOpen(false);
   };
+
+  const clearSearch = () => {
+  setNameSearch("");
+  setBirthSearch("");
+};
 
   if (loading) {
     return <Typography>Cargando mascotas...</Typography>;
@@ -63,16 +88,49 @@ export const PetsPage = ({ onGoHome }: PetsPageProps) => {
         </Button>
       </Box>
 
-      <Typography variant="h6" mb={2}>
-        Welcome back, Dr. Smith
-      </Typography>
+<Box
+  display="flex"
+  gap={2}
+  mb={3}
+  flexWrap="wrap"
+>
+  <TextField
+    label="Name"
+    value={nameSearch}
+    onChange={(e) =>
+      setNameSearch(e.target.value)
+    }
+    size="small"
+  />
 
+  <TextField
+    label="Birth Date"
+    type="date"
+    value={birthSearch}
+    onChange={(e) =>
+      setBirthSearch(e.target.value)
+    }
+    InputLabelProps={{
+      shrink: true,
+    }}
+    size="small"
+  />
+
+  <Button
+    variant="outlined"
+    onClick={clearSearch}
+  >
+    Clear
+  </Button>
+
+
+</Box>
       <Typography mb={3}>
-        Registered pets: {pets.length}
+        Registered pets: {filteredPets.length}
       </Typography>
 
       <PetsList
-        pets={pets}
+        pets={filteredPets}
         onSelect={(pet) => {
           setSelectedPet(pet);
           setIsDetailOpen(true);
