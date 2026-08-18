@@ -11,10 +11,14 @@ import { useState } from "react";
 import { createPet } from "../types/pets";
 
 
+// src/components/AddPetDialog.tsx
+
 interface AddPetDialogProps {
   open: boolean;
   onClose: () => void;
+  onPetAdded: () => Promise<void>;
 }
+
 export default function AddPetDialog({
   open,
   onClose,
@@ -45,12 +49,11 @@ console.log("PET A ENVIAR", {
 
   await createPet({
     pet_name: name,
-    
     ownerId: Number(ownerId),
     color,
     sex,
     birthdate: new Date(birthdate),
-    microchip_no: String(microchipNo),
+    microchip_no: Number(microchipNo),
     weight: Number(weight),
     pet_typeId: 1, // Default value, you can change it as needed
     breed_id: 1, // Default value, you can change it as needed

@@ -1,5 +1,5 @@
 export interface Pet {
-  petName: string | null;
+  petName: string;
   petId: number;
   ownerId: number | null;
   birthdate: Date;
@@ -14,7 +14,7 @@ export interface Pet {
 
 export interface PetApi {
   pet_id: number;
-  pet_name: string | null;
+  pet_name: string;
   sex: string | null;
   weight: number;
   birthdate: Date;
@@ -26,7 +26,7 @@ export interface PetApi {
 }
 
 export interface CreatePetRequest {
-  pet_name: string | null;
+  pet_name: string;
   sex: string;
   weight: number;
   birthdate: Date;
