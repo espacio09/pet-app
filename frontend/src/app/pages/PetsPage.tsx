@@ -1,35 +1,50 @@
 import { useState } from "react";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+} from "@mui/material";
+
 import type { Pet } from "../types/Pet";
 import { usePets } from "../hooks/usePets";
 
 import PetsList from "../components/PetsList";
 import PetDetailModal from "../components/PetDetailModal";
 import AddPetDialog from "../components/AddPetDialog";
-import Typography from "@mui/material/Typography";
-import {
-  Box,
-  Button,
-  TextField,
-} from "@mui/material";
 
 type PetsPageProps = {
   onGoHome: () => void;
 };
 
-export const PetsPage = ({ onGoHome }: PetsPageProps) => {
-  const [selectedPet, setSelectedPet] = useState<Pet | null>(null);
+export const PetsPage = ({
+  onGoHome,
+}: PetsPageProps) => {
+  const [selectedPet, setSelectedPet] =
+    useState<Pet | null>(null);
 
-  const [isAddPetOpen, setIsAddPetOpen] = useState(false);
+  const [isAddPetOpen, setIsAddPetOpen] =
+    useState(false);
+
+  const [modalOpen, setModalOpen] =
+    useState(false);
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [nameSearch, setNameSearch] = useState("");
-  const [birthSearch, setBirthSearch] = useState("");
+  const [searchBirthdate, setSearchBirthdate] = useState("");
 
-  const { pets, loading, error, loadPets } = usePets();
-
-  const handleSaved = async (): Promise<void> => {
-  await loadPets();
+  const formatDate = (date: string | Date) => {
+  return new Date(date).toLocaleDateString(
+    "de-DE"
+  );
 };
+
+  const {
+    pets,
+    loading,
+    error,
+    loadPets,
+  } = usePets();
+
 
   const filteredPets = pets.filter((pet) => {
     const matchesSearch =
@@ -38,51 +53,30 @@ export const PetsPage = ({ onGoHome }: PetsPageProps) => {
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
 
-    const matchesName =
-      nameSearch === "" ||
-      pet.petName
-        .toLowerCase()
-        .includes(nameSearch.toLowerCase());
-
-  const matchesBirth =
-  birthSearch === "" ||
-  pet.birthdate.toISOString().split("T")[0] === birthSearch;
-
+        const matchesBirth =
+  searchBirthdate === "" ||
+  formatDate(pet.birthdate).includes(
+    searchBirthdate
+  );
 
     return (
       matchesSearch &&
-      matchesName &&
       matchesBirth
     );
   });
 
-const [modalOpen, setModalOpen] = useState(false);
-
-const handleOpenModal = () => {
-  setModalOpen(true);
-};
-
-const handleCloseModal = () => {
-  setModalOpen(false);
-};
-
-
-
-
-  const handleOpenAddPetDialog = () => {
-    setIsAddPetOpen(true);
+  const handleOpenModal = () => {
+    setModalOpen(true);
   };
 
-  const handleCloseAddPetDialog = () => {
-    setIsAddPetOpen(false);
+  const handleCloseModal = () => {
+    setModalOpen(false);
   };
 
   const clearSearch = () => {
     setSearchTerm("");
-    setNameSearch("");
-    setBirthSearch("");
-  
-};
+    setSearchBirthdate("");
+  };
 
   if (loading) {
     return (
@@ -101,57 +95,39 @@ const handleCloseModal = () => {
   }
 
   return (
+    <Box sx={{ p: 2 }}>
+      <Typography
+        variant="h4"
+        sx={{ mb: 2 }}
+      >
+        Mis Mascotas
+      </Typography>
 
-    <Box
-    sx={{
-    display: "flex",
-    gap: 2,
-    mb: 2,
-    flexWrap: "wrap",
-  }}
->
+      <Button
+        variant="outlined"
+        onClick={onGoHome}
+      >
+        Home
+      </Button>
 
-
-   <Typography
-  variant="h4"
-  sx={{ mb: 2 }}
->
-  Mis Mascotas
-</Typography>
-
-      <Box
-    sx={{
-    display: "flex",
-    gap: 2,
-    mb: 2,
-    flexWrap: "wrap",
-  }}
->
-
-        <Button
-          variant="outlined"
-          onClick={onGoHome}
-        >
-          Home
-        </Button>
-
-        <Button
-          variant="contained"
-          onClick={handleOpenAddPetDialog}
-          sx={{ ml: 1 }}
-        >
-          Add Pet
-        </Button>
-      </Box>
+      <Button
+        variant="contained"
+        sx={{ ml: 1 }}
+        onClick={() =>
+          setIsAddPetOpen(true)
+        }
+      >
+        Add Pet
+      </Button>
 
       <Box
-  sx={{
-    display: "flex",
-    gap: 2,
-    mb: 2,
-    flexWrap: "wrap",
-  }}
-
+        sx={{
+          mt: 2,
+          mb: 2,
+          display: "flex",
+          gap: 2,
+          flexWrap: "wrap",
+        }}
       >
         <TextField
           label="Search Pet"
@@ -159,26 +135,18 @@ const handleCloseModal = () => {
           onChange={(e) =>
             setSearchTerm(e.target.value)
           }
-          size="small"
         />
 
         <TextField
-          label="Name"
-          value={nameSearch}
-          onChange={(e) =>
-            setNameSearch(e.target.value)
-          }
-          size="small"
-        />
-
-       <PetDetailModal
-  open={modalOpen}
-  onClose={handleCloseModal}
-  onSaved={loadPets}
-  pet={selectedPet}
+  label="Nacimiento"
+  placeholder="25.04.2023"
+  value={searchBirthdate}
+  onChange={(e) =>
+    setSearchBirthdate(
+      e.target.value
+    )
+  }
 />
-
-
         <Button
           variant="outlined"
           onClick={clearSearch}
@@ -187,18 +155,11 @@ const handleCloseModal = () => {
         </Button>
       </Box>
 
-        <Typography
-  variant="h4"
-  sx={{ mb: 2 }}
->
-        Registered pets: {filteredPets.length}
+      <Typography variant="h6">
+        Registered pets:
+        {" "}
+        {filteredPets.length}
       </Typography>
-
-      {filteredPets.length === 0 && (
-        <Typography color="error">
-          No hay mascotas que coincidan con la búsqueda.
-        </Typography>
-      )}
 
       <PetsList
         pets={filteredPets}
@@ -210,17 +171,18 @@ const handleCloseModal = () => {
 
       <AddPetDialog
         open={isAddPetOpen}
-        onClose={handleCloseAddPetDialog}
+        onClose={() =>
+          setIsAddPetOpen(false)
+        }
         onPetAdded={loadPets}
-      />  
+      />
 
-     <PetDetailModal
-  open={modalOpen}
-  onClose={handleCloseModal}
-  onSaved={handleSaved}
-  pet={selectedPet}
-/>
-
+      <PetDetailModal
+        open={modalOpen}
+        onClose={handleCloseModal}
+        onSaved={loadPets}
+        pet={selectedPet}
+      />
     </Box>
   );
-}
+};

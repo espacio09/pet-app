@@ -22,6 +22,7 @@ interface AddPetDialogProps {
 export default function AddPetDialog({
   open,
   onClose,
+
 }: AddPetDialogProps) {
 
   const [name, setName] = useState("");

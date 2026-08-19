@@ -3,8 +3,6 @@ import type {
   UpdatePetRequest,
 } from "../types/Pet";
 
-
-
 export async function getPets() {
   const res = await fetch("http://localhost:3002/pets");
 
@@ -15,8 +13,6 @@ export async function getPets() {
   return res.json();
 }
 
-
-
 export async function createPet(pet: CreatePetRequest) {
   const res = await fetch("http://localhost:3002/pets", {
     method: "POST",
@@ -26,23 +22,23 @@ export async function createPet(pet: CreatePetRequest) {
     body: JSON.stringify(pet),
   });
 
-if (!res.ok) {
-  const error = await res.text();
-  console.error(error);
-  throw new Error(error);
-}
+  if (!res.ok) {
+    const error = await res.text();
+    console.error(error);
+    throw new Error(error);
+  }
+
   return res.json();
 }
-
 
 export async function updatePet(
   id: number,
   pet: UpdatePetRequest,
 ) {
   const res = await fetch(`http://localhost:3002/pets/${id}`, {
-    method: 'PATCH',
+    method: "PATCH",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(pet),
   });
