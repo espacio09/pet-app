@@ -41,7 +41,7 @@ console.log("PET A ENVIAR", {
   ownerId: Number(ownerId),
   color,
   sex,
-  birthdate,
+  birthdate: Date.parse(birthdate),
   microchip_no: Number(microchipNo),
   weight: Number(weight),
   breed_id: 1,

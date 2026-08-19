@@ -30,13 +30,9 @@ export const PetsPage = ({
     useState(false);
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchBirthdate, setSearchBirthdate] = useState("");
 
-  const formatDate = (date: string | Date) => {
-  return new Date(date).toLocaleDateString(
-    "de-DE"
-  );
-};
+  const [birthdate, setBirthdate] = useState("");
+
 
   const {
     pets,
@@ -53,17 +49,25 @@ export const PetsPage = ({
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
 
-        const matchesBirth =
-  searchBirthdate === "" ||
-  formatDate(pet.birthdate).includes(
-    searchBirthdate
-  );
+
+// Function to format the date in German format (dd.mm.yyyy)
+  const formatGermanDate = (date: string | Date) =>
+  new Intl.DateTimeFormat("de-DE", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).format(new Date(date));
+
+const matchesBirth =
+  birthdate.trim() === "" ||
+  formatGermanDate(pet.birthdate) === birthdate.trim();
 
     return (
-      matchesSearch &&
-      matchesBirth
-    );
+      matchesSearch && matchesBirth 
+     );
   });
+
+
 
   const handleOpenModal = () => {
     setModalOpen(true);
@@ -73,9 +77,10 @@ export const PetsPage = ({
     setModalOpen(false);
   };
 
+
   const clearSearch = () => {
     setSearchTerm("");
-    setSearchBirthdate("");
+    setBirthdate("");
   };
 
   if (loading) {
@@ -137,15 +142,14 @@ export const PetsPage = ({
           }
         />
 
-        <TextField
-  label="Nacimiento"
-  placeholder="25.04.2023"
-  value={searchBirthdate}
+       <TextField
+  label="Birthdate"
+  value={birthdate}
+  placeholder="15.10.2000"
   onChange={(e) =>
-    setSearchBirthdate(
-      e.target.value
-    )
+    setBirthdate(e.target.value)
   }
+
 />
         <Button
           variant="outlined"
