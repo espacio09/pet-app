@@ -1,7 +1,7 @@
-import type {  CreateOwnerRequest,
+import type {
+  CreateOwnerRequest,
   UpdateOwnerRequest,
 } from "../types/Owner";
-
 
 export async function getOwners() {
   const res = await fetch("http://localhost:3002/owners");

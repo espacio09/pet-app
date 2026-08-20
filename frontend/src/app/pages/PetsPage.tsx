@@ -13,6 +13,11 @@ import PetsList from "../components/PetsList";
 import PetDetailModal from "../components/PetDetailModal";
 import AddPetDialog from "../components/AddPetDialog";
 
+import { useOwners } from "../hooks/useOwners";
+
+
+
+
 type PetsPageProps = {
   onGoHome: () => void;
 };
@@ -43,6 +48,18 @@ export const PetsPage = ({
     loadPets,
   } = usePets();
 
+  const {
+    owners,
+    loading: ownersLoading,
+    error: ownersError,
+  } = useOwners();
+
+  const formatGermanDate = (date: string | Date) =>
+    new Intl.DateTimeFormat("de-DE", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    }).format(new Date(date));
 
   const filteredPets = pets.filter((pet) => {
     const matchesSearch =
@@ -51,37 +68,18 @@ export const PetsPage = ({
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
 
+    const matchesBirth =
+      birthdate.trim() === "" ||
+      formatGermanDate(pet.birthdate) === birthdate.trim();
 
-  const filteredPetsByOwner = pets.filter((pet) => {
-  const owner = owners.find(
-    o => o.ownerId === pet.ownerId
-  );
+    const owner = owners.find(
+      (candidate) => candidate.ownerId === pet.ownerId,
+    );
+    const matchesOwner =
+      searchOwner.trim() === "" ||
+      owner?.ownerName.toLowerCase().includes(searchOwner.toLowerCase()) === true;
 
-  const ownerName =
-    `${owner?.firstName ?? ""} ${owner?.lastName ?? ""}`;
-
-  return ownerName
-    .toLowerCase()
-    .includes(searchOwner.toLowerCase());
-});
-
-
-// Function to format the date in German format (dd.mm.yyyy)
-  const formatGermanDate = (date: string | Date) =>
-  new Intl.DateTimeFormat("de-DE", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  }).format(new Date(date));
-
-const matchesBirth =
-  birthdate.trim() === "" ||
-  formatGermanDate(pet.birthdate) === birthdate.trim();
-
-
-    return (
-      matchesSearch && matchesBirth
-     );
+    return matchesSearch && matchesBirth && matchesOwner;
   });
 
 
@@ -98,6 +96,7 @@ const matchesBirth =
   const clearSearch = () => {
     setSearchTerm("");
     setBirthdate("");
+    setSearchOwner("");
   };
 
   if (loading) {
@@ -159,44 +158,19 @@ const matchesBirth =
           }
         />
 
-       <TextField
-  label="Birthdate"
-  value={birthdate}
-  placeholder="15.10.2000"
-  onChange={(e) =>
-    setBirthdate(e.target.value)
-  }
+        <TextField
+          label="Birthdate"
+          value={birthdate}
+          placeholder="15.10.2000"
+          onChange={(e) => setBirthdate(e.target.value)}
+        />
 
-/>
-return (
-  <>
-
-    return (
-  <>
-    <TextField
-      label="Search Owner"
-      value={searchOwner}
-      onChange={(e) =>
-        setSearchOwner(e.target.value)
-      }
-    />
-
-    {filteredPetsByOwner.map((pet) => {
-      const owner = owners.find(
-        o => o.ownerId === pet.ownerId
-      );
-
-      return (
-        <div key={pet.petId}>
-          {pet.name} - {owner?.firstName}
-        </div>
-      );
-    })}
-  </>
-);
-
-  </>
-);
+        <TextField
+          label="Search Owner"
+          value={searchOwner}
+          disabled={ownersLoading || ownersError}
+          onChange={(e) => setSearchOwner(e.target.value)}
+        />
         <Button
           variant="outlined"
           onClick={clearSearch}
