@@ -1,7 +1,7 @@
 export interface Pet {
   petName: string;
   petId: number;
-  ownerId: number | null;
+  ownerId: number;
   birthdate: Date;
   age: number;
   sex: string | null;
@@ -18,7 +18,7 @@ export interface PetApi {
   sex: string | null;
   weight: number;
   birthdate: Date;
-  ownerId: number | null;
+  ownerId: number;
   color: string;
   microchip_no: number;
   breed_id: number
@@ -30,7 +30,7 @@ export interface CreatePetRequest {
   sex: string;
   weight: number;
   birthdate: Date;
-  ownerId: number | null;
+  ownerId: number;
   color: string;
   microchip_no: number;
   pet_typeId: number;

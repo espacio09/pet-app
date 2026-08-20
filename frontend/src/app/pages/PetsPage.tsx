@@ -33,6 +33,8 @@ export const PetsPage = ({
 
   const [birthdate, setBirthdate] = useState("");
 
+  const [searchOwner, setSearchOwner] = useState("");
+
 
   const {
     pets,
@@ -50,6 +52,20 @@ export const PetsPage = ({
         .includes(searchTerm.toLowerCase());
 
 
+  const filteredPetsByOwner = pets.filter((pet) => {
+  const owner = owners.find(
+    o => o.ownerId === pet.ownerId
+  );
+
+  const ownerName =
+    `${owner?.firstName ?? ""} ${owner?.lastName ?? ""}`;
+
+  return ownerName
+    .toLowerCase()
+    .includes(searchOwner.toLowerCase());
+});
+
+
 // Function to format the date in German format (dd.mm.yyyy)
   const formatGermanDate = (date: string | Date) =>
   new Intl.DateTimeFormat("de-DE", {
@@ -62,8 +78,9 @@ const matchesBirth =
   birthdate.trim() === "" ||
   formatGermanDate(pet.birthdate) === birthdate.trim();
 
+
     return (
-      matchesSearch && matchesBirth 
+      matchesSearch && matchesBirth
      );
   });
 
@@ -151,6 +168,35 @@ const matchesBirth =
   }
 
 />
+return (
+  <>
+
+    return (
+  <>
+    <TextField
+      label="Search Owner"
+      value={searchOwner}
+      onChange={(e) =>
+        setSearchOwner(e.target.value)
+      }
+    />
+
+    {filteredPetsByOwner.map((pet) => {
+      const owner = owners.find(
+        o => o.ownerId === pet.ownerId
+      );
+
+      return (
+        <div key={pet.petId}>
+          {pet.name} - {owner?.firstName}
+        </div>
+      );
+    })}
+  </>
+);
+
+  </>
+);
         <Button
           variant="outlined"
           onClick={clearSearch}
