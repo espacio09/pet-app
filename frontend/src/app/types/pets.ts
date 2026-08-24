@@ -9,8 +9,9 @@ export async function getPets() {
   if (!res.ok) {
     throw new Error("API error: " + res.statusText);
   }
-
-  return res.json();
+  const pets = await res.json();
+  console.log("Pets:", pets);
+  return pets;
 }
 
 export async function createPet(pet: CreatePetRequest) {

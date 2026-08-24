@@ -17,7 +17,6 @@ import { useOwners } from "../hooks/useOwners";
 
 
 
-
 type PetsPageProps = {
   onGoHome: () => void;
 };
@@ -54,12 +53,19 @@ export const PetsPage = ({
     error: ownersError,
   } = useOwners();
 
+  console.log("Owners:", owners);
+
+
   const formatGermanDate = (date: string | Date) =>
     new Intl.DateTimeFormat("de-DE", {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
     }).format(new Date(date));
+
+
+    console.log("SearchOwner:", searchOwner);
+
 
   const filteredPets = pets.filter((pet) => {
     const matchesSearch =
@@ -72,17 +78,31 @@ export const PetsPage = ({
       birthdate.trim() === "" ||
       formatGermanDate(pet.birthdate) === birthdate.trim();
 
-    const owner = owners.find(
-      (candidate) => candidate.ownerId === pet.ownerId,
-    );
-    const matchesOwner =
-      searchOwner.trim() === "" ||
-      owner?.ownerName.toLowerCase().includes(searchOwner.toLowerCase()) === true;
+const owner = owners.find(
+  (o) => o.owner_id === pet.ownerId
+);
 
-    return matchesSearch && matchesBirth && matchesOwner;
+console.log(
+  "Pet:",
+  pet.petName,
+  "pet.ownerId:",
+  pet.ownerId,
+  "Owner encontrado:",
+  owner
+);
+
+const matchesOwner =
+  !searchOwner ||
+  (
+    owner &&
+    owner.owner_name
+      .toLowerCase()
+      .includes(searchOwner.toLowerCase())
+  );
+
+return matchesSearch && matchesBirth && matchesOwner;
+
   });
-
-
 
   const handleOpenModal = () => {
     setModalOpen(true);
@@ -209,4 +229,4 @@ export const PetsPage = ({
       />
     </Box>
   );
-};
+}
