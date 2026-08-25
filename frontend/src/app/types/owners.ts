@@ -32,10 +32,10 @@ export async function createOwner(owner: CreateOwnerRequest) {
 }
 
 export async function updateOwner(
-  id: number,
+  owner_id: number,
   owner: UpdateOwnerRequest,
 ) {
-  const res = await fetch(`http://localhost:3002/owners/${id}`, {
+  const res = await fetch(`http://localhost:3002/owners/${owner_id}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",

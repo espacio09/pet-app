@@ -64,45 +64,48 @@ export const PetsPage = ({
     }).format(new Date(date));
 
 
-    console.log("SearchOwner:", searchOwner);
 
 
   const filteredPets = pets.filter((pet) => {
-    const matchesSearch =
-      searchTerm === "" ||
-      pet.petName
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
-
-    const matchesBirth =
-      birthdate.trim() === "" ||
-      formatGermanDate(pet.birthdate) === birthdate.trim();
-
-const owner = owners.find(
-  (o) => o.owner_id === pet.ownerId
-);
-
-console.log(
-  "Pet:",
-  pet.petName,
-  "pet.ownerId:",
-  pet.ownerId,
-  "Owner encontrado:",
-  owner
-);
-
-const matchesOwner =
-  !searchOwner ||
-  (
-    owner &&
-    owner.owner_name
+  const matchesSearch =
+    searchTerm === "" ||
+    pet.petName
       .toLowerCase()
-      .includes(searchOwner.toLowerCase())
+      .includes(searchTerm.toLowerCase());
+
+  const matchesBirth =
+    birthdate.trim() === "" ||
+    formatGermanDate(pet.birthdate) === birthdate.trim();
+
+  const owner = owners.find(
+    (o) => Number(o.ownerId) === Number(pet.ownerId)
   );
 
-return matchesSearch && matchesBirth && matchesOwner;
+  console.log(
+    "Pet:",
+    pet.petName,
+    "pet.ownerId:",
+    pet.ownerId,
+    "Owner encontrado:",
+    owner
+  );
 
-  });
+  const matchesOwner =
+    searchOwner === "" ||
+    (
+      `${owner?.first_name} ${owner?.last_name}`
+        .toLowerCase()
+        .includes(searchOwner.toLowerCase())
+    );
+
+  return (
+    matchesSearch &&
+    matchesBirth &&
+    matchesOwner
+  );
+});
+
+    
 
   const handleOpenModal = () => {
     setModalOpen(true);

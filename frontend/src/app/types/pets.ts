@@ -33,10 +33,10 @@ export async function createPet(pet: CreatePetRequest) {
 }
 
 export async function updatePet(
-  id: number,
+  pet_id: number,
   pet: UpdatePetRequest,
 ) {
-  const res = await fetch(`http://localhost:3002/pets/${id}`, {
+  const res = await fetch(`http://localhost:3002/pets/${pet_id}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",

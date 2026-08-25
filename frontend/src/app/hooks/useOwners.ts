@@ -20,12 +20,15 @@ console.log("Raw owner:", data[0]);
 
 const mappedOwners = data.map((owner: OwnerApi) => ({
   ownerId: owner.owner_id,
-  ownerName: `${owner.first_name} ${owner.last_name}`,
+  first_name: owner.first_name,
+  last_name: owner.last_name,
   email: owner.email,
-  phone: owner.phone,
+  phone: owner.phone ?? "",
 }));
 
 console.log("Mapped owner:", mappedOwners[0]);
+console.log("All mapped owners:", mappedOwners);
+
 
 setOwners(mappedOwners);
 
