@@ -104,8 +104,7 @@ export const PetsPage = ({
     matchesOwner
   );
 });
-
-    
+   
 
   const handleOpenModal = () => {
     setModalOpen(true);
@@ -209,12 +208,13 @@ export const PetsPage = ({
       </Typography>
 
       <PetsList
-        pets={filteredPets}
-        onSelect={(pet) => {
-          setSelectedPet(pet);
-          handleOpenModal();
-        }}
-      />
+  pets={filteredPets}
+  owners={owners}
+  onSelect={(pet) => {
+    setSelectedPet(pet);
+    handleOpenModal();
+  }}
+/>
 
       <AddPetDialog
         open={isAddPetOpen}

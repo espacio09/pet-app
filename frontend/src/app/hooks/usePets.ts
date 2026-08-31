@@ -11,6 +11,8 @@ export function usePets() {
   try {
     const data = await getPets();
 
+    console.log("Pets API:", data);
+
     setPets(
       data.map((pet: PetApi) => ({
         petId: pet.pet_id,
@@ -20,6 +22,9 @@ export function usePets() {
         birthdate: pet.birthdate,
         microchipNo: pet.microchip_no,
         ownerId: pet.ownerId,
+
+    ownerFirstName: pet.ownerFirstName,
+    ownerLastName: pet.ownerLastName,
         color: pet.color,
         petTypeId: pet.pet_typeId,
         breedTypeId: pet.breed_id,

@@ -17,6 +17,15 @@ export const PET_TABLE_COLUMNS: GridColDef[] = [
     headerName: "Owner ID",
     width: 200,
   },
+
+   {
+  field: "owner",
+  headerName: "Owner",
+  width: 300,
+  valueGetter: (_value, row) =>
+    `${row.ownerFirstName ?? ""} ${row.ownerLastName ?? ""}`,
+},
+
 {
     field: "birthdate",
     headerName: "Birthdate",

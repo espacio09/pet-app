@@ -3,32 +3,62 @@ import { DataGrid} from "@mui/x-data-grid";
 import type { Pet } from "./../types/Pet";
 import { PET_TABLE_COLUMNS } from "./pets-table.columns";
 import { germanDateFormatter } from "./../shared/formatters";
+import type { Owner } from "../types/Owner";
 
 
 interface PetsListProps {
   pets: Pet[];
+  owners: Owner[];
   onSelect: (pet: Pet) => void;
 }
 
 
 export default function PetsList({
   pets,
-  onSelect,
+  owners,
+  onSelect: onSelect,
 }: PetsListProps) {
 
+const rows = pets.map((pet) => {
+  const owner = owners.find(
+    (o) => o.ownerId === pet.ownerId
+  );
 
 
-const rows = pets.map((pet) => ({
-  id: pet.petId,
-  name: pet.petName,
-  sex: pet.sex,
-  weight: pet.weight,
-  birthdate: germanDateFormatter(pet.birthdate),
-  microchip_no: pet.microchip_no,
-  color: pet.color,
-  owner_id: pet.ownerId,
-}));
+  
+  console.log(
+    "Pet:",
+    pet.petName,
+    "pet.ownerId:",
+    pet.ownerId,
+    "tipo:",
+    typeof pet.ownerId
+  );
+  
+  owners.forEach((o) =>
+    console.log(
+      "Owner:",
+      o.ownerId,
+      "tipo:",
+      typeof o.ownerId
+    )
+  );
+  
+  return {
+    id: pet.petId,
+    name: pet.petName,
+    ownerName: owner
+      ? `${owner.first_name} ${owner.last_name}`
+      : "Sin propietario",
 
+    sex: pet.sex,
+    weight: pet.weight,
+    birthdate: germanDateFormatter(pet.birthdate),
+    microchip_no: pet.microchip_no,
+    color: pet.color,
+    owner_id: pet.ownerId,
+  };
+});
 
   return (
     <Box sx={{ height: 400, width: "100%" }}>
@@ -56,19 +86,17 @@ sx={{
   },
 }}
 
-  
-       onRowClick={(params) => {
-         const pet = pets.find(
-        (p) => p.petId === params.row.id
-);
+      onRowClick={(params) => {
+  const pet = pets.find(
+    (p) => p.petId === params.row.id
+  );
 
-          if (pet) {
-            onSelect(pet);
-          }
-        }}
+  if (pet) {
+    onSelect(pet);
+  }
+}}
+      
       />
     </Box>
   
-  );
- 
-}
+  );}
