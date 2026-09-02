@@ -11,31 +11,35 @@ export function usePets() {
   try {
     const data = await getPets();
 
-    console.log("Pets API:", data);
+    console.log("Primer Pet API:", data[0]);
+
 
     setPets(
-      data.map((pet: PetApi) => ({
-        petId: pet.pet_id,
-        petName: pet.pet_name,
-        sex: pet.sex,
-        weight: pet.weight,
-        birthdate: pet.birthdate,
-        microchipNo: pet.microchip_no,
-        ownerId: pet.ownerId,
+      data.map((pet: PetApi) => {
+        const ownerId = pet.ownerId ?? pet.owner_id;
 
-    ownerFirstName: pet.ownerFirstName,
-    ownerLastName: pet.ownerLastName,
-        color: pet.color,
-        petTypeId: pet.pet_typeId,
-        breedTypeId: pet.breed_id,
-        age: pet.birthdate
-          ? Math.floor(
-              (Date.now() -
-                new Date(pet.birthdate).getTime()) /
-                (1000 * 60 * 60 * 24 * 365.25)
-            )
-          : 0,
-      }))
+        return {
+          petId: pet.pet_id,
+          petName: pet.pet_name,
+          sex: pet.sex,
+          weight: pet.weight,
+          birthdate: pet.birthdate,
+          microchipNo: pet.microchip_no,
+          ownerId: ownerId ?? 0,
+          ownerFirstName: pet.ownerFirstName,
+          ownerLastName: pet.ownerLastName,
+          color: pet.color,
+          petTypeId: pet.pet_typeId,
+          breedTypeId: pet.breed_id,
+          age: pet.birthdate
+            ? Math.floor(
+                (Date.now() -
+                  new Date(pet.birthdate).getTime()) /
+                  (1000 * 60 * 60 * 24 * 365.25)
+              )
+            : 0,
+        };
+      })
     );
   } catch (err) {
     console.error(err);

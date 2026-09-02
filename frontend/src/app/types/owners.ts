@@ -3,7 +3,29 @@ import type {
   UpdateOwnerRequest,
 } from "../types/Owner";
 
+
 export async function getOwners() {
+  try {
+   
+
+    const res = await fetch("http://localhost:3002/owners");
+
+    console.log("Status:", res.status);
+    console.log("OK:", res.ok);
+
+    const text = await res.text();
+
+    console.log("Respuesta RAW:", text);
+
+    return JSON.parse(text);
+  } catch (error) {
+    console.error("ERROR FETCH OWNERS:", error);
+    throw error;
+  }
+}
+
+
+/*export async function getOwners() {
   const res = await fetch("http://localhost:3002/owners");
 
   if (!res.ok) {
@@ -12,6 +34,8 @@ export async function getOwners() {
 
   return res.json();
 }
+*/
+
 
 export async function createOwner(owner: CreateOwnerRequest) {
   const res = await fetch("http://localhost:3002/owners", {
@@ -30,6 +54,8 @@ export async function createOwner(owner: CreateOwnerRequest) {
 
   return res.json();
 }
+
+
 
 export async function updateOwner(
   owner_id: number,

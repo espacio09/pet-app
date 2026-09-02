@@ -43,8 +43,12 @@ export default function PetDetailModal({
 
   if (!pet) return null;
 
+  const ownerName = [pet.ownerFirstName, pet.ownerLastName]
+    .filter(Boolean)
+    .join(" ")
+    .trim();
 
-const handleSave = async () => {
+  const handleSave = async () => {
   console.log("SAVE CLICKED");
 
   try {
@@ -191,9 +195,12 @@ setIsEditing(false);
   </Typography>
 
   <Typography>
-    <strong>Owner ID:</strong> {pet.ownerId}
+    <strong>Owner:</strong> {ownerName || "Sin propietario"}
   </Typography>
 
+  <Typography>
+    <strong>Owner ID:</strong> {pet.ownerId}
+  </Typography>
 
       <DialogActions>
   <Button onClick={onClose}>

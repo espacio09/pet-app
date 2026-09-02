@@ -1,31 +1,40 @@
 export interface Owner {
   ownerId: number;
-   first_name: string;
-  last_name: string;
+    first_name?: string;
+  last_name?: string;
+  firstName: string;
+  lastName: string;
   email: string;
   phone: string;
 }
 
 export interface OwnerApi {
-  owner_id: number;
-  first_name: string;
-  last_name: string;
+  owner_id?: number;
+  ownerId?: number;
+  firstName?: string;
+  lastName?: string;
+  first_name?: string;
+  last_name?: string;
   email: string;
   phone?: string;
 }
 
 export interface CreateOwnerRequest {
-  owner_id: number;
-   first_name: string;
-  last_name: string;
+  ownerId: number;
+    first_name?: string;
+  last_name?: string;
+   firstName: string;
+  lastName: string;
   email: string;
   phone: string;
 }
 
 export interface UpdateOwnerRequest {
-  owner_id: number;
-   first_name: string;
-  last_name: string;
+  ownerId: number;
+    first_name?: string;
+  last_name?: string;
+   firstName: string;
+  lastName: string;
   email: string;
   phone: string;
 }

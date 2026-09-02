@@ -5,6 +5,11 @@ type PetCardProps = {
 };
 
 export default function PetCard({ pet }: PetCardProps) {
+  const ownerName = [pet.ownerFirstName, pet.ownerLastName]
+    .filter(Boolean)
+    .join(" ")
+    .trim();
+
   return (
     <div
       style={{
@@ -16,21 +21,22 @@ export default function PetCard({ pet }: PetCardProps) {
     >
       <h3>{pet.petName}</h3>
 
-
       <p>
         <strong>Tipo:</strong> {pet.petId}
       </p>
 
-        <p>
+      <p>
         <strong>Tipo:</strong> {pet.microchip_no}
       </p>
 
       <p>
-        <strong>Propietario:</strong> {pet.ownerId}
+        <strong>Propietario:</strong>{" "}
+        {ownerName || `Owner ID: ${pet.ownerId}`}
       </p>
 
-        <p>
-        <strong>Birthdate:</strong> {pet.birthdate ? pet.birthdate.toDateString() : "N/A"}
+      <p>
+        <strong>Birthdate:</strong>{" "}
+        {pet.birthdate ? pet.birthdate.toDateString() : "N/A"}
       </p>
       <p>
         <strong>Edad:</strong> {pet.age}

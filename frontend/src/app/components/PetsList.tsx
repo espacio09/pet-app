@@ -47,10 +47,11 @@ const rows = pets.map((pet) => {
   return {
     id: pet.petId,
     name: pet.petName,
+    ownerFirstName: owner?.firstName ?? "",
+    ownerLastName: owner?.lastName ?? "",
     ownerName: owner
-      ? `${owner.first_name} ${owner.last_name}`
+      ? `${owner.firstName ?? ""} ${owner.lastName ?? ""}`.trim()
       : "Sin propietario",
-
     sex: pet.sex,
     weight: pet.weight,
     birthdate: germanDateFormatter(pet.birthdate),

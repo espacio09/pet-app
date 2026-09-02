@@ -1,23 +1,24 @@
-import { updatePet } from "../models/pets";
+import { useState } from "react";
+import { updatePet } from "../types/pets";
 
 export default function EditPet() {
   const [petName, setPetName] = useState("");
   const [color, setColor] = useState("");
 
-  const petId = 1; // luego vendrá de la URL
+  const petId = 1;
 
   const handleSave = async () => {
     try {
       await updatePet(petId, {
-          pet_name: petName,
-          color: color,
-          sex: "",
-          weight: 0,
-          birthdate: null,
-          ownerId: null,
-          microchip_no: null,
-          pet_typeId: 0,
-          breed_id: null
+        pet_name: petName,
+        color,
+        sex: "",
+        weight: 0,
+        birthdate: new Date(),
+        ownerId: 0,
+        microchip_no: 0,
+        pet_typeId: 0,
+        breed_id: 0,
       });
 
       alert("Pet updated successfully!");

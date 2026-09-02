@@ -1,29 +1,40 @@
 import { render, screen } from "@testing-library/react";
-import PetsList from ".PetsPage/PetsList";
-import { describe, expect, it, vi } from "vitest";
-
-// ✅ IMPORTANTE: mock correcto
-vi.mock("../api/pets", () => ({
-  getPets: vi.fn(() =>
-    Promise.resolve([
-      {
-        pet_id: 15,
-        pet_name: "Nala",
-        weight: 28,
-        color: "white",
-        sex: "female",
-        microchip_no: "1234567",
-      },
-    ])
-  ),
-}));
+import { describe, expect, it } from "vitest";
+import PetsList from "./PetsList";
 
 describe("PetsList", () => {
-  it("renders pets from API", async () => {
-    render(<PetsList />);
+  it("shows the owner full name resolved from the pet ownerId", async () => {
+    render(
+      <PetsList
+        pets={[
+          {
+            petId: 1,
+            petName: "Nala",
+            ownerId: 7,
+            birthdate: new Date("2021-02-03"),
+            age: 3,
+            sex: "female",
+            color: "white",
+            microchip_no: 123456,
+            weight: 12,
+            pet_typeId: 1,
+            breed_id: 2,
+          },
+        ]}
+        owners={[
+          {
+            ownerId: 7,
+            firstName: "Ana",
+            lastName: "García",
+            email: "ana@test.com",
+            phone: "123",
+          },
+        ]}
+        onSelect={() => {}}
+      />
+    );
 
-    const pet = await screen.findByText("Nala");
-
-    expect(pet).toBeDefined();
+    const ownerName = await screen.findByText("Ana García");
+    expect(ownerName).toBeTruthy();
   });
 });

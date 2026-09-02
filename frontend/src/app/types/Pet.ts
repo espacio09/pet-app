@@ -21,13 +21,14 @@ export interface PetApi {
   sex: string | null;
   weight: number;
   birthdate: Date;
-  ownerId: number;
+  owner_id?: number;
+  ownerId?: number;
   ownerFirstName?: string;
   ownerLastName?: string;
   color: string;
   microchip_no: number;
-  breed_id: number
-  pet_typeId: number
+  breed_id: number;
+  pet_typeId: number;
 }
 
 export interface CreatePetRequest {
@@ -50,6 +51,7 @@ export interface UpdatePetRequest {
   sex?: string;
   weight?: number;
   birthdate?: Date;
+  owner_id?: number;
   ownerId?: number;
   ownerFirstName?: string;
   ownerLastName?: string;

@@ -17,6 +17,7 @@ import { useOwners } from "../hooks/useOwners";
 
 
 
+
 type PetsPageProps = {
   onGoHome: () => void;
 };
@@ -30,6 +31,12 @@ export const PetsPage = ({
   const [isAddPetOpen, setIsAddPetOpen] =
     useState(false);
 
+     const handleOpenModal = () => {
+    setModalOpen(false);
+};
+    const handleCloseModal = () => {
+    setModalOpen(false);
+};
   const [modalOpen, setModalOpen] =
     useState(false);
 
@@ -53,7 +60,7 @@ export const PetsPage = ({
     error: ownersError,
   } = useOwners();
 
-  console.log("Owners:", owners);
+
 
 
   const formatGermanDate = (date: string | Date) =>
@@ -64,9 +71,7 @@ export const PetsPage = ({
     }).format(new Date(date));
 
 
-
-
-  const filteredPets = pets.filter((pet) => {
+const filteredPets = pets.filter((pet) => {
   const matchesSearch =
     searchTerm === "" ||
     pet.petName
@@ -78,25 +83,26 @@ export const PetsPage = ({
     formatGermanDate(pet.birthdate) === birthdate.trim();
 
   const owner = owners.find(
-    (o) => Number(o.ownerId) === Number(pet.ownerId)
+    (o) => o.ownerId === pet.ownerId
   );
 
-  console.log(
-    "Pet:",
-    pet.petName,
-    "pet.ownerId:",
-    pet.ownerId,
-    "Owner encontrado:",
-    owner
-  );
+console.log(
+  "Pet:",
+  pet.petName,
+  "ownerId:",
+  pet.ownerId,
+  "owner encontrado:",
+  owner
+);
+
+  const ownerName =
+    `${owner?.firstName ?? ""} ${owner?.lastName ?? ""}`;
 
   const matchesOwner =
     searchOwner === "" ||
-    (
-      `${owner?.first_name} ${owner?.last_name}`
-        .toLowerCase()
-        .includes(searchOwner.toLowerCase())
-    );
+    ownerName
+      .toLowerCase()
+      .includes(searchOwner.toLowerCase());
 
   return (
     matchesSearch &&
@@ -104,15 +110,7 @@ export const PetsPage = ({
     matchesOwner
   );
 });
-   
 
-  const handleOpenModal = () => {
-    setModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setModalOpen(false);
-  };
 
 
   const clearSearch = () => {
