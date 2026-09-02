@@ -16,42 +16,21 @@ interface PetsListProps {
 export default function PetsList({
   pets,
   owners,
-  onSelect: onSelect,
+  onSelect,
 }: PetsListProps) {
 
 const rows = pets.map((pet) => {
-  const owner = owners.find(
-    (o) => o.ownerId === pet.ownerId
-  );
+  const owner = owners.find((o) => o.ownerId === pet.ownerId);
+  const ownerName = owner
+    ? `${owner.firstName ?? ""} ${owner.lastName ?? ""}`.trim()
+    : "Sin propietario";
 
-
-  
-  console.log(
-    "Pet:",
-    pet.petName,
-    "pet.ownerId:",
-    pet.ownerId,
-    "tipo:",
-    typeof pet.ownerId
-  );
-  
-  owners.forEach((o) =>
-    console.log(
-      "Owner:",
-      o.ownerId,
-      "tipo:",
-      typeof o.ownerId
-    )
-  );
-  
   return {
     id: pet.petId,
     name: pet.petName,
     ownerFirstName: owner?.firstName ?? "",
     ownerLastName: owner?.lastName ?? "",
-    ownerName: owner
-      ? `${owner.firstName ?? ""} ${owner.lastName ?? ""}`.trim()
-      : "Sin propietario",
+    ownerName,
     sex: pet.sex,
     weight: pet.weight,
     birthdate: germanDateFormatter(pet.birthdate),
@@ -87,15 +66,23 @@ sx={{
   },
 }}
 
-      onRowClick={(params) => {
+    onRowClick={(params) => {
+  console.log("ROW CLICK", params.row);
+
   const pet = pets.find(
     (p) => p.petId === params.row.id
   );
 
+  console.log("PET ENCONTRADO", pet);
+
   if (pet) {
+    console.log("ANTES DE onSelect");
     onSelect(pet);
   }
+
 }}
+
+
       
       />
     </Box>

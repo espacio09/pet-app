@@ -5,9 +5,11 @@ import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+import Alert from "@mui/material/Alert";
+import Snackbar from "@mui/material/Snackbar";
 import type { Pet } from "../types/Pet";
 import { germanDateFormatter } from "../shared/formatters";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { updatePet } from "../types/pets";
 import Stack from "@mui/material/Stack";
 
@@ -27,19 +29,32 @@ export default function PetDetailModal({
   onSaved,
   pet,
 }: PetDetailModalProps) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [name, setName] = useState("");
+  const [color, setColor] = useState("");
+  const [sex, setSex] = useState("");
+  const [weight, setWeight] = useState<number>(0);
+  const [birthdate, setBirthdate] = useState("");
+  const [microchip_no, setMicrochip] = useState<number>(0);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
-   
-    const [isEditing, setIsEditing] = useState(false);
-    const [name, setName] = useState(pet?.petName ?? "");
-    const [color, setColor] = useState(pet?.color ?? "");
-    const [sex, setSex] = useState(pet?.sex ?? "");
-    const [weight, setWeight] = useState<number>(
-  pet?.weight ?? 0
-);
-    const [birthdate, setBirthdate] = useState(pet?.birthdate ?? "");
-   const [microchip_no, setMicrochip] = useState<number>(
-  pet?.microchip_no ?? 0
-);
+  useEffect(() => {
+    if (!pet) return;
+
+    setName(pet.petName ?? "");
+    setColor(pet.color ?? "");
+    setSex(pet.sex ?? "");
+    setWeight(pet.weight ?? 0);
+    setMicrochip(pet.microchip_no ?? 0);
+    setBirthdate(
+      pet.birthdate instanceof Date
+        ? pet.birthdate.toISOString().slice(0, 10)
+        : new Date(pet.birthdate).toISOString().slice(0, 10)
+    );
+    setIsEditing(false);
+  }, [pet]);
 
   if (!pet) return null;
 
@@ -49,43 +64,41 @@ export default function PetDetailModal({
     .trim();
 
   const handleSave = async () => {
-  console.log("SAVE CLICKED");
+    try {
+      await updatePet(pet.petId, {
+        color,
+        pet_name: name,
+        sex,
+        birthdate: birthdate ? new Date(birthdate) : undefined,
+        microchip_no,
+        weight: Number(weight),
+      });
 
-  try {
-    
-        console.log("SAVE CLICKED");
-
-  await updatePet(
-  pet.petId,
-  {
-    color,
-    pet_name: name,
-    sex,
-    birthdate: new Date(birthdate),
-    microchip_no,
-    weight: Number(weight)
-  }
-);
-
-await onSaved();
-
-setIsEditing(false);
-  } catch (error) {
-    console.error(error);
-  }
-};
+      await onSaved();
+      setSnackbarSeverity("success");
+      setSnackbarMessage("Mascota actualizada correctamente");
+      setSnackbarOpen(true);
+      setIsEditing(false);
+    } catch (error) {
+      console.error(error);
+      setSnackbarSeverity("error");
+      setSnackbarMessage("No se pudo guardar la mascota");
+      setSnackbarOpen(true);
+    }
+  };
 
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-      <DialogTitle>{pet.petName}</DialogTitle>
-    <Typography>
-  Editing: {isEditing ? "YES" : "NO"}
-</Typography>
+    <>
+      <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
+        <DialogTitle>{pet.petName}</DialogTitle>
+      <Typography>
+    Editing: {isEditing ? "YES" : "NO"}
+  </Typography>
 
 
-<DialogContent>
-      <Stack spacing={2}>
+  <DialogContent>
+        <Stack spacing={2}>
 
   <Typography>
     <strong>ID:</strong> {pet.petId}
@@ -202,24 +215,40 @@ setIsEditing(false);
     <strong>Owner ID:</strong> {pet.ownerId}
   </Typography>
 
-      <DialogActions>
-  <Button onClick={onClose}>
-  Close
-</Button>
-
-{!isEditing ? (
-  <Button onClick={() => setIsEditing(true)}>
-    Edit
+        <DialogActions>
+    <Button onClick={onClose}>
+    Close
   </Button>
-) : (
-  <Button onClick={handleSave}>
-    Save
-  </Button>
-)}
-</DialogActions>
-    </Stack>
 
-        </DialogContent>
- </Dialog>
+  {!isEditing ? (
+    <Button onClick={() => setIsEditing(true)}>
+      Edit
+    </Button>
+  ) : (
+    <Button onClick={handleSave}>
+      Save
+    </Button>
+  )}
+  </DialogActions>
+      </Stack>
+
+          </DialogContent>
+   </Dialog>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={() => setSnackbarOpen(false)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setSnackbarOpen(false)}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
+    </>
   );
-  }
+}

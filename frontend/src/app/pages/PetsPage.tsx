@@ -31,12 +31,15 @@ export const PetsPage = ({
   const [isAddPetOpen, setIsAddPetOpen] =
     useState(false);
 
-     const handleOpenModal = () => {
+  const handleOpenModal = () => {
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
     setModalOpen(false);
-};
-    const handleCloseModal = () => {
-    setModalOpen(false);
-};
+    setSelectedPet(null);
+  };
+
   const [modalOpen, setModalOpen] =
     useState(false);
 
