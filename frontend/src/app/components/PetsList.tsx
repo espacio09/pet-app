@@ -4,7 +4,7 @@ import type { Pet } from "./../types/Pet";
 import { PET_TABLE_COLUMNS } from "./pets-table.columns";
 import { germanDateFormatter } from "./../shared/formatters";
 import type { Owner } from "../types/Owner";
-import { calculateAge } from "../utils/petAge";
+import { calculateAgeText } from "../../utils/petAge";
 
 
 interface PetsListProps {
@@ -29,7 +29,7 @@ const rows = pets.map((pet) => {
   return {
     id: pet.petId,
     name: pet.petName,
-    age: calculateAge(pet.birthdate),
+    age: calculateAgeText(pet.birthdate),
     ownerFirstName: owner?.firstName ?? "",
     ownerLastName: owner?.lastName ?? "",
     ownerName,
