@@ -1,6 +1,10 @@
-export function calculateAgeText(birthdate: string): string {
-  const birth = new Date(birthdate);
+export function calculateAgeText(birthdate: Date): string {
+  const birth = birthdate;
   const today = new Date();
+
+  if (Number.isNaN(birth.getTime())) {
+    return "N/A";
+  }
 
   let years = today.getFullYear() - birth.getFullYear();
   let months = today.getMonth() - birth.getMonth();

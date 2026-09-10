@@ -26,7 +26,7 @@ export interface PetApi {
   ownerFirstName?: string;
   ownerLastName?: string;
   color: string;
-  microchip_no: number;
+  microchip_no?: number;
   breed_id: number;
   pet_typeId: number;
 }
@@ -40,7 +40,7 @@ export interface CreatePetRequest {
     ownerFirstName?: string;
   ownerLastName?: string;
   color: string;
-  microchip_no: number;
+    microchip_no?: number;
   pet_typeId: number;
   breed_id: number | null;
 }

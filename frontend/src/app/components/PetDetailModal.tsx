@@ -13,8 +13,10 @@ import { useEffect, useState } from "react";
 import { updatePet } from "../types/pets";
 import Stack from "@mui/material/Stack";
 
-
-//    muestra detalles de una mascota
+function toDateInputValue(value: Date) {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? "" : date.toISOString().slice(0, 10);
+}
 
 interface PetDetailModalProps {
   open: boolean;
@@ -33,9 +35,9 @@ export default function PetDetailModal({
   const [name, setName] = useState("");
   const [color, setColor] = useState("");
   const [sex, setSex] = useState("");
-  const [weight, setWeight] = useState<number>(0);
+  const [weight, setWeight] = useState("");
   const [birthdate, setBirthdate] = useState("");
-  const [microchip_no, setMicrochip] = useState<number>(0);
+  const [microchipNo, setMicrochipNo] = useState("");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -43,17 +45,22 @@ export default function PetDetailModal({
   useEffect(() => {
     if (!pet) return;
 
-    setName(pet.petName ?? "");
-    setColor(pet.color ?? "");
-    setSex(pet.sex ?? "");
-    setWeight(pet.weight ?? 0);
-    setMicrochip(pet.microchip_no ?? 0);
-    setBirthdate(
-      pet.birthdate instanceof Date
-        ? pet.birthdate.toISOString().slice(0, 10)
-        : new Date(pet.birthdate).toISOString().slice(0, 10)
-    );
-    setIsEditing(false);
+    let cancelled = false;
+    queueMicrotask(() => {
+      if (cancelled) return;
+
+      setName(pet.petName ?? "");
+      setColor(pet.color ?? "");
+      setSex(pet.sex ?? "");
+      setWeight(String(pet.weight ?? ""));
+      setMicrochipNo(String(pet.microchip_no ?? ""));
+      setBirthdate(toDateInputValue(pet.birthdate));
+      setIsEditing(false);
+    });
+
+    return () => {
+      cancelled = true;
+    };
   }, [pet]);
 
   if (!pet) return null;
@@ -64,14 +71,48 @@ export default function PetDetailModal({
     .trim();
 
   const handleSave = async () => {
+    const weightValue = Number(weight);
+    const birthdateValue = birthdate ? new Date(birthdate) : undefined;
+
+    if (!name.trim() || !sex.trim() || !color.trim()) {
+      setSnackbarSeverity("error");
+      setSnackbarMessage("Name, sex and color are required");
+      setSnackbarOpen(true);
+      return;
+    }
+
+    if (!Number.isFinite(weightValue) || weightValue < 0) {
+      setSnackbarSeverity("error");
+      setSnackbarMessage("Weight must be a valid non-negative number");
+      setSnackbarOpen(true);
+      return;
+    }
+
+    if (microchipNo) {
+      const microchipValue = Number(microchipNo);
+      if (!Number.isInteger(microchipValue) || microchipValue <= 0) {
+        setSnackbarSeverity("error");
+        setSnackbarMessage("Microchip number must be a positive integer");
+        setSnackbarOpen(true);
+        return;
+      }
+    }
+
+    if (birthdate && Number.isNaN(birthdateValue?.getTime())) {
+      setSnackbarSeverity("error");
+      setSnackbarMessage("Birthdate must be a valid date");
+      setSnackbarOpen(true);
+      return;
+    }
+
     try {
       await updatePet(pet.petId, {
-        color,
-        pet_name: name,
-        sex,
-        birthdate: birthdate ? new Date(birthdate) : undefined,
-        microchip_no,
-        weight: Number(weight),
+        color: color.trim(),
+        pet_name: name.trim(),
+        sex: sex.trim(),
+        birthdate: birthdateValue,
+        microchip_no: microchipNo ? Number(microchipNo) : undefined,
+        weight: weightValue,
       });
 
       await onSaved();
@@ -92,13 +133,8 @@ export default function PetDetailModal({
     <>
       <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
         <DialogTitle>{pet.petName}</DialogTitle>
-      <Typography>
-    Editing: {isEditing ? "YES" : "NO"}
-  </Typography>
-
-
-  <DialogContent>
-        <Stack spacing={2}>
+        <DialogContent>
+          <Stack spacing={2}>
 
   <Typography>
     <strong>ID:</strong> {pet.petId}
@@ -171,7 +207,9 @@ export default function PetDetailModal({
   <TextField
     label="Weight"
     type="number"
-    onChange={(e) => setWeight(Number(e.target.value))}
+    value={weight}
+    onChange={(e) => setWeight(e.target.value)}
+    slotProps={{ htmlInput: { min: 0, step: "any" } }}
     fullWidth
   />
 ) : (
@@ -190,10 +228,9 @@ export default function PetDetailModal({
  <TextField
   label="Microchip No"
   type="number"
-  value={microchip_no}
-  onChange={(e) =>
-    setMicrochip(Number(e.target.value))
-  }
+  value={microchipNo}
+  onChange={(e) => setMicrochipNo(e.target.value)}
+  slotProps={{ htmlInput: { min: 1, step: 1 } }}
   fullWidth
 />
 ) : (
@@ -215,24 +252,16 @@ export default function PetDetailModal({
     <strong>Owner ID:</strong> {pet.ownerId}
   </Typography>
 
+          </Stack>
+        </DialogContent>
         <DialogActions>
-    <Button onClick={onClose}>
-    Close
-  </Button>
-
-  {!isEditing ? (
-    <Button onClick={() => setIsEditing(true)}>
-      Edit
-    </Button>
-  ) : (
-    <Button onClick={handleSave}>
-      Save
-    </Button>
-  )}
-  </DialogActions>
-      </Stack>
-
-          </DialogContent>
+          <Button onClick={onClose}>Close</Button>
+          {!isEditing ? (
+            <Button onClick={() => setIsEditing(true)}>Edit</Button>
+          ) : (
+            <Button onClick={handleSave}>Save</Button>
+          )}
+        </DialogActions>
    </Dialog>
 
       <Snackbar
