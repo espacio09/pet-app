@@ -22,7 +22,7 @@ interface AddPetDialogProps {
 export default function AddPetDialog({
   open,
   onClose,
-
+  onPetAdded,
 }: AddPetDialogProps) {
 
   const [name, setName] = useState("");
@@ -60,6 +60,7 @@ console.log("PET A ENVIAR", {
     breed_id: 1, // Default value, you can change it as needed
   });
 
+  await onPetAdded();
   onClose();
 
 };
