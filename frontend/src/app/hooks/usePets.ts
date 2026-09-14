@@ -23,7 +23,7 @@ export function usePets() {
           petName: pet.pet_name,
           sex: pet.sex,
           weight: pet.weight,
-          birthdate: pet.birthdate,
+          birthdate: new Date(pet.birthdate),
           microchip_no: pet.microchip_no,
           ownerId: ownerId ?? 0,
           ownerFirstName: pet.ownerFirstName,

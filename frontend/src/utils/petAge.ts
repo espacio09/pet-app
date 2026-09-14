@@ -1,5 +1,5 @@
-export function calculateAgeText(birthdate: Date): string {
-  const birth = birthdate;
+export function calculateAgeText(birthdate: Date | string): string {
+  const birth = birthdate instanceof Date ? birthdate : new Date(birthdate);
   const today = new Date();
 
   if (Number.isNaN(birth.getTime())) {

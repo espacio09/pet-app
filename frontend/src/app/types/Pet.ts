@@ -5,7 +5,7 @@ export interface Pet {
   ownerFirstName?: string;
   ownerLastName?: string;
 
-  birthdate: Date;
+  birthdate: Date | string;
   age: number;
   sex: string | null;
   color: string;
