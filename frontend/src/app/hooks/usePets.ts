@@ -28,9 +28,12 @@ export function usePets() {
           ownerId: ownerId ?? 0,
           ownerFirstName: pet.ownerFirstName,
           ownerLastName: pet.ownerLastName,
+          ownerName: pet.owner_name,
+          ownerBirthdate: pet.owner_birthdate,
           color: pet.color,
           petTypeId: pet.pet_typeId,
-          breedTypeId: pet.breed_id,
+          breed_id: pet.breed_id,
+          breedName: pet.breed_name,
           age: pet.birthdate
             ? Math.floor(
                 (Date.now() -

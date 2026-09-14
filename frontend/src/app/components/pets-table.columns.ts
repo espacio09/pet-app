@@ -13,8 +13,8 @@ export const PET_TABLE_COLUMNS: GridColDef[] = [
   },
 
    {
-    field: "owner_id",
-    headerName: "Owner ID",
+    field: "breed_name",
+    headerName: "Breed",
     width: 200,
   },
 

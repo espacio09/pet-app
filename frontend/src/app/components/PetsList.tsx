@@ -39,6 +39,9 @@ const rows = pets.map((pet) => {
     microchip_no: pet.microchip_no,
     color: pet.color,
     owner_id: pet.ownerId,
+    breed_id: pet.breed_id,
+    pet_typeId: pet.pet_typeId,
+    breed_name: pet.breedName ?? "",
   };
 });
 
