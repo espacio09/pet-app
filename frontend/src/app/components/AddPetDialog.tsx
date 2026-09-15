@@ -8,7 +8,10 @@ import {
   Box,
   TextField,
   Alert,
+  Typography,
 } from "@mui/material";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
 import { useState } from "react";
 import { createPet } from "../types/pets";
 
@@ -29,21 +32,26 @@ export default function AddPetDialog({
   const [birthdate, setBirthdate] = useState("");
   const [microchipNo, setMicrochipNo] = useState("");
   const [color, setColor] = useState("");
+  const [breedName, setBreedName] = useState("");
+  const [ownerName, setOwnerName] = useState("");
   const [ownerId, setOwnerId] = useState("");
+  const [breedId, setBreedId] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleSave = async () => {
-    const ownerIdValue = Number(ownerId);
     const weightValue = Number(weight);
     const birthdateValue = new Date(birthdate);
 
-    if (!name.trim() || !sex.trim() || !color.trim() || !birthdate) {
-      setErrorMessage("Name, sex, color and birthdate are required.");
-      return;
-    }
-
-    if (!Number.isInteger(ownerIdValue) || ownerIdValue <= 0) {
-      setErrorMessage("Owner ID must be a positive integer.");
+    if (
+      !name.trim() ||
+      !sex.trim() ||
+      !color.trim() ||
+      !birthdate ||
+      !breedName.trim() ||
+      !ownerName.trim()||
+      microchipNo.trim() === ""
+    ) {
+      setErrorMessage("Name, sex, color, birthdate, breed name, microchip number, and owner name are required.");
       return;
     }
 
@@ -65,21 +73,29 @@ export default function AddPetDialog({
       return;
     }
 
-    setErrorMessage("");
-    await createPet({
-      pet_name: name.trim(),
-      ownerId: ownerIdValue,
-      color: color.trim(),
-      sex: sex.trim(),
-      birthdate: birthdateValue,
-      microchip_no: microchipNo ? Number(microchipNo) : undefined,
-      weight: weightValue,
-      pet_typeId: 1,
-      breed_id: 1,
-    });
+    try {
+      setErrorMessage("");
+      const createdPet = await createPet({
+        pet_name: name.trim(),
+        owner_name: ownerName.trim(),
+        color: color.trim(),
+        sex: sex.trim(),
+        birthdate: birthdateValue,
+        microchip_no: microchipNo ? Number(microchipNo) : undefined,
+        weight: weightValue,
+        pet_typeId: 1,
+        breed_name: breedName.trim(),
+      });
 
-    await onPetAdded();
-    onClose();
+      setOwnerId(String(createdPet.ownerId ?? createdPet.owner_id ?? ""));
+      setBreedId(String(createdPet.breed_id ?? ""));
+      await onPetAdded();
+      onClose();
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error ? error.message : "Could not create pet.",
+      );
+    }
   };
 
   return (
@@ -112,6 +128,17 @@ export default function AddPetDialog({
         }}
       >
         Add Pet
+        <IconButton
+          aria-label="close"
+          onClick={onClose}
+          sx={{
+            position: "absolute",
+            right: 16,
+            top: 12,
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
       </DialogTitle>
 
       {/* ── CONTENIDO CON SCROLL ── */}
@@ -175,23 +202,64 @@ export default function AddPetDialog({
             fullWidth
           />
 
-          {/* Columna 2 */}
-          <TextField
-            label="Owner ID"
-            value={ownerId}
-            onChange={(e) => setOwnerId(e.target.value)}
-            fullWidth
-          />
-
-          {/* Full width: ocupa las 2 columnas */}
           <TextField
             label="Microchip No"
             value={microchipNo}
             onChange={(e) => setMicrochipNo(e.target.value)}
             slotProps={{ htmlInput: { min: 1, step: 1 } }}
             fullWidth
-            sx={{ gridColumn: "1 / -1" }}
           />
+
+          <Box
+            sx={{
+              gridColumn: "1 / -1",
+              display: "grid",
+              gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+              gap: 3,
+            }}
+          >
+            <TextField
+              label="Breed name"
+              value={breedName}
+              onChange={(e) => setBreedName(e.target.value)}
+              fullWidth
+            />
+
+            {breedId && (
+              <Box>
+                <Typography variant="caption" color="text.secondary">
+                  Breed ID
+                </Typography>
+                <Typography variant="body1">{breedId}</Typography>
+              </Box>
+            )}
+          </Box>
+
+          <Box
+            sx={{
+              gridColumn: "1 / -1",
+              display: "grid",
+              gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+              gap: 3,
+            }}
+          >
+            <TextField
+              label="Owner name"
+              value={ownerName}
+              onChange={(e) => setOwnerName(e.target.value)}
+              fullWidth
+            />
+
+            {ownerId && (
+              <Box>
+                <Typography variant="caption" color="text.secondary">
+                  Owner ID
+                </Typography>
+                <Typography variant="body1">{ownerId}</Typography>
+              </Box>
+            )}
+          </Box>
+
         </Box>
         {errorMessage && <Alert severity="error" sx={{ mt: 2 }}>{errorMessage}</Alert>}
       </DialogContent>
@@ -213,7 +281,7 @@ export default function AddPetDialog({
           color="inherit"
           sx={{ minWidth: 100 }}
         >
-          Cancel
+          Close
         </Button>
 
         <Button

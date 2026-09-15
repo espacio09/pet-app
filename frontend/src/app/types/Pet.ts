@@ -44,14 +44,13 @@ export interface CreatePetRequest {
   sex: string;
   weight: number;
   birthdate: Date;
-  ownerId: number;
-    ownerFirstName?: string;
+  owner_name: string;
+  ownerFirstName?: string;
   ownerLastName?: string;
   color: string;
     microchip_no?: number;
   pet_typeId: number;
-  breed_id: number,
-  breed_name?: string;
+    breed_name: string;
 }
 
 export interface UpdatePetRequest {

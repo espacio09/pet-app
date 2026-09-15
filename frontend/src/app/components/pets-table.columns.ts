@@ -23,7 +23,9 @@ export const PET_TABLE_COLUMNS: GridColDef[] = [
   headerName: "Owner",
   width: 300,
   valueGetter: (_value, row) =>
-    `${row.ownerFirstName ?? ""} ${row.ownerLastName ?? ""}`.trim() || "Sin propietario",
+    row.ownerName ||
+    `${row.ownerFirstName ?? ""} ${row.ownerLastName ?? ""}`.trim() ||
+    "Sin propietario",
 },
 
 {

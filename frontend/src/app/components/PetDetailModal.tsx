@@ -42,10 +42,7 @@ export default function PetDetailModal({
   const [weight, setWeight] = useState("");
   const [birthdate, setBirthdate] = useState("");
   const [microchipNo, setMicrochipNo] = useState("");
-  const [ownerId, setOwnerId] = useState("");
   const [ownerNameInput, setOwnerNameInput] = useState("");
-  const [ownerBirthdate, setOwnerBirthdate] = useState("");
-  const [breedId, setBreedId] = useState("");
   const [breedNameInput, setBreedNameInput] = useState("");
   const [savedPet, setSavedPet] = useState<Pet | null>(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -66,7 +63,6 @@ export default function PetDetailModal({
       setSex(pet.sex ?? "");
       setWeight(String(pet.weight ?? ""));
       setMicrochipNo(String(pet.microchip_no ?? ""));
-      setOwnerId(String(pet.ownerId ?? ""));
       setOwnerNameInput(
         pet.ownerName ||
           [pet.ownerFirstName, pet.ownerLastName]
@@ -74,8 +70,6 @@ export default function PetDetailModal({
             .join(" ")
             .trim(),
       );
-      setOwnerBirthdate(toDateInputValue(pet.ownerBirthdate));
-      setBreedId(String(pet.breed_id ?? ""));
       setBreedNameInput(pet.breedName || pet.breed_name || "");
       setBirthdate(toDateInputValue(pet.birthdate));
       setSavedPet(null);
@@ -101,12 +95,7 @@ export default function PetDetailModal({
 
   const handleSave = async () => {
     const weightValue = Number(weight);
-    const ownerIdValue = Number(ownerId);
-    const breedIdValue = Number(breedId);
     const birthdateValue = birthdate ? new Date(birthdate) : undefined;
-    const ownerBirthdateValue = ownerBirthdate
-      ? new Date(ownerBirthdate)
-      : undefined;
 
     const requiredFields: Array<[string, string]> = [
       ["Name", name],
@@ -116,7 +105,6 @@ export default function PetDetailModal({
       ["Weight", weight],
       ["Microchip No", microchipNo],
       ["Owner name", ownerNameInput],
-      ["Owner birthdate", ownerBirthdate],
       ["Breed name", breedNameInput],
     ];
     const missingField = requiredFields.find(([, value]) => !value.trim());
@@ -131,13 +119,6 @@ export default function PetDetailModal({
     if (!Number.isFinite(weightValue) || weightValue < 0) {
       setSnackbarSeverity("error");
       setSnackbarMessage("Weight must be a valid non-negative number");
-      setSnackbarOpen(true);
-      return;
-    }
-
-    if (ownerId && (!Number.isInteger(ownerIdValue) || ownerIdValue <= 0)) {
-      setSnackbarSeverity("error");
-      setSnackbarMessage("Owner ID must be a positive integer");
       setSnackbarOpen(true);
       return;
     }
@@ -159,29 +140,13 @@ export default function PetDetailModal({
       return;
     }
 
-    if (Number.isNaN(ownerBirthdateValue?.getTime())) {
-      setSnackbarSeverity("error");
-      setSnackbarMessage("Owner birthdate must be a valid date");
-      setSnackbarOpen(true);
-      return;
-    }
-
     try {
       const updatedPet = await updatePet(pet.petId, {
         color: color.trim(),
         pet_name: name.trim(),
         sex: sex.trim(),
         birthdate: birthdateValue,
-        owner_id:
-          Number.isInteger(ownerIdValue) && ownerIdValue > 0
-            ? ownerIdValue
-            : undefined,
         owner_name: ownerNameInput.trim(),
-        owner_birthdate: ownerBirthdateValue,
-        breed_id:
-          Number.isInteger(breedIdValue) && breedIdValue > 0
-            ? breedIdValue
-            : undefined,
         breed_name: breedNameInput.trim(),
         microchip_no: microchipNo ? Number(microchipNo) : undefined,
         weight: weightValue,
@@ -193,10 +158,9 @@ export default function PetDetailModal({
         color: color.trim(),
         sex,
         birthdate: birthdateValue ?? displayedPet.birthdate,
-        ownerId: updatedPet.ownerId ?? ownerIdValue,
+        ownerId: updatedPet.ownerId ?? displayedPet.ownerId,
         ownerName: ownerNameInput.trim(),
-        ownerBirthdate: ownerBirthdateValue,
-        breed_id: updatedPet.breed_id ?? breedIdValue,
+        breed_id: updatedPet.breed_id ?? displayedPet.breed_id,
         breedName: breedNameInput.trim(),
         microchip_no: microchipNo
           ? Number(microchipNo)
@@ -360,23 +324,6 @@ export default function PetDetailModal({
             <Grid size={{ xs: 12, sm: 6 }}>
               {isEditing ? (
                 <TextField
-                  label="Owner ID"
-                  type="number"
-                  value={ownerId}
-                  onChange={(e) => setOwnerId(e.target.value)}
-                  slotProps={{ htmlInput: { min: 1, step: 1 } }}
-                  fullWidth
-                  size="small"
-                />
-              ) : (
-                <Typography>
-                  <strong>Owner ID:</strong> {displayedPet.ownerId}
-                </Typography>
-              )}
-            </Grid>
-             <Grid size={{ xs: 12, sm: 6 }}>
-              {isEditing ? (
-                <TextField
                   label="Owner name"
                   value={ownerNameInput}
                   onChange={(e) => setOwnerNameInput(e.target.value)}
@@ -390,48 +337,14 @@ export default function PetDetailModal({
               )}
             </Grid> 
 
-            <Grid size={{ xs: 12, sm: 6 }}>
-              {isEditing ? (
-                <TextField
-                  label="Owner birthdate"
-                  type="date"
-                  value={ownerBirthdate}
-                  onChange={(e) => setOwnerBirthdate(e.target.value)}
-                  fullWidth
-                  size="small"
-                  slotProps={{ inputLabel: { shrink: true } }}
-                />
-              ) : (
-                <Typography>
-                  <strong>Owner birthdate:</strong>{" "}
-                  {displayedPet.ownerBirthdate
-                    ? germanDateFormatter(displayedPet.ownerBirthdate)
-                    : "Sin fecha"}
-                </Typography>
-              )}
-            </Grid>
-
-
             {/* Row 6 */}
             <Grid size={{ xs: 12, sm: 6 }}>
-              {isEditing ? (
-                <TextField
-                  label="Breed ID"
-                  type="number"
-                  value={breedId}
-                  onChange={(e) => setBreedId(e.target.value)}
-                  slotProps={{ htmlInput: { min: 1, step: 1 } }}
-                  helperText="Optional for a new breed"
-                  fullWidth
-                  size="small"
-                />
-              ) : (
-                <Typography>
-                  <strong>Breed ID:</strong> {displayedPet.breed_id ?? "Sin raza"}
-                </Typography>
-              )}
+              <Typography>
+                <strong>Breed ID:</strong> {displayedPet.breed_id ?? "Sin raza"}
+              </Typography>
             </Grid>
 
+            {/* Row 7 */}
             <Grid size={{ xs: 12, sm: 6 }}>
               {isEditing ? (
                 <TextField

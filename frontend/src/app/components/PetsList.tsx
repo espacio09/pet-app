@@ -22,9 +22,11 @@ export default function PetsList({
 
 const rows = pets.map((pet) => {
   const owner = owners.find((o) => o.ownerId === pet.ownerId);
-  const ownerName = owner
-    ? `${owner.firstName ?? ""} ${owner.lastName ?? ""}`.trim()
-    : "Sin propietario";
+  const ownerName =
+    pet.ownerName ||
+    (owner
+      ? `${owner.firstName ?? ""} ${owner.lastName ?? ""}`.trim()
+      : "Sin propietario");
 
   return {
     id: pet.petId,
