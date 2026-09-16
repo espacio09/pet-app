@@ -52,6 +52,11 @@ const rows = pets.map((pet) => {
       <DataGrid
         rows={rows}
         columns={PET_TABLE_COLUMNS}
+        initialState={{
+          sorting: {
+            sortModel: [{ field: "name", sort: "asc" }],
+          },
+        }}
 
         
 sx={{
