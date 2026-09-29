@@ -12,8 +12,8 @@ import {
 } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
-import { useState } from "react";
-import { createPet } from "../types/pets";
+import { useEffect, useState } from "react";
+import { createPet, getBreedId } from "../types/pets";
 
 interface AddPetDialogProps {
   open: boolean;
@@ -32,11 +32,37 @@ export default function AddPetDialog({
   const [birthdate, setBirthdate] = useState("");
   const [microchipNo, setMicrochipNo] = useState("");
   const [color, setColor] = useState("");
+  const [notes, setNotes] = useState("");
   const [breedName, setBreedName] = useState("");
   const [ownerName, setOwnerName] = useState("");
   const [ownerId, setOwnerId] = useState("");
   const [breedId, setBreedId] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    const normalizedBreedName = breedName.trim();
+
+    if (!normalizedBreedName) {
+      setBreedId("");
+      return;
+    }
+
+    let cancelled = false;
+    const timeoutId = window.setTimeout(() => {
+      void getBreedId(normalizedBreedName)
+        .then((id) => {
+          if (!cancelled) setBreedId(id === null ? "" : String(id));
+        })
+        .catch(() => {
+          if (!cancelled) setBreedId("");
+        });
+    }, 250);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timeoutId);
+    };
+  }, [breedName]);
 
   const handleSave = async () => {
     const weightValue = Number(weight);
@@ -85,6 +111,7 @@ export default function AddPetDialog({
         weight: weightValue,
         pet_typeId: 1,
         breed_name: breedName.trim(),
+        notes: notes.trim(),
       });
 
       setOwnerId(String(createdPet.ownerId ?? createdPet.owner_id ?? ""));
@@ -110,6 +137,7 @@ export default function AddPetDialog({
             borderRadius: 3,
             display: "flex",
             flexDirection: "column",
+            minHeight: { xs: "auto", sm: "min(720px, 90vh)" },
             maxHeight: "90vh",
           },
         },
@@ -119,7 +147,7 @@ export default function AddPetDialog({
       <DialogTitle
         sx={{
           px: 4,
-          py: 2.5,
+          py: 2,
           fontWeight: 700,
           fontSize: "1.25rem",
           borderBottom: "1px solid",
@@ -145,7 +173,7 @@ export default function AddPetDialog({
       <DialogContent
         sx={{
           px: 4,
-          py: 3,
+          py: 2,
           overflowY: "auto",
           flexGrow: 1,
         }}
@@ -154,8 +182,8 @@ export default function AddPetDialog({
           sx={{
             display: "grid",
             gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-            gap: 3,
-            mt: 0.5,
+            gap: 2,
+            mt: 1,
           }}
         >
           {/* Columna 1 */}
@@ -215,7 +243,7 @@ export default function AddPetDialog({
               gridColumn: "1 / -1",
               display: "grid",
               gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-              gap: 3,
+              gap: 2,
             }}
           >
             <TextField
@@ -225,14 +253,14 @@ export default function AddPetDialog({
               fullWidth
             />
 
-            {breedId && (
-              <Box>
-                <Typography variant="caption" color="text.secondary">
-                  Breed ID
-                </Typography>
-                <Typography variant="body1">{breedId}</Typography>
-              </Box>
-            )}
+            <Box>
+              <Typography variant="caption" color="text.secondary">
+                Breed ID
+              </Typography>
+              <Typography variant="body1">
+                {breedId || (breedName.trim() ? "Assigned on save" : "-")}
+              </Typography>
+            </Box>
           </Box>
 
           <Box
@@ -240,7 +268,7 @@ export default function AddPetDialog({
               gridColumn: "1 / -1",
               display: "grid",
               gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-              gap: 3,
+              gap: 2,
             }}
           >
             <TextField
@@ -260,6 +288,17 @@ export default function AddPetDialog({
             )}
           </Box>
 
+          <TextField
+            label="Notes"
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            fullWidth
+            multiline
+            minRows={2}
+            maxRows={2}
+            sx={{ gridColumn: "1 / -1" }}
+          />
+
         </Box>
         {errorMessage && <Alert severity="error" sx={{ mt: 2 }}>{errorMessage}</Alert>}
       </DialogContent>
@@ -268,7 +307,7 @@ export default function AddPetDialog({
       <DialogActions
         sx={{
           px: 4,
-          py: 2.5,
+          py: 2,
           borderTop: "1px solid",
           borderColor: "divider",
           flexShrink: 0,

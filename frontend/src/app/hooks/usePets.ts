@@ -34,6 +34,7 @@ export function usePets() {
           petTypeId: pet.pet_typeId,
           breed_id: pet.breed_id,
           breedName: pet.breed_name,
+          notes: pet.notes,
           age: pet.birthdate
             ? Math.floor(
                 (Date.now() -

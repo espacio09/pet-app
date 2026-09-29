@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {
+  Autocomplete,
   Box,
   Button,
   TextField,
@@ -49,6 +50,8 @@ export const PetsPage = ({
 
   const [searchOwner, setSearchOwner] = useState("");
 
+  const [selectedOwnerId, setSelectedOwnerId] = useState<number | null>(null);
+
 
   const {
     pets,
@@ -63,15 +66,46 @@ export const PetsPage = ({
     error: ownersError,
   } = useOwners();
 
+  const ownerOptions = owners
+    .map((owner) => ({
+      ownerId: owner.ownerId,
+      label: `${owner.firstName ?? ""} ${owner.lastName ?? ""}`.trim(),
+      lastName: owner.lastName ?? "",
+      firstName: owner.firstName ?? "",
+    }))
+    .filter((owner, index, ownersList) =>
+      ownersList.findIndex((candidate) => candidate.label === owner.label) === index
+    )
+    .sort((firstOwner, secondOwner) => {
+      const lastNameOrder = firstOwner.lastName.localeCompare(
+        secondOwner.lastName,
+        undefined,
+        {
+        sensitivity: "base",
+        }
+      );
+
+      return lastNameOrder !== 0
+        ? lastNameOrder
+        : firstOwner.firstName.localeCompare(secondOwner.firstName, undefined, {
+            sensitivity: "base",
+          });
+    })
+            ;
+
+  const petOptions = pets
+    .map((pet) => pet.petName)
+    .filter((petName, index, names) => names.indexOf(petName) === index)
+    .sort((firstPet, secondPet) =>
+      firstPet.localeCompare(secondPet, undefined, {
+        sensitivity: "base",
+      })
+    );
 
 
 
-  const formatGermanDate = (date: string | Date) =>
-    new Intl.DateTimeFormat("de-DE", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    }).format(new Date(date));
+  const formatDateInput = (date: string | Date) =>
+    new Date(date).toISOString().slice(0, 10);
 
 
 const filteredPets = pets.filter((pet) => {
@@ -83,7 +117,7 @@ const filteredPets = pets.filter((pet) => {
 
   const matchesBirth =
     birthdate.trim() === "" ||
-    formatGermanDate(pet.birthdate) === birthdate.trim();
+    formatDateInput(pet.birthdate) === birthdate.trim();
 
   const owner = owners.find(
     (o) => o.ownerId === pet.ownerId
@@ -99,13 +133,20 @@ console.log(
 );
 
   const ownerName =
-    `${owner?.firstName ?? ""} ${owner?.lastName ?? ""}`;
+    pet.ownerName?.trim() ||
+    `${pet.ownerFirstName ?? owner?.firstName ?? ""} ${
+      pet.ownerLastName ?? owner?.lastName ?? ""
+    }`.trim();
+
+  const normalizedOwnerName = ownerName.toLowerCase().trim();
+  const normalizedSearchOwner = searchOwner.toLowerCase().trim();
 
   const matchesOwner =
-    searchOwner === "" ||
-    ownerName
-      .toLowerCase()
-      .includes(searchOwner.toLowerCase());
+    selectedOwnerId !== null
+      ? String(pet.ownerId) === String(selectedOwnerId) ||
+        normalizedOwnerName === normalizedSearchOwner
+      : searchOwner === "" ||
+        normalizedOwnerName.includes(normalizedSearchOwner);
 
   return (
     matchesSearch &&
@@ -120,6 +161,7 @@ console.log(
     setSearchTerm("");
     setBirthdate("");
     setSearchOwner("");
+    setSelectedOwnerId(null);
   };
 
   if (loading) {
@@ -173,26 +215,71 @@ console.log(
           flexWrap: "wrap",
         }}
       >
-        <TextField
-          label="Search Pet"
-          value={searchTerm}
-          onChange={(e) =>
-            setSearchTerm(e.target.value)
+        <Autocomplete
+          options={ownerOptions}
+          value={
+            ownerOptions.find((owner) => owner.label === searchOwner) ?? null
           }
+          inputValue={searchOwner}
+          getOptionLabel={(option) => option.label}
+          onChange={(_, value) => {
+            setSearchOwner(value?.label ?? "");
+            setSelectedOwnerId(value?.ownerId ?? null);
+          }}
+          onInputChange={(_, value, reason) => {
+            if (reason === "input" || reason === "clear") {
+              setSearchOwner(value);
+              setSelectedOwnerId(null);
+            }
+          }}
+          disabled={ownersLoading || Boolean(ownersError)}
+          sx={{ minWidth: 220 }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Search Owner"
+              autoComplete="off"
+            />
+          )}
+        />
+
+        <Autocomplete
+          options={petOptions}
+          value={petOptions.includes(searchTerm) ? searchTerm : null}
+          inputValue={searchTerm}
+          onChange={(_, value) => setSearchTerm(value ?? "")}
+          onInputChange={(_, value, reason) => {
+            if (reason === "input" || reason === "clear") {
+              setSearchTerm(value);
+            }
+          }}
+          sx={{ minWidth: 220 }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Search Pet"
+              autoComplete="off"
+            />
+          )}
         />
 
         <TextField
-          label="Birthdate"
+          label="Birthday"
           value={birthdate}
-          placeholder="15.10.2000"
+          type="date"
+          slotProps={{
+            inputLabel: { shrink: true },
+          }}
+          sx={{
+            minWidth: 220,
+            "& input[type=date]:invalid::-webkit-datetime-edit": {
+              color: "transparent",
+            },
+            "& input[type=date]:focus::-webkit-datetime-edit": {
+              color: "inherit",
+            },
+          }}
           onChange={(e) => setBirthdate(e.target.value)}
-        />
-
-        <TextField
-          label="Search Owner"
-          value={searchOwner}
-          disabled={ownersLoading || ownersError}
-          onChange={(e) => setSearchOwner(e.target.value)}
         />
         <Button
           variant="outlined"

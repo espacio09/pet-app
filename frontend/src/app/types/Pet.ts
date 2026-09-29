@@ -17,6 +17,7 @@ export interface Pet {
   breed_id: number;
   breedName?: string;
   breed_name?: string;
+  notes?: string | null;
 }
 
 export interface PetApi {
@@ -35,6 +36,7 @@ export interface PetApi {
   microchip_no?: number;
   breed_id: number;
   breed_name?: string;
+  notes?: string | null;
 
   pet_typeId: number;
 }
@@ -51,6 +53,7 @@ export interface CreatePetRequest {
     microchip_no?: number;
   pet_typeId: number;
     breed_name: string;
+  notes?: string;
 }
 
 export interface UpdatePetRequest {
@@ -69,5 +72,6 @@ export interface UpdatePetRequest {
   pet_typeId?: number;
   breed_id?: number;
   breed_name?: string;
+  notes?: string;
   
 }

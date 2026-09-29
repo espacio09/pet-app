@@ -44,6 +44,7 @@ const rows = pets.map((pet) => {
     breed_id: pet.breed_id,
     pet_typeId: pet.pet_typeId,
     breed_name: pet.breedName ?? "",
+    notes: pet.notes ?? "",
   };
 });
 

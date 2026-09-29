@@ -27,6 +27,7 @@ describe("usePets", () => {
         color: "white",
         microchip_no: 123456,
         breed_id: 2,
+        notes: "Needs a low-sodium diet",
         pet_typeId: 1,
       },
     ]);
@@ -39,5 +40,6 @@ describe("usePets", () => {
 
     expect(result.current.pets).toHaveLength(1);
     expect(result.current.pets[0].ownerId).toBe(7);
+    expect(result.current.pets[0].notes).toBe("Needs a low-sodium diet");
   });
 });

@@ -49,6 +49,11 @@ export const PET_TABLE_COLUMNS: GridColDef[] = [
     width: 120,
   },
   {
+    field: "notes",
+    headerName: "Notes",
+    width: 240,
+  },
+  {
     field: "microchip_no",
     headerName: "Microchip No",
     width: 180,

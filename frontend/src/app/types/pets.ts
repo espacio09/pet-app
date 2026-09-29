@@ -32,6 +32,20 @@ export async function createPet(pet: CreatePetRequest) {
   return res.json();
 }
 
+export async function getBreedId(breedName: string): Promise<number | null> {
+  const params = new URLSearchParams({ breedName });
+  const res = await fetch(
+    `http://localhost:3002/pets/breed-id?${params.toString()}`,
+  );
+
+  if (!res.ok) {
+    throw new Error("Could not look up breed.");
+  }
+
+  const result: { breed_id: number | null } = await res.json();
+  return result.breed_id;
+}
+
 export async function updatePet(
   pet_id: number,
   pet: UpdatePetRequest,

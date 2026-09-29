@@ -42,6 +42,7 @@ export default function PetDetailModal({
   const [weight, setWeight] = useState("");
   const [birthdate, setBirthdate] = useState("");
   const [microchipNo, setMicrochipNo] = useState("");
+  const [notes, setNotes] = useState("");
   const [ownerNameInput, setOwnerNameInput] = useState("");
   const [breedNameInput, setBreedNameInput] = useState("");
   const [savedPet, setSavedPet] = useState<Pet | null>(null);
@@ -63,6 +64,7 @@ export default function PetDetailModal({
       setSex(pet.sex ?? "");
       setWeight(String(pet.weight ?? ""));
       setMicrochipNo(String(pet.microchip_no ?? ""));
+      setNotes(pet.notes ?? "");
       setOwnerNameInput(
         pet.ownerName ||
           [pet.ownerFirstName, pet.ownerLastName]
@@ -116,6 +118,19 @@ export default function PetDetailModal({
       return;
     }
 
+    const ownerNameValue = ownerNameInput.trim().split(/\s+/);
+
+    if (ownerNameValue.length < 2) {
+      setSnackbarSeverity("error");
+      setSnackbarMessage(
+        "Estimado usuario, por favor, introduzca el nombre y apellido del owner.",
+      );
+      setSnackbarOpen(true);
+      return;
+    }
+
+    const normalizedOwnerName = ownerNameValue.join(" ");
+
     if (!Number.isFinite(weightValue) || weightValue < 0) {
       setSnackbarSeverity("error");
       setSnackbarMessage("Weight must be a valid non-negative number");
@@ -146,10 +161,11 @@ export default function PetDetailModal({
         pet_name: name.trim(),
         sex: sex.trim(),
         birthdate: birthdateValue,
-        owner_name: ownerNameInput.trim(),
+        owner_name: normalizedOwnerName,
         breed_name: breedNameInput.trim(),
         microchip_no: microchipNo ? Number(microchipNo) : undefined,
         weight: weightValue,
+        notes: notes.trim(),
       });
 
       setSavedPet({
@@ -159,13 +175,14 @@ export default function PetDetailModal({
         sex,
         birthdate: birthdateValue ?? displayedPet.birthdate,
         ownerId: updatedPet.ownerId ?? displayedPet.ownerId,
-        ownerName: ownerNameInput.trim(),
+        ownerName: normalizedOwnerName,
         breed_id: updatedPet.breed_id ?? displayedPet.breed_id,
         breedName: breedNameInput.trim(),
         microchip_no: microchipNo
           ? Number(microchipNo)
           : displayedPet.microchip_no,
         weight: weightValue,
+        notes: notes.trim(),
       });
       await onSaved();
       setSnackbarSeverity("success");
@@ -182,7 +199,23 @@ export default function PetDetailModal({
 
   return (
     <>
-      <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
+      <Dialog
+        open={open}
+        onClose={onClose}
+        fullWidth
+        maxWidth="md"
+        slotProps={{
+          paper: {
+            sx: {
+              minHeight: {
+                xs: "auto",
+                sm: "min(600px, calc(100dvh - 32px))",
+              },
+              maxHeight: "calc(100dvh - 32px)",
+            },
+          },
+        }}
+      >
           <DialogTitle>
         {displayedPet.petName}
   <IconButton
@@ -200,7 +233,7 @@ export default function PetDetailModal({
 
         </DialogTitle>
         <DialogContent>
-          <Grid container spacing={2} sx={{ pt: 1 }}>
+          <Grid container spacing={1} sx={{ pt: 2 }}>
             {/* Row 1 */}
             <Grid size={{ xs: 12, sm: 6 }}>
               <Typography>
@@ -357,6 +390,25 @@ export default function PetDetailModal({
               ) : (
                 <Typography>
                   <strong>Breed:</strong> {breedName || "Sin raza"}
+                </Typography>
+              )}
+            </Grid>
+
+            <Grid size={{ xs: 12 }}>
+              {isEditing ? (
+                <TextField
+                  label="Notes"
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  fullWidth
+                  multiline
+                  minRows={2}
+                  maxRows={2}
+                  size="small"
+                />
+              ) : (
+                <Typography sx={{ whiteSpace: "pre-wrap" }}>
+                  <strong>Notes:</strong> {displayedPet.notes || ""}
                 </Typography>
               )}
             </Grid>
