@@ -108,6 +108,17 @@ export const PetsPage = ({
     new Date(date).toISOString().slice(0, 10);
 
 
+const getPetOwnerName = (pet: Pet) => {
+  const owner = owners.find((candidate) => candidate.ownerId === pet.ownerId);
+
+  return (
+    pet.ownerName?.trim() ||
+    `${pet.ownerFirstName ?? owner?.firstName ?? ""} ${
+      pet.ownerLastName ?? owner?.lastName ?? ""
+    }`.trim()
+  );
+};
+
 const filteredPets = pets.filter((pet) => {
   const matchesSearch =
     searchTerm === "" ||
@@ -119,26 +130,7 @@ const filteredPets = pets.filter((pet) => {
     birthdate.trim() === "" ||
     formatDateInput(pet.birthdate) === birthdate.trim();
 
-  const owner = owners.find(
-    (o) => o.ownerId === pet.ownerId
-  );
-
-console.log(
-  "Pet:",
-  pet.petName,
-  "ownerId:",
-  pet.ownerId,
-  "owner encontrado:",
-  owner
-);
-
-  const ownerName =
-    pet.ownerName?.trim() ||
-    `${pet.ownerFirstName ?? owner?.firstName ?? ""} ${
-      pet.ownerLastName ?? owner?.lastName ?? ""
-    }`.trim();
-
-  const normalizedOwnerName = ownerName.toLowerCase().trim();
+  const normalizedOwnerName = getPetOwnerName(pet).toLowerCase().trim();
   const normalizedSearchOwner = searchOwner.toLowerCase().trim();
 
   const matchesOwner =
@@ -153,7 +145,11 @@ console.log(
     matchesBirth &&
     matchesOwner
   );
-});
+}).sort((firstPet, secondPet) =>
+  firstPet.petName.localeCompare(secondPet.petName, undefined, {
+    sensitivity: "base",
+  })
+);
 
 
 
@@ -296,13 +292,13 @@ console.log(
       </Typography>
 
       <PetsList
-  pets={filteredPets}
-  owners={owners}
-  onSelect={(pet) => {
-    setSelectedPet(pet);
-    handleOpenModal();
-  }}
-/>
+        pets={filteredPets}
+        owners={owners}
+        onSelect={(pet) => {
+          setSelectedPet(pet);
+          handleOpenModal();
+        }}
+      />
 
       <AddPetDialog
         open={isAddPetOpen}

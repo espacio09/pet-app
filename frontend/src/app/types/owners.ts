@@ -69,9 +69,23 @@ export async function updateOwner(
     body: JSON.stringify(owner),
   });
 
+  const responseBody: unknown = await res.json().catch(() => null);
+
   if (!res.ok) {
-    throw new Error(await res.text());
+    const message =
+      responseBody &&
+      typeof responseBody === "object" &&
+      "message" in responseBody
+        ? responseBody.message
+        : undefined;
+    throw new Error(
+      Array.isArray(message)
+        ? message.join(" ")
+        : typeof message === "string"
+          ? message
+          : "No se pudo guardar el propietario.",
+    );
   }
 
-  return res.json();
+  return responseBody;
 }

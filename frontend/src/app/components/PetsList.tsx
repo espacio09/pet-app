@@ -67,15 +67,15 @@ sx={{
   },
 
   "& .MuiDataGrid-row:nth-of-type(even)": {
-    backgroundColor: "#eaf826",
+    backgroundColor: "#fbfb13",
   },
 
   "& .MuiDataGrid-row:nth-of-type(odd)": {
-    backgroundColor: "#d30f0f",
+    backgroundColor: "#e71616",
   },
 
   "& .MuiDataGrid-row:hover": {
-    backgroundColor: "#0eb6f3",
+    backgroundColor: "#0c6bb8",
   },
 }}
 

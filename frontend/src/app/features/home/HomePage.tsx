@@ -6,10 +6,12 @@ import HeroImage from "./components/HeroImage";
 
  type HomePageProps = {
   onOpenPets: () => void;
+  onOpenOwners: () => void;
 };
 
 export default function HomePage({
   onOpenPets,
+  onOpenOwners,
 }: HomePageProps) {
 
   return (
@@ -30,7 +32,10 @@ export default function HomePage({
           }}
         >
           <WelcomeSection />
-          <DashboardCards onOpenPets={onOpenPets} />
+          <DashboardCards
+            onOpenPets={onOpenPets}
+            onOpenOwners={onOpenOwners}
+          />
 
           <HeroImage />
         </Paper>

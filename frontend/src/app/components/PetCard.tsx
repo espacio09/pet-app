@@ -1,46 +1,50 @@
+import {
+  Card,
+  CardActionArea,
+  CardContent,
+  Typography,
+} from "@mui/material";
 import type { Pet } from "../types/Pet";
 
 type PetCardProps = {
   pet: Pet;
+  ownerName?: string;
+  onSelect: () => void;
 };
 
-export default function PetCard({ pet }: PetCardProps) {
-  const ownerName = [pet.ownerFirstName, pet.ownerLastName]
-    .filter(Boolean)
-    .join(" ")
-    .trim();
+export default function PetCard({
+  pet,
+  ownerName,
+  onSelect,
+}: PetCardProps) {
+  const resolvedOwnerName =
+    ownerName?.trim() ||
+    pet.ownerName?.trim() ||
+    [pet.ownerFirstName, pet.ownerLastName].filter(Boolean).join(" ").trim() ||
+    "Sin propietario";
 
   return (
-    <div
-      style={{
-        border: "1px solid #ddd",
-        borderRadius: "8px",
-        padding: "16px",
-        marginBottom: "12px",
-      }}
-    >
-      <h3>{pet.petName}</h3>
-
-      <p>
-        <strong>Tipo:</strong> {pet.petId}
-      </p>
-
-      <p>
-        <strong>Tipo:</strong> {pet.microchip_no}
-      </p>
-
-      <p>
-        <strong>Propietario:</strong>{" "}
-        {ownerName || `Owner ID: ${pet.ownerId}`}
-      </p>
-
-      <p>
-        <strong>Birthdate:</strong>{" "}
-        {pet.birthdate ? pet.birthdate.toDateString() : "N/A"}
-      </p>
-      <p>
-        <strong>Edad:</strong> {pet.age}
-      </p>
-    </div>
+    <Card variant="outlined" sx={{ height: "100%" }}>
+      <CardActionArea
+        aria-label={`Ver detalles de ${pet.petName}`}
+        onClick={onSelect}
+        sx={{ height: "100%" }}
+      >
+        <CardContent>
+          <Typography variant="h6" component="h2" gutterBottom>
+            {pet.petName}
+          </Typography>
+          <Typography variant="body2">
+            <strong>Propietario:</strong> {resolvedOwnerName}
+          </Typography>
+          <Typography variant="body2">
+            <strong>Microchip:</strong> {pet.microchip_no || "Sin registrar"}
+          </Typography>
+          <Typography variant="body2">
+            <strong>Edad:</strong> {pet.age}
+          </Typography>
+        </CardContent>
+      </CardActionArea>
+    </Card>
   );
 }

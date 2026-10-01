@@ -14,7 +14,10 @@ import Grid from "@mui/material/Grid";
 import type { Pet } from "../types/Pet";
 import { germanDateFormatter } from "../shared/formatters";
 import { useEffect, useState } from "react";
-import { updatePet } from "../types/pets";
+import { checkMicrochipAvailability, updatePet } from "../types/pets";
+
+const duplicateMicrochipMessage =
+  "¡El número de microchip ya existe! Verifique su entrada.";
 
 function toDateInputValue(value: Date | string | undefined) {
   if (!value) return "";
@@ -42,6 +45,7 @@ export default function PetDetailModal({
   const [weight, setWeight] = useState("");
   const [birthdate, setBirthdate] = useState("");
   const [microchipNo, setMicrochipNo] = useState("");
+  const [microchipError, setMicrochipError] = useState("");
   const [notes, setNotes] = useState("");
   const [ownerNameInput, setOwnerNameInput] = useState("");
   const [breedNameInput, setBreedNameInput] = useState("");
@@ -64,6 +68,7 @@ export default function PetDetailModal({
       setSex(pet.sex ?? "");
       setWeight(String(pet.weight ?? ""));
       setMicrochipNo(String(pet.microchip_no ?? ""));
+      setMicrochipError("");
       setNotes(pet.notes ?? "");
       setOwnerNameInput(
         pet.ownerName ||
@@ -86,6 +91,24 @@ export default function PetDetailModal({
   if (!pet) return null;
 
   const displayedPet = savedPet ?? pet;
+
+  const handleMicrochipBlur = async () => {
+    const microchipValue = Number(microchipNo);
+    if (!microchipNo || !Number.isInteger(microchipValue) || microchipValue <= 0) {
+      setMicrochipError("");
+      return;
+    }
+
+    try {
+      const available = await checkMicrochipAvailability(
+        microchipValue,
+        pet.petId,
+      );
+      setMicrochipError(available ? "" : duplicateMicrochipMessage);
+    } catch {
+      setMicrochipError("");
+    }
+  };
 
   const ownerName =
     displayedPet.ownerName ||
@@ -192,7 +215,10 @@ export default function PetDetailModal({
     } catch (error) {
       console.error(error);
       setSnackbarSeverity("error");
-      setSnackbarMessage("No se pudo guardar la mascota");
+      const message =
+        error instanceof Error ? error.message : "No se pudo guardar la mascota";
+      setSnackbarMessage(message);
+      if (message === duplicateMicrochipMessage) setMicrochipError(message);
       setSnackbarOpen(true);
     }
   };
@@ -341,7 +367,13 @@ export default function PetDetailModal({
                   label="Microchip No"
                   type="number"
                   value={microchipNo}
-                  onChange={(e) => setMicrochipNo(e.target.value)}
+                  onChange={(e) => {
+                    setMicrochipNo(e.target.value);
+                    setMicrochipError("");
+                  }}
+                  onBlur={() => void handleMicrochipBlur()}
+                  error={Boolean(microchipError)}
+                  helperText={microchipError || " "}
                   slotProps={{ htmlInput: { min: 1, step: 1 } }}
                   fullWidth
                   size="small"

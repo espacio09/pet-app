@@ -13,7 +13,14 @@ import {
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import { useEffect, useState } from "react";
-import { createPet, getBreedId } from "../types/pets";
+import {
+  checkMicrochipAvailability,
+  createPet,
+  getBreedId,
+} from "../types/pets";
+
+const duplicateMicrochipMessage =
+  "¡El número de microchip ya existe! Verifique su entrada.";
 
 interface AddPetDialogProps {
   open: boolean;
@@ -38,6 +45,7 @@ export default function AddPetDialog({
   const [ownerId, setOwnerId] = useState("");
   const [breedId, setBreedId] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [microchipError, setMicrochipError] = useState("");
 
   useEffect(() => {
     const normalizedBreedName = breedName.trim();
@@ -63,6 +71,21 @@ export default function AddPetDialog({
       window.clearTimeout(timeoutId);
     };
   }, [breedName]);
+
+  const handleMicrochipBlur = async () => {
+    const microchipValue = Number(microchipNo);
+    if (!microchipNo || !Number.isInteger(microchipValue) || microchipValue <= 0) {
+      setMicrochipError("");
+      return;
+    }
+
+    try {
+      const available = await checkMicrochipAvailability(microchipValue);
+      setMicrochipError(available ? "" : duplicateMicrochipMessage);
+    } catch {
+      setMicrochipError("");
+    }
+  };
 
   const handleSave = async () => {
     const weightValue = Number(weight);
@@ -99,6 +122,11 @@ export default function AddPetDialog({
       return;
     }
 
+    if (microchipError) {
+      setErrorMessage(microchipError);
+      return;
+    }
+
     try {
       setErrorMessage("");
       const createdPet = await createPet({
@@ -119,9 +147,10 @@ export default function AddPetDialog({
       await onPetAdded();
       onClose();
     } catch (error) {
-      setErrorMessage(
-        error instanceof Error ? error.message : "Could not create pet.",
-      );
+      const message =
+        error instanceof Error ? error.message : "Could not create pet.";
+      setErrorMessage(message);
+      if (message === duplicateMicrochipMessage) setMicrochipError(message);
     }
   };
 
@@ -233,7 +262,13 @@ export default function AddPetDialog({
           <TextField
             label="Microchip No"
             value={microchipNo}
-            onChange={(e) => setMicrochipNo(e.target.value)}
+            onChange={(e) => {
+              setMicrochipNo(e.target.value);
+              setMicrochipError("");
+            }}
+            onBlur={() => void handleMicrochipBlur()}
+            error={Boolean(microchipError)}
+            helperText={microchipError || " "}
             slotProps={{ htmlInput: { min: 1, step: 1 } }}
             fullWidth
           />
@@ -295,7 +330,6 @@ export default function AddPetDialog({
             fullWidth
             multiline
             minRows={2}
-            maxRows={2}
             sx={{ gridColumn: "1 / -1" }}
           />
 

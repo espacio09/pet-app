@@ -3,6 +3,21 @@ import type {
   UpdatePetRequest,
 } from "../types/Pet";
 
+async function getErrorMessage(response: Response): Promise<string> {
+  try {
+    const body: unknown = await response.json();
+    if (typeof body === "object" && body !== null && "message" in body) {
+      const message = body.message;
+      if (typeof message === "string") return message;
+      if (Array.isArray(message)) return message.join(", ");
+    }
+  } catch {
+    // Fall back to the HTTP status when the response is not JSON.
+  }
+
+  return response.statusText || "Request failed.";
+}
+
 export async function getPets() {
   const res = await fetch("http://localhost:3002/pets");
 
@@ -24,9 +39,7 @@ export async function createPet(pet: CreatePetRequest) {
   });
 
   if (!res.ok) {
-    const error = await res.text();
-    console.error(error);
-    throw new Error(error);
+    throw new Error(await getErrorMessage(res));
   }
 
   return res.json();
@@ -46,6 +59,27 @@ export async function getBreedId(breedName: string): Promise<number | null> {
   return result.breed_id;
 }
 
+export async function checkMicrochipAvailability(
+  microchipNo: number,
+  excludePetId?: number,
+): Promise<boolean> {
+  const params = new URLSearchParams({ microchipNo: String(microchipNo) });
+  if (excludePetId !== undefined) {
+    params.set("excludePetId", String(excludePetId));
+  }
+
+  const res = await fetch(
+    `http://localhost:3002/pets/microchip-availability?${params.toString()}`,
+  );
+
+  if (!res.ok) {
+    throw new Error(await getErrorMessage(res));
+  }
+
+  const result: { available: boolean } = await res.json();
+  return result.available;
+}
+
 export async function updatePet(
   pet_id: number,
   pet: UpdatePetRequest,
@@ -59,7 +93,7 @@ export async function updatePet(
   });
 
   if (!res.ok) {
-    throw new Error(await res.text());
+    throw new Error(await getErrorMessage(res));
   }
 
   return res.json();

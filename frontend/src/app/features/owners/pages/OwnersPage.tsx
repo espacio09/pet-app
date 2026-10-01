@@ -1,15 +1,14 @@
-﻿import { useMemo } from "react";
+﻿import { useState } from "react";
 import {
   Box,
   Button,
-  Card,
-  CardContent,
   Stack,
   Typography,
 } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
-import PeopleIcon from "@mui/icons-material/People";
-import PetsIcon from "@mui/icons-material/Pets";
+import OwnerDetailModal from "../../../components/OwnerDetailModal";
+import OwnersList from "../../../components/OwnersList";
+import type { Owner } from "../../../types/Owner";
 import { useOwners } from "../../../hooks/useOwners";
 
 type OwnersPageProps = {
@@ -17,15 +16,17 @@ type OwnersPageProps = {
 };
 
 export const OwnersPage = ({ onGoHome }: OwnersPageProps) => {
-  const { owners, loading, error } = useOwners();
+  const { owners, loading, error, reloadOwners } = useOwners();
+  const [selectedOwner, setSelectedOwner] = useState<Owner | null>(null);
 
-  const summary = useMemo(
-    () => ({
-      totalOwners: owners.length,
-      activePets: owners.reduce((count, owner) => count + (owner.ownerId > 0 ? 1 : 0), 0),
-    }),
-    [owners]
-  );
+  const handleOwnerSaved = async () => {
+    if (!selectedOwner) return;
+
+    const refreshedOwners = await reloadOwners();
+    setSelectedOwner(
+      refreshedOwners.find((owner) => owner.ownerId === selectedOwner.ownerId) ?? null,
+    );
+  };
 
   if (loading) {
     return <Typography>Cargando propietarios...</Typography>;
@@ -44,54 +45,18 @@ export const OwnersPage = ({ onGoHome }: OwnersPageProps) => {
         <Typography variant="h4">Propietarios</Typography>
       </Stack>
 
-      <Box
-        sx={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-          gap: 2,
-          mb: 4,
-        }}
-      >
-        <Card>
-          <CardContent>
-            <PeopleIcon color="primary" />
-            <Typography variant="h5" sx={{ mt: 1, fontWeight: 700 }}>
-              {summary.totalOwners}
-            </Typography>
-            <Typography color="text.secondary">Owners registered</Typography>
-          </CardContent>
-        </Card>
+      <Typography color="text.secondary" sx={{ mb: 1 }}>
+        {owners.length} propietarios registrados
+      </Typography>
 
-        <Card>
-          <CardContent>
-            <PetsIcon color="success" />
-            <Typography variant="h5" sx={{ mt: 1, fontWeight: 700 }}>
-              {summary.activePets}
-            </Typography>
-            <Typography color="text.secondary">Active pets</Typography>
-          </CardContent>
-        </Card>
-      </Box>
+      <OwnersList owners={owners} onSelect={setSelectedOwner} />
 
-      <Box
-        sx={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-          gap: 2,
-        }}
-      >
-        {owners.map((owner) => (
-          <Card key={owner.ownerId}>
-            <CardContent>
-              <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                {owner.firstName} {owner.lastName}
-              </Typography>
-              <Typography color="text.secondary">{owner.email}</Typography>
-              <Typography color="text.secondary">{owner.phone}</Typography>
-            </CardContent>
-          </Card>
-        ))}
-      </Box>
+      <OwnerDetailModal
+        open={selectedOwner !== null}
+        onClose={() => setSelectedOwner(null)}
+        onSaved={handleOwnerSaved}
+        owner={selectedOwner}
+      />
     </Box>
   );
 };

@@ -1,9 +1,10 @@
 export interface Owner {
   ownerId: number;
-    first_name?: string;
+  firstName?: string;
+  lastName?: string;
+  first_name?: string;
   last_name?: string;
-  firstName: string;
-  lastName: string;
+  address?: string;
   email: string;
   phone: string;
 }
@@ -15,16 +16,16 @@ export interface OwnerApi {
   lastName?: string;
   first_name?: string;
   last_name?: string;
+  address?: string;
   email: string;
   phone?: string;
 }
 
 export interface CreateOwnerRequest {
   ownerId: number;
-    first_name?: string;
+  first_name?: string;
   last_name?: string;
-   firstName: string;
-  lastName: string;
+  address?: string;
   email: string;
   phone: string;
 }
@@ -33,8 +34,7 @@ export interface UpdateOwnerRequest {
   ownerId: number;
     first_name?: string;
   last_name?: string;
-   firstName: string;
-  lastName: string;
+  address?: string;
   email: string;
   phone: string;
 }
