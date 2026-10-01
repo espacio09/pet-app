@@ -22,11 +22,11 @@ export interface OwnerApi {
 }
 
 export interface CreateOwnerRequest {
-  ownerId: number;
-  first_name?: string;
-  last_name?: string;
-  address?: string;
-  email: string;
+  ownerId?: number;
+  first_name: string;
+  last_name: string;
+  address: string;
+  email?: string;
   phone: string;
 }
 

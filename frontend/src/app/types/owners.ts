@@ -47,9 +47,7 @@ export async function createOwner(owner: CreateOwnerRequest) {
   });
 
   if (!res.ok) {
-    const error = await res.text();
-    console.error(error);
-    throw new Error(error);
+    throw new Error(await getApiErrorMessage(res));
   }
 
   return res.json();
@@ -72,20 +70,49 @@ export async function updateOwner(
   const responseBody: unknown = await res.json().catch(() => null);
 
   if (!res.ok) {
-    const message =
-      responseBody &&
-      typeof responseBody === "object" &&
-      "message" in responseBody
-        ? responseBody.message
-        : undefined;
-    throw new Error(
-      Array.isArray(message)
-        ? message.join(" ")
-        : typeof message === "string"
-          ? message
-          : "No se pudo guardar el propietario.",
-    );
+    throw new Error(getApiErrorMessageFromBody(responseBody));
   }
 
   return responseBody;
+}
+
+export async function deleteOwner(ownerId: number) {
+  const res = await fetch(`http://localhost:3002/owners/${ownerId}`, {
+    method: "DELETE",
+  });
+
+  if (!res.ok) {
+    throw new Error(await getApiErrorMessage(res));
+  }
+
+  return res.json().catch(() => null);
+}
+
+export async function deleteOwners(ownerIds: number[]) {
+  const res = await fetch("http://localhost:3002/owners", {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ownerIds }),
+  });
+
+  if (!res.ok) {
+    throw new Error(await getApiErrorMessage(res));
+  }
+
+  return res.json();
+}
+
+async function getApiErrorMessage(response: Response) {
+  const body: unknown = await response.json().catch(() => null);
+  return getApiErrorMessageFromBody(body);
+}
+
+function getApiErrorMessageFromBody(body: unknown) {
+  if (body && typeof body === "object" && "message" in body) {
+    const message = body.message;
+    if (Array.isArray(message)) return message.join(" ");
+    if (typeof message === "string") return message;
+  }
+
+  return "No se pudo guardar el propietario.";
 }

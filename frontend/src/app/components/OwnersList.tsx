@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, Checkbox } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import type { Owner } from "../types/Owner";
 import { OWNER_TABLE_COLUMNS } from "./owners-table.columns";
@@ -6,11 +6,15 @@ import { OWNER_TABLE_COLUMNS } from "./owners-table.columns";
 interface OwnersProps {
   owners: Owner[];
   onSelect: (owner: Owner) => void;
+  selectedOwnerIds: number[];
+  onSelectionChange: (ownerIds: number[]) => void;
 }
 
 export default function OwnersList({
   owners,
   onSelect,
+  selectedOwnerIds,
+  onSelectionChange,
 }: OwnersProps) {
   const rows = [...owners]
     .sort((firstOwner, secondOwner) => {
@@ -37,13 +41,46 @@ export default function OwnersList({
       phone: owner.phone ?? "",
       email: owner.email ?? "",
     }));
+  const columns = [
+    {
+      field: "select",
+      headerName: "",
+      width: 56,
+      sortable: false,
+      filterable: false,
+      disableColumnMenu: true,
+      renderCell: (params: { row: { ownerId: number; firstName: string; lastName: string } }) => {
+        const ownerId = Number(params.row.ownerId);
+        const isSelected = selectedOwnerIds.includes(ownerId);
+
+        return (
+          <Checkbox
+            checked={isSelected}
+            slotProps={{
+              input: {
+                "aria-label": `Seleccionar ${params.row.firstName} ${params.row.lastName}`,
+              },
+            }}
+            onClick={(event) => event.stopPropagation()}
+            onChange={(event) => {
+              const nextSelection = event.target.checked
+                ? [...selectedOwnerIds, ownerId]
+                : selectedOwnerIds.filter((id) => id !== ownerId);
+              onSelectionChange(nextSelection);
+            }}
+          />
+        );
+      },
+    },
+    ...OWNER_TABLE_COLUMNS,
+  ];
 
   return (
     <Box sx={{ height: 420, width: "100%" }}>
       <DataGrid
         aria-label="Lista de propietarios"
         rows={rows}
-        columns={OWNER_TABLE_COLUMNS}
+        columns={columns}
         initialState={{
           pagination: {
             paginationModel: { page: 0, pageSize: 25 },
