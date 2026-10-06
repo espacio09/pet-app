@@ -31,13 +31,23 @@ export default function OwnerDetailModal({
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [isError, setIsError] = useState(false);
   const [validationMessage, setValidationMessage] = useState("");
 
   useEffect(() => {
-    if (!owner) return;
+    if (!owner) {
+      setFirstName("");
+      setLastName("");
+      setEmail("");
+      setPhone("");
+      setAddress("");
+      setIsEditing(false);
+      setValidationMessage("");
+      return;
+    }
 
     setFirstName(owner.firstName ?? owner.first_name ?? "");
     setLastName(owner.lastName ?? owner.last_name ?? "");
@@ -46,11 +56,13 @@ export default function OwnerDetailModal({
     setAddress(owner.address ?? "");
     setIsEditing(false);
     setValidationMessage("");
-  }, [owner]);
+  }, [open, owner]);
 
   if (!owner) return null;
 
   const handleSave = async () => {
+    if (isSaving) return;
+
     const trimmedFirstName = firstName.trim();
     const trimmedLastName = lastName.trim();
     const trimmedAddress = address.trim();
@@ -67,6 +79,7 @@ export default function OwnerDetailModal({
     }
 
     setValidationMessage("");
+    setIsSaving(true);
 
     try {
       await updateOwner(owner.ownerId, {
@@ -89,26 +102,53 @@ export default function OwnerDetailModal({
           ? error.message
           : "No se pudo guardar el propietario",
       );
+    } finally {
+      setIsSaving(false);
     }
     setSnackbarOpen(true);
+  };
+
+  const handleClose = () => {
+    if (isSaving) return;
+    setIsEditing(false);
+    setFirstName(owner.firstName ?? owner.first_name ?? "");
+    setLastName(owner.lastName ?? owner.last_name ?? "");
+    setEmail(owner.email ?? "");
+    setPhone(owner.phone ?? "");
+    setAddress(owner.address ?? "");
+    setValidationMessage("");
+    onClose();
   };
 
   const ownerName = `${firstName} ${lastName}`.trim() || "Propietario";
 
   return (
     <>
-      <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+      <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
         <DialogTitle>
           {ownerName}
           <IconButton
             aria-label="Cerrar"
-            onClick={onClose}
+            onClick={handleClose}
+            disabled={isSaving}
             sx={{ position: "absolute", right: 8, top: 8 }}
           >
             <CloseIcon />
           </IconButton>
         </DialogTitle>
-        <DialogContent sx={{ display: "grid", gap: 2, pt: 2 }}>
+        <DialogContent
+          sx={{
+            display: "grid",
+            gap: 2,
+            pt: 3,
+            "& .MuiInputBase-input.Mui-disabled": {
+              WebkitTextFillColor: "#000",
+            },
+            "& .MuiInputLabel-root.Mui-disabled": {
+              color: "#000",
+            },
+          }}
+        >
           {validationMessage && (
             <Alert severity="error">{validationMessage}</Alert>
           )}
@@ -122,6 +162,7 @@ export default function OwnerDetailModal({
             disabled={!isEditing}
             required
             fullWidth
+            sx={{ mt: 1 }}
           />
           <TextField
             label="Apellido"
@@ -167,9 +208,15 @@ export default function OwnerDetailModal({
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={onClose}>Cerrar</Button>
+          <Button onClick={handleClose} disabled={isSaving}>Cerrar</Button>
           {isEditing ? (
-            <Button onClick={() => void handleSave()}>Guardar</Button>
+            <Button
+              onClick={() => void handleSave()}
+              disabled={isSaving}
+              variant="contained"
+            >
+              Guardar
+            </Button>
           ) : (
             <Button onClick={() => setIsEditing(true)}>Editar</Button>
           )}

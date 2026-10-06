@@ -96,6 +96,13 @@ export const OwnersPage = ({ onGoHome }: OwnersPageProps) => {
           </Button>
           <Button
             variant="outlined"
+            disabled={selectedDeleteOwnerIds.length === 0}
+            onClick={() => setSelectedDeleteOwnerIds([])}
+          >
+            Clear
+          </Button>
+          <Button
+            variant="outlined"
             color="error"
             startIcon={<DeleteOutlineIcon />}
             disabled={selectedDeleteOwnerIds.length === 0}
@@ -136,12 +143,14 @@ export const OwnersPage = ({ onGoHome }: OwnersPageProps) => {
         fullWidth
         maxWidth="xs"
       >
-        <DialogTitle>Eliminar propietario</DialogTitle>
+        <DialogTitle>Confirmar eliminación</DialogTitle>
         <DialogContent>
           <Typography>
+            ¿De verdad quiere borrar esta o estas filas?
+            {" "}
             {selectedDeleteOwners.length === 1
-              ? `¿Quieres eliminar a ${selectedDeleteOwners[0].firstName ?? selectedDeleteOwners[0].first_name} ${selectedDeleteOwners[0].lastName ?? selectedDeleteOwners[0].last_name}?`
-              : `¿Quieres eliminar a los ${selectedDeleteOwners.length} propietarios seleccionados?`}
+              ? `${selectedDeleteOwners[0].firstName ?? selectedDeleteOwners[0].first_name} ${selectedDeleteOwners[0].lastName ?? selectedDeleteOwners[0].last_name}`
+              : `${selectedDeleteOwners.length} propietarios seleccionados`}
           </Typography>
           {deleteError && (
             <Alert severity="error" sx={{ mt: 2 }}>
