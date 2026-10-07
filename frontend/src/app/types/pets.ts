@@ -22,7 +22,7 @@ export async function getPets() {
   const res = await fetch("http://localhost:3002/pets");
 
   if (!res.ok) {
-    throw new Error("API error: " + res.statusText);
+    throw new Error(await getErrorMessage(res));
   }
   const pets = await res.json();
   console.log("Pets:", pets);

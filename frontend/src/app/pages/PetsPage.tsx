@@ -171,7 +171,7 @@ const filteredPets = pets.filter((pet) => {
   if (error) {
     return (
       <Typography>
-        Error al cargar mascotas.
+        {error}
       </Typography>
     );
   }

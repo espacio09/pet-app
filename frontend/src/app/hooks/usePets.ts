@@ -5,9 +5,10 @@ import { getPets } from "../types/pets";
 export function usePets() {
   const [pets, setPets] = useState<Pet[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState("");
 
  const loadPets = async () => {
+  setError("");
   try {
     const data = await getPets();
 
@@ -47,7 +48,9 @@ export function usePets() {
     );
   } catch (err) {
     console.error(err);
-    setError(true);
+    setError(
+      err instanceof Error ? err.message : "Error al cargar mascotas.",
+    );
   } finally {
     setLoading(false);
   }

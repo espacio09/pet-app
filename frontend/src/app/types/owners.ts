@@ -47,11 +47,22 @@ export async function createOwner(owner: CreateOwnerRequest) {
   });
 
   if (!res.ok) {
-    throw new Error(await getApiErrorMessage(res));
+    const body: unknown = await res.json().catch(() => null);
+    if (
+      body &&
+      typeof body === "object" &&
+      "code" in body &&
+      body.code === "DUPLICATE_OWNER_NAME"
+    ) {
+      throw new DuplicateOwnerNameError(getApiErrorMessageFromBody(body));
+    }
+    throw new Error(getApiErrorMessageFromBody(body));
   }
 
   return res.json();
 }
+
+export class DuplicateOwnerNameError extends Error {}
 
 
 

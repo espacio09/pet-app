@@ -23,6 +23,7 @@ export interface OwnerApi {
 
 export interface CreateOwnerRequest {
   ownerId?: number;
+  confirm_duplicate_name?: boolean;
   first_name: string;
   last_name: string;
   address: string;

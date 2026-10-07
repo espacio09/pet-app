@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ChangeEvent } from "react";
 import {
   Alert,
   Button,
@@ -8,7 +8,7 @@ import {
   DialogTitle,
   TextField,
 } from "@mui/material";
-import { createOwner } from "../types/owners";
+import { createOwner, DuplicateOwnerNameError } from "../types/owners";
 
 type AddOwnerDialogProps = {
   open: boolean;
@@ -27,6 +27,7 @@ export default function AddOwnerDialog({
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [duplicateNameWarning, setDuplicateNameWarning] = useState("");
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -38,9 +39,10 @@ export default function AddOwnerDialog({
     setEmail("");
     setPhone("");
     setErrorMessage("");
+    setDuplicateNameWarning("");
   }, [open]);
 
-  const handleSave = async () => {
+  const handleSave = async (confirmDuplicateName = false) => {
     const trimmedFirstName = firstName.trim();
     const trimmedLastName = lastName.trim();
     const trimmedAddress = address.trim();
@@ -61,6 +63,7 @@ export default function AddOwnerDialog({
 
     try {
       await createOwner({
+        confirm_duplicate_name: confirmDuplicateName || undefined,
         first_name: trimmedFirstName,
         last_name: trimmedLastName,
         address: trimmedAddress,
@@ -70,12 +73,24 @@ export default function AddOwnerDialog({
       await onAdded();
       onClose();
     } catch (error) {
-      setErrorMessage(
-        error instanceof Error ? error.message : "No se pudo crear el propietario.",
-      );
+      if (error instanceof DuplicateOwnerNameError) {
+        setDuplicateNameWarning(error.message);
+      } else {
+        setErrorMessage(
+          error instanceof Error ? error.message : "No se pudo crear el propietario.",
+        );
+      }
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleFieldChange = (setValue: (value: string) => void) => (
+    event: ChangeEvent<HTMLInputElement>,
+  ) => {
+    setValue(event.target.value);
+    setDuplicateNameWarning("");
+    setErrorMessage("");
   };
 
   return (
@@ -83,10 +98,13 @@ export default function AddOwnerDialog({
       <DialogTitle>Agregar propietario</DialogTitle>
       <DialogContent sx={{ display: "grid", gap: 2, pt: 2 }}>
         {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
+        {duplicateNameWarning && (
+          <Alert severity="warning">{duplicateNameWarning}</Alert>
+        )}
         <TextField
           label="Nombre"
           value={firstName}
-          onChange={(event) => setFirstName(event.target.value)}
+          onChange={handleFieldChange(setFirstName)}
           required
           disabled={saving}
           fullWidth
@@ -94,7 +112,7 @@ export default function AddOwnerDialog({
         <TextField
           label="Apellido"
           value={lastName}
-          onChange={(event) => setLastName(event.target.value)}
+          onChange={handleFieldChange(setLastName)}
           required
           disabled={saving}
           fullWidth
@@ -102,7 +120,7 @@ export default function AddOwnerDialog({
         <TextField
           label="Dirección"
           value={address}
-          onChange={(event) => setAddress(event.target.value)}
+          onChange={handleFieldChange(setAddress)}
           required
           disabled={saving}
           fullWidth
@@ -111,7 +129,7 @@ export default function AddOwnerDialog({
           label="Correo electrónico"
           type="email"
           value={email}
-          onChange={(event) => setEmail(event.target.value)}
+          onChange={handleFieldChange(setEmail)}
           disabled={saving}
           fullWidth
         />
@@ -119,7 +137,7 @@ export default function AddOwnerDialog({
           label="Teléfono"
           type="tel"
           value={phone}
-          onChange={(event) => setPhone(event.target.value)}
+          onChange={handleFieldChange(setPhone)}
           slotProps={{ htmlInput: { inputMode: "numeric" } }}
           required
           disabled={saving}
@@ -128,8 +146,20 @@ export default function AddOwnerDialog({
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} disabled={saving}>No</Button>
-        <Button onClick={() => void handleSave()} disabled={saving} variant="contained">
-          Add
+        {duplicateNameWarning && (
+          <Button
+            onClick={() => setDuplicateNameWarning("")}
+            disabled={saving}
+          >
+            Revisar datos
+          </Button>
+        )}
+        <Button
+          onClick={() => void handleSave(Boolean(duplicateNameWarning))}
+          disabled={saving}
+          variant="contained"
+        >
+          {duplicateNameWarning ? "Confirmar y guardar" : "Add"}
         </Button>
       </DialogActions>
     </Dialog>

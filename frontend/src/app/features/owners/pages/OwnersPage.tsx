@@ -8,6 +8,7 @@ import {
   DialogContent,
   DialogTitle,
   Stack,
+  TextField,
   Typography,
 } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
@@ -28,6 +29,8 @@ export const OwnersPage = ({ onGoHome }: OwnersPageProps) => {
   const { owners, loading, error, reloadOwners } = useOwners();
   const [selectedOwner, setSelectedOwner] = useState<Owner | null>(null);
   const [selectedDeleteOwnerIds, setSelectedDeleteOwnerIds] = useState<number[]>([]);
+  const [searchFirstName, setSearchFirstName] = useState("");
+  const [searchLastName, setSearchLastName] = useState("");
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteError, setDeleteError] = useState("");
@@ -35,6 +38,17 @@ export const OwnersPage = ({ onGoHome }: OwnersPageProps) => {
   const selectedDeleteOwners = owners.filter((owner) =>
     selectedDeleteOwnerIds.includes(owner.ownerId),
   );
+  const normalizedFirstNameSearch = searchFirstName.trim().toLocaleLowerCase();
+  const normalizedLastNameSearch = searchLastName.trim().toLocaleLowerCase();
+  const filteredOwners = owners.filter((owner) => {
+    const firstName = (owner.firstName ?? owner.first_name ?? "").toLocaleLowerCase();
+    const lastName = (owner.lastName ?? owner.last_name ?? "").toLocaleLowerCase();
+
+    return (
+      firstName.includes(normalizedFirstNameSearch) &&
+      lastName.includes(normalizedLastNameSearch)
+    );
+  });
 
   const handleOwnerSaved = async () => {
     if (!selectedOwner) return;
@@ -60,6 +74,17 @@ export const OwnersPage = ({ onGoHome }: OwnersPageProps) => {
       setDeleteError(
         error instanceof Error ? error.message : "No se pudo eliminar el propietario.",
       );
+      try {
+        const currentOwners = await reloadOwners();
+        const currentOwnerIds = new Set(
+          currentOwners.map((owner) => owner.ownerId),
+        );
+        setSelectedDeleteOwnerIds((ownerIds) =>
+          ownerIds.filter((ownerId) => currentOwnerIds.has(ownerId)),
+        );
+      } catch (refreshError) {
+        console.error("No se pudo actualizar la lista de propietarios.", refreshError);
+      }
     } finally {
       setDeleting(false);
     }
@@ -96,8 +121,16 @@ export const OwnersPage = ({ onGoHome }: OwnersPageProps) => {
           </Button>
           <Button
             variant="outlined"
-            disabled={selectedDeleteOwnerIds.length === 0}
-            onClick={() => setSelectedDeleteOwnerIds([])}
+            disabled={
+              selectedDeleteOwnerIds.length === 0 &&
+              searchFirstName === "" &&
+              searchLastName === ""
+            }
+            onClick={() => {
+              setSelectedDeleteOwnerIds([]);
+              setSearchFirstName("");
+              setSearchLastName("");
+            }}
           >
             Clear
           </Button>
@@ -120,8 +153,27 @@ export const OwnersPage = ({ onGoHome }: OwnersPageProps) => {
         {owners.length} propietarios registrados
       </Typography>
 
+      <Stack
+        direction={{ xs: "column", sm: "row" }}
+        spacing={2}
+        sx={{ mb: 2 }}
+      >
+        <TextField
+          label="Buscar por nombre"
+          value={searchFirstName}
+          onChange={(event) => setSearchFirstName(event.target.value)}
+          sx={{ width: { xs: "100%", sm: 220 } }}
+        />
+        <TextField
+          label="Buscar por apellido"
+          value={searchLastName}
+          onChange={(event) => setSearchLastName(event.target.value)}
+          sx={{ width: { xs: "100%", sm: 220 } }}
+        />
+      </Stack>
+
       <OwnersList
-        owners={owners}
+        owners={filteredOwners}
         onSelect={setSelectedOwner}
         selectedOwnerIds={selectedDeleteOwnerIds}
         onSelectionChange={setSelectedDeleteOwnerIds}
@@ -146,7 +198,7 @@ export const OwnersPage = ({ onGoHome }: OwnersPageProps) => {
         <DialogTitle>Confirmar eliminación</DialogTitle>
         <DialogContent>
           <Typography>
-            ¿De verdad quiere borrar esta o estas filas?
+            ¿De verdad quieres borrar estos usuarios?
             {" "}
             {selectedDeleteOwners.length === 1
               ? `${selectedDeleteOwners[0].firstName ?? selectedDeleteOwners[0].first_name} ${selectedDeleteOwners[0].lastName ?? selectedDeleteOwners[0].last_name}`
