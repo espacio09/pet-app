@@ -1,5 +1,5 @@
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import PetsList from "./PetsList";
 
 describe("PetsList", () => {
@@ -31,6 +31,8 @@ describe("PetsList", () => {
           },
         ]}
         onSelect={() => {}}
+        selectedPetIds={[]}
+        onSelectionChange={() => {}}
       />
     );
 
@@ -59,6 +61,8 @@ describe("PetsList", () => {
         ]}
         owners={[]}
         onSelect={() => {}}
+        selectedPetIds={[]}
+        onSelectionChange={() => {}}
       />
     );
 
@@ -98,6 +102,8 @@ describe("PetsList", () => {
         ]}
         owners={[]}
         onSelect={() => {}}
+        selectedPetIds={[]}
+        onSelectionChange={() => {}}
       />
     );
 
@@ -106,5 +112,37 @@ describe("PetsList", () => {
       .filter((name) => name === "Bella" || name === "Nala");
 
     expect(petNames).toEqual(["Bella", "Nala"]);
+  });
+
+  it("reports selected pets from the selection checkbox", async () => {
+    const onSelectionChange = vi.fn();
+
+    render(
+      <PetsList
+        pets={[
+          {
+            petId: 1,
+            petName: "Nala",
+            ownerId: 7,
+            birthdate: new Date("2021-02-03"),
+            age: 3,
+            sex: "female",
+            color: "white",
+            microchip_no: 123456,
+            weight: 12,
+            pet_typeId: 1,
+            breed_id: 2,
+          },
+        ]}
+        owners={[]}
+        onSelect={() => {}}
+        selectedPetIds={[]}
+        onSelectionChange={onSelectionChange}
+      />,
+    );
+
+    fireEvent.click(await screen.findByRole("checkbox", { name: "Seleccionar Nala" }));
+
+    expect(onSelectionChange).toHaveBeenCalledWith([1]);
   });
 });

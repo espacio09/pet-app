@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, Checkbox } from "@mui/material";
 import { DataGrid} from "@mui/x-data-grid";
 import type { Pet } from "./../types/Pet";
 import { PET_TABLE_COLUMNS } from "./pets-table.columns";
@@ -11,6 +11,8 @@ interface PetsListProps {
   pets: Pet[];
   owners: Owner[];
   onSelect: (pet: Pet) => void;
+  selectedPetIds: number[];
+  onSelectionChange: (petIds: number[]) => void;
 }
 
 
@@ -18,6 +20,8 @@ export default function PetsList({
   pets,
   owners,
   onSelect,
+  selectedPetIds,
+  onSelectionChange,
 }: PetsListProps) {
 
 const rows = pets.map((pet) => {
@@ -52,7 +56,38 @@ const rows = pets.map((pet) => {
     <Box sx={{ height: 400, width: "100%" }}>
       <DataGrid
         rows={rows}
-        columns={PET_TABLE_COLUMNS}
+        columns={[
+          {
+            field: "select",
+            headerName: "",
+            width: 56,
+            sortable: false,
+            filterable: false,
+            disableColumnMenu: true,
+            renderCell: (params: { row: { id: number; name: string } }) => {
+              const petId = Number(params.row.id);
+
+              return (
+                <Checkbox
+                  checked={selectedPetIds.includes(petId)}
+                  slotProps={{
+                    input: {
+                      "aria-label": `Seleccionar ${params.row.name}`,
+                    },
+                  }}
+                  onClick={(event) => event.stopPropagation()}
+                  onChange={(event) => {
+                    const nextSelection = event.target.checked
+                      ? [...selectedPetIds, petId]
+                      : selectedPetIds.filter((id) => id !== petId);
+                    onSelectionChange(nextSelection);
+                  }}
+                />
+              );
+            },
+          },
+          ...PET_TABLE_COLUMNS,
+        ]}
         initialState={{
           sorting: {
             sortModel: [{ field: "name", sort: "asc" }],

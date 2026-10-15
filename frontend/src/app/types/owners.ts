@@ -38,7 +38,7 @@ export async function getOwners() {
 
 
 export async function createOwner(owner: CreateOwnerRequest) {
-  const res = await fetch("http://localhost:3002/owners", {
+  const res = await fetch("https://localhost:3002/owners", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -70,7 +70,7 @@ export async function updateOwner(
   owner_id: number,
   owner: UpdateOwnerRequest,
 ) {
-  const res = await fetch(`http://localhost:3002/owners/${owner_id}`, {
+  const res = await fetch(`https://localhost:3002/owners/${owner_id}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
@@ -100,7 +100,7 @@ export async function deleteOwner(ownerId: number) {
 }
 
 export async function deleteOwners(ownerIds: number[]) {
-  const res = await fetch("http://localhost:3002/owners", {
+  const res = await fetch("https://localhost:3002/owners", {
     method: "DELETE",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ ownerIds }),

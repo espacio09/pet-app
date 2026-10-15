@@ -1,22 +1,28 @@
 import { useState } from "react";
 import {
+  Alert,
   Autocomplete,
   Box,
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Stack,
   TextField,
   Typography,
 } from "@mui/material";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
 import type { Pet } from "../types/Pet";
 import { usePets } from "../hooks/usePets";
+import { deletePets } from "../types/pets";
 
 import PetsList from "../components/PetsList";
 import PetDetailModal from "../components/PetDetailModal";
 import AddPetDialog from "../components/AddPetDialog";
 
 import { useOwners } from "../hooks/useOwners";
-
-
 
 
 type PetsPageProps = {
@@ -28,6 +34,10 @@ export const PetsPage = ({
 }: PetsPageProps) => {
   const [selectedPet, setSelectedPet] =
     useState<Pet | null>(null);
+  const [selectedDeletePetIds, setSelectedDeletePetIds] = useState<number[]>([]);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
+  const [deleting, setDeleting] = useState(false);
 
   const [isAddPetOpen, setIsAddPetOpen] =
     useState(false);
@@ -59,6 +69,9 @@ export const PetsPage = ({
     error,
     loadPets,
   } = usePets();
+  const selectedDeletePets = pets.filter((pet) =>
+    selectedDeletePetIds.includes(pet.petId),
+  );
 
   const {
     owners,
@@ -158,6 +171,29 @@ const filteredPets = pets.filter((pet) => {
     setBirthdate("");
     setSearchOwner("");
     setSelectedOwnerId(null);
+    setSelectedDeletePetIds([]);
+  };
+
+  const handleDeletePets = async () => {
+    if (selectedDeletePetIds.length === 0) return;
+
+    setDeleting(true);
+    setDeleteError("");
+    try {
+      await deletePets(selectedDeletePetIds);
+      await loadPets();
+      setSelectedPet(null);
+      setSelectedDeletePetIds([]);
+      setDeleteDialogOpen(false);
+    } catch (deleteError) {
+      setDeleteError(
+        deleteError instanceof Error
+          ? deleteError.message
+          : "No se pudieron eliminar las mascotas.",
+      );
+    } finally {
+      setDeleting(false);
+    }
   };
 
   if (loading) {
@@ -185,22 +221,35 @@ const filteredPets = pets.filter((pet) => {
         Mis Mascotas
       </Typography>
 
-      <Button
-        variant="outlined"
-        onClick={onGoHome}
-      >
-        Home
-      </Button>
-
-      <Button
-        variant="contained"
-        sx={{ ml: 1 }}
-        onClick={() =>
-          setIsAddPetOpen(true)
-        }
-      >
-        Add Pet
-      </Button>
+      <Stack direction="row" spacing={1}>
+        <Button variant="outlined" onClick={onGoHome}>
+          Home
+        </Button>
+        <Button
+          variant="contained"
+          onClick={() => setIsAddPetOpen(true)}
+        >
+          Add Pet
+        </Button>
+        <Button
+          variant="outlined"
+          color="error"
+          startIcon={<DeleteOutlineIcon />}
+          disabled={selectedDeletePetIds.length === 0}
+          onClick={() => {
+            setDeleteError("");
+            setDeleteDialogOpen(true);
+          }}
+        >
+          Delete
+        </Button>
+        <Button
+          variant="outlined"
+          onClick={clearSearch}
+        >
+          Clear
+        </Button>
+      </Stack>
 
       <Box
         sx={{
@@ -277,12 +326,6 @@ const filteredPets = pets.filter((pet) => {
           }}
           onChange={(e) => setBirthdate(e.target.value)}
         />
-        <Button
-          variant="outlined"
-          onClick={clearSearch}
-        >
-          Clear
-        </Button>
       </Box>
 
       <Typography variant="h6">
@@ -298,6 +341,8 @@ const filteredPets = pets.filter((pet) => {
           setSelectedPet(pet);
           handleOpenModal();
         }}
+        selectedPetIds={selectedDeletePetIds}
+        onSelectionChange={setSelectedDeletePetIds}
       />
 
       <AddPetDialog
@@ -314,6 +359,46 @@ const filteredPets = pets.filter((pet) => {
         onSaved={loadPets}
         pet={selectedPet}
       />
+
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={() => {
+          if (!deleting) setDeleteDialogOpen(false);
+        }}
+        fullWidth
+        maxWidth="xs"
+      >
+        <DialogTitle>Confirmar eliminación</DialogTitle>
+        <DialogContent>
+          <Typography>
+            ¿De verdad quieres eliminar{" "}
+            {selectedDeletePets.length === 1
+              ? `a ${selectedDeletePets[0].petName}?`
+              : `estas ${selectedDeletePets.length} mascotas?`}
+          </Typography>
+          {deleteError && (
+            <Alert severity="error" sx={{ mt: 2 }}>
+              {deleteError}
+            </Alert>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => setDeleteDialogOpen(false)}
+            disabled={deleting}
+          >
+            No
+          </Button>
+          <Button
+            color="error"
+            variant="contained"
+            onClick={() => void handleDeletePets()}
+            disabled={deleting || selectedDeletePetIds.length === 0}
+          >
+            Sí
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

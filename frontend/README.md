@@ -2,6 +2,24 @@
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
+## Playwright UI tests
+
+Install the project dependencies and the Chrome browser used by Playwright:
+
+```powershell
+npm install
+npx playwright install chrome
+```
+
+Run the UI tests headlessly, or open Chrome visibly:
+
+```powershell
+npm run test:e2e
+npm run test:e2e:headed
+```
+
+Place browser tests in `e2e/`. The existing example opens Google and checks its page title.
+
 Currently, two official plugins are available:
 
 - [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)

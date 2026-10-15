@@ -19,7 +19,7 @@ async function getErrorMessage(response: Response): Promise<string> {
 }
 
 export async function getPets() {
-  const res = await fetch("http://localhost:3002/pets");
+  const res = await fetch("https://localhost:3002/pets");
 
   if (!res.ok) {
     throw new Error(await getErrorMessage(res));
@@ -30,7 +30,7 @@ export async function getPets() {
 }
 
 export async function createPet(pet: CreatePetRequest) {
-  const res = await fetch("http://localhost:3002/pets", {
+  const res = await fetch("https://localhost:3002/pets", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -48,7 +48,7 @@ export async function createPet(pet: CreatePetRequest) {
 export async function getBreedId(breedName: string): Promise<number | null> {
   const params = new URLSearchParams({ breedName });
   const res = await fetch(
-    `http://localhost:3002/pets/breed-id?${params.toString()}`,
+    `https://localhost:3002/pets/breed-id?${params.toString()}`,
   );
 
   if (!res.ok) {
@@ -69,7 +69,7 @@ export async function checkMicrochipAvailability(
   }
 
   const res = await fetch(
-    `http://localhost:3002/pets/microchip-availability?${params.toString()}`,
+    `https://localhost:3002/pets/microchip-availability?${params.toString()}`,
   );
 
   if (!res.ok) {
@@ -84,12 +84,26 @@ export async function updatePet(
   pet_id: number,
   pet: UpdatePetRequest,
 ) {
-  const res = await fetch(`http://localhost:3002/pets/${pet_id}`, {
+  const res = await fetch(`https://localhost:3002/pets/${pet_id}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(pet),
+  });
+
+  if (!res.ok) {
+    throw new Error(await getErrorMessage(res));
+  }
+
+  return res.json();
+}
+
+export async function deletePets(petIds: number[]) {
+  const res = await fetch("https://localhost:3002/pets", {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ petIds }),
   });
 
   if (!res.ok) {
