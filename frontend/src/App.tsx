@@ -1,4 +1,5 @@
 import { lazy, Suspense, useState } from "react";
+import "./App.css";
 import HomePage from "./app/features/home/HomePage";
 
 const PetsPage = lazy(() =>

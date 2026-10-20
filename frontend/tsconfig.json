@@ -1,8 +1,8 @@
-{
-  "compilerOptions": {
+{  "compilerOptions": {
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "types": ["vite/client", "vitest/globals"]
   },
   "files": [],
   "references": [
