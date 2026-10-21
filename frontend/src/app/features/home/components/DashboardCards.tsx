@@ -3,17 +3,10 @@ import Card from "@mui/material/Card";
 import CardActionArea from "@mui/material/CardActionArea";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
+import { Link } from "react-router-dom";
 import { useOwners } from "../../../hooks/useOwners";
 
-type DashboardCardsProps = {
-  onOpenPets: () => void;
-  onOpenOwners: () => void;
-};
-
-export default function DashboardCards({
-  onOpenPets,
-  onOpenOwners,
-}: DashboardCardsProps) {
+export default function DashboardCards() {
   const { owners } = useOwners();
 
   const cards = [
@@ -31,6 +24,7 @@ export default function DashboardCards({
       title: "Patients",
       value: 15,
       icon: "🐾",
+      to: "/pets",
     },
     {
       title: "Follow-Ups",
@@ -38,71 +32,65 @@ export default function DashboardCards({
       icon: "⚠️",
     },
     {
-      title: "Propietarios",
+      title: "Proprietarios",
       value: owners.length,
       icon: "👥",
+      to: "/owners",
     },
   ];
 
   return (
     <Grid container spacing={3}>
-      {cards.map((card) => (
-        <Grid
-          size={{ xs: 12, sm: 6, md: 2.4 }}
-          key={card.title}
-        >
-          <Card
-            sx={{
-              borderRadius: 4,
-              textAlign: "center",
-              height: "100%",
-              boxShadow: 3,
-              cursor:
-                card.title === "Patients" || card.title === "Propietarios"
-                  ? "pointer"
-                  : "default",
-              transition: "all 0.3s ease",
-              "&:hover": {
-                transform: "translateY(-5px)",
-                boxShadow: 6,
-              },
-            }}
-          >
-            <CardActionArea
-              disabled={card.title !== "Patients" && card.title !== "Propietarios"}
-              onClick={() => {
-                if (card.title === "Patients") {
-                  onOpenPets();
-                } else if (card.title === "Propietarios") {
-                  onOpenOwners();
-                }
-              }}
-              sx={{ height: "100%" }}
+      {cards.map((card) => {
+        const content = (
+          <CardContent>
+            <Typography variant="h3">{card.icon}</Typography>
+            <Typography
+              variant="h4"
+              color="primary"
+              sx={{ fontWeight: 700 }}
             >
-              <CardContent>
-                <Typography variant="h3">
-                  {card.icon}
-                </Typography>
+              {card.value}
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              {card.title}
+            </Typography>
+          </CardContent>
+        );
 
-                <Typography
-                  variant="h4"
-                  color="primary"
-                  sx={{ fontWeight: 700 }}
+        return (
+          <Grid size={{ xs: 12, sm: 6, md: 2.4 }} key={card.title}>
+            <Card
+              sx={{
+                borderRadius: 4,
+                textAlign: "center",
+                height: "100%",
+                boxShadow: 3,
+                cursor: card.to ? "pointer" : "default",
+                transition: "all 0.3s ease",
+                "&:hover": {
+                  transform: "translateY(-5px)",
+                  boxShadow: 6,
+                },
+              }}
+            >
+              {card.to ? (
+                <CardActionArea
+                  component={Link}
+                  to={card.to}
+                  sx={{ height: "100%" }}
                 >
-                  {card.value}
-                </Typography>
-
-                <Typography
-                  variant="body1"
-                  color="text.secondary"
-                >
-                  {card.title}
-                </Typography>
-              </CardContent>
-            </CardActionArea>
-          </Card>
-        </Grid>
-      ))}
+                  {content}
+                </CardActionArea>
+              ) : (
+                <CardActionArea disabled sx={{ height: "100%" }}>
+                  {content}
+                </CardActionArea>
+              )}
+            </Card>
+          </Grid>
+        );
+      })}
     </Grid>
   );
 }

@@ -13,6 +13,7 @@ import {
   Typography,
 } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import { Link } from "react-router-dom";
 
 import type { Pet } from "../types/Pet";
 import { usePets } from "../hooks/usePets";
@@ -25,13 +26,7 @@ import AddPetDialog from "../components/AddPetDialog";
 import { useOwners } from "../hooks/useOwners";
 
 
-type PetsPageProps = {
-  onGoHome: () => void;
-};
-
-export const PetsPage = ({
-  onGoHome,
-}: PetsPageProps) => {
+export const PetsPage = () => {
   const [selectedPet, setSelectedPet] =
     useState<Pet | null>(null);
   const [selectedDeletePetIds, setSelectedDeletePetIds] = useState<number[]>([]);
@@ -222,7 +217,7 @@ const filteredPets = pets.filter((pet) => {
       </Typography>
 
       <Stack direction="row" spacing={1}>
-        <Button variant="outlined" onClick={onGoHome}>
+        <Button variant="outlined" component={Link} to="/">
           Home
         </Button>
         <Button

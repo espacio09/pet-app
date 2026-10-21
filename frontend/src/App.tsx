@@ -1,4 +1,5 @@
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense } from "react";
+import { Navigate, Route, Routes } from "react-router-dom";
 import "./App.css";
 import HomePage from "./app/features/home/HomePage";
 
@@ -9,33 +10,28 @@ const PetsPage = lazy(() =>
 );
 const OwnersPage = lazy(() => import("./app/features/owners/pages/OwnersPage"));
 
-type Page = "home" | "pets" | "owners";
-
 function App() {
-  const [activePage, setActivePage] =
-    useState<Page>("home");
-
-  if (activePage === "pets") {
-    return (
-      <Suspense fallback={<p>Cargando mascotas...</p>}>
-        <PetsPage onGoHome={() => setActivePage("home")} />
-      </Suspense>
-    );
-  }
-
-  if (activePage === "owners") {
-    return (
-      <Suspense fallback={<p>Cargando propietarios...</p>}>
-        <OwnersPage onGoHome={() => setActivePage("home")} />
-      </Suspense>
-    );
-  }
-
   return (
-    <HomePage
-      onOpenPets={() => setActivePage("pets")}
-      onOpenOwners={() => setActivePage("owners")}
-    />
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route
+        path="/pets"
+        element={
+          <Suspense fallback={<p>Cargando mascotas...</p>}>
+            <PetsPage />
+          </Suspense>
+        }
+      />
+      <Route
+        path="/owners"
+        element={
+          <Suspense fallback={<p>Cargando propietarios...</p>}>
+            <OwnersPage />
+          </Suspense>
+        }
+      />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }
 

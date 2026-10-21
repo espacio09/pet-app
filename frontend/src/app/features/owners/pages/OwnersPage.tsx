@@ -14,6 +14,7 @@ import {
 import HomeIcon from "@mui/icons-material/Home";
 import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import { Link } from "react-router-dom";
 import AddOwnerDialog from "../../../components/AddOwnerDialog";
 import OwnerDetailModal from "../../../components/OwnerDetailModal";
 import OwnersList from "../../../components/OwnersList";
@@ -21,11 +22,7 @@ import type { Owner } from "../../../types/Owner";
 import { deleteOwners } from "../../../types/owners";
 import { useOwners } from "../../../hooks/useOwners";
 
-type OwnersPageProps = {
-  onGoHome: () => void;
-};
-
-export const OwnersPage = ({ onGoHome }: OwnersPageProps) => {
+export const OwnersPage = () => {
   const { owners, loading, error, reloadOwners } = useOwners();
   const [selectedOwner, setSelectedOwner] = useState<Owner | null>(null);
   const [selectedDeleteOwnerIds, setSelectedDeleteOwnerIds] = useState<number[]>([]);
@@ -106,7 +103,12 @@ export const OwnersPage = ({ onGoHome }: OwnersPageProps) => {
         sx={{ mb: 3, alignItems: { xs: "stretch", sm: "center" }, justifyContent: "space-between" }}
       >
         <Stack direction="row" spacing={2} sx={{ alignItems: "center" }}>
-          <Button variant="outlined" startIcon={<HomeIcon />} onClick={onGoHome}>
+          <Button
+            variant="outlined"
+            startIcon={<HomeIcon />}
+            component={Link}
+            to="/"
+          >
             Home
           </Button>
           <Typography variant="h4">Propietarios</Typography>

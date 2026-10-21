@@ -2,18 +2,7 @@ import { Box, Container, Paper } from "@mui/material";
 import WelcomeSection from "./components/WelcomeSection";
 import DashboardCards from "./components/DashboardCards";
 import HeroImage from "./components/HeroImage";
-
-
- type HomePageProps = {
-  onOpenPets: () => void;
-  onOpenOwners: () => void;
-};
-
-export default function HomePage({
-  onOpenPets,
-  onOpenOwners,
-}: HomePageProps) {
-
+export default function HomePage() {
   return (
     <Box
   sx={{
@@ -32,10 +21,7 @@ export default function HomePage({
           }}
         >
           <WelcomeSection />
-          <DashboardCards
-            onOpenPets={onOpenPets}
-            onOpenOwners={onOpenOwners}
-          />
+          <DashboardCards />
 
           <HeroImage />
         </Paper>
