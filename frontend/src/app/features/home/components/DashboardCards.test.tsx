@@ -39,6 +39,8 @@ describe("Navegación por Dashboard", () => {
     expect(screen.getByLabelText("Ruta actual")).toHaveTextContent("/pets");
 
     fireEvent.click(screen.getByRole("link", { name: /home/i }));
+    expect(screen.getByLabelText("Ruta actual")).toHaveTextContent("/");
+
     fireEvent.click(screen.getByRole("link", { name: /proprietarios/i }));
     expect(screen.getByLabelText("Ruta actual")).toHaveTextContent("/owners");
   });
