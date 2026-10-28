@@ -34,7 +34,7 @@ export default function OwnerDetailModal({
   const [isSaving, setIsSaving] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [isError, setIsError] = useState(false);
+  const [saveErrorMessage, setSaveErrorMessage] = useState("");
   const [validationMessage, setValidationMessage] = useState("");
 
   useEffect(() => {
@@ -46,6 +46,7 @@ export default function OwnerDetailModal({
       setAddress("");
       setIsEditing(false);
       setValidationMessage("");
+      setSaveErrorMessage("");
       return;
     }
 
@@ -56,6 +57,7 @@ export default function OwnerDetailModal({
     setAddress(owner.address ?? "");
     setIsEditing(false);
     setValidationMessage("");
+    setSaveErrorMessage("");
   }, [open, owner]);
 
   if (!owner) return null;
@@ -79,6 +81,7 @@ export default function OwnerDetailModal({
     }
 
     setValidationMessage("");
+    setSaveErrorMessage("");
     setIsSaving(true);
 
     try {
@@ -92,12 +95,11 @@ export default function OwnerDetailModal({
       });
       await onSaved();
       setIsEditing(false);
-      setIsError(false);
       setSnackbarMessage("Propietario actualizado correctamente");
+      setSnackbarOpen(true);
     } catch (error) {
       console.error(error);
-      setIsError(true);
-      setSnackbarMessage(
+      setSaveErrorMessage(
         error instanceof Error
           ? error.message
           : "No se pudo guardar el propietario",
@@ -105,7 +107,6 @@ export default function OwnerDetailModal({
     } finally {
       setIsSaving(false);
     }
-    setSnackbarOpen(true);
   };
 
   const handleClose = () => {
@@ -117,6 +118,7 @@ export default function OwnerDetailModal({
     setPhone(owner.phone ?? "");
     setAddress(owner.address ?? "");
     setValidationMessage("");
+    setSaveErrorMessage("");
     onClose();
   };
 
@@ -152,12 +154,16 @@ export default function OwnerDetailModal({
           {validationMessage && (
             <Alert severity="error">{validationMessage}</Alert>
           )}
+          {saveErrorMessage && (
+            <Alert severity="error">{saveErrorMessage}</Alert>
+          )}
           <TextField
             label="Nombre"
             value={firstName}
             onChange={(event) => {
               setFirstName(event.target.value);
               setValidationMessage("");
+              setSaveErrorMessage("");
             }}
             disabled={!isEditing}
             required
@@ -170,6 +176,7 @@ export default function OwnerDetailModal({
             onChange={(event) => {
               setLastName(event.target.value);
               setValidationMessage("");
+              setSaveErrorMessage("");
             }}
             disabled={!isEditing}
             required
@@ -179,7 +186,10 @@ export default function OwnerDetailModal({
             label="Correo electrónico"
             type="email"
             value={email}
-            onChange={(event) => setEmail(event.target.value)}
+            onChange={(event) => {
+              setEmail(event.target.value);
+              setSaveErrorMessage("");
+            }}
             disabled={!isEditing}
             fullWidth
           />
@@ -189,6 +199,7 @@ export default function OwnerDetailModal({
             onChange={(event) => {
               setPhone(event.target.value);
               setValidationMessage("");
+              setSaveErrorMessage("");
             }}
             disabled={!isEditing}
             required
@@ -201,6 +212,7 @@ export default function OwnerDetailModal({
             onChange={(event) => {
               setAddress(event.target.value);
               setValidationMessage("");
+              setSaveErrorMessage("");
             }}
             disabled={!isEditing}
             required
@@ -229,7 +241,7 @@ export default function OwnerDetailModal({
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
         <Alert
-          severity={isError ? "error" : "success"}
+          severity="success"
           onClose={() => setSnackbarOpen(false)}
         >
           {snackbarMessage}

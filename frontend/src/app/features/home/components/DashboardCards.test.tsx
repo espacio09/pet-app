@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
   Link,
   MemoryRouter,
@@ -8,6 +8,10 @@ import {
   useLocation,
 } from "react-router-dom";
 import DashboardCards from "./DashboardCards";
+
+vi.mock("../../../types/owners", () => ({
+  getOwners: vi.fn().mockResolvedValue([]),
+}));
 
 function CurrentPath() {
   const { pathname } = useLocation();
@@ -30,7 +34,26 @@ describe("Navegación por Dashboard", () => {
               </>
             }
           />
-          <Route path="/owners" element={<h1>Owners</h1>} />
+          <Route path="/appointments" element={<h1>Appointments</h1>} />
+          <Route
+            path="/appointments/:id"
+            element={
+              <>
+                <h1>Appointments</h1>
+                <Link to="/">Home</Link>
+              </>
+            }
+          />
+          <Route path="/follow-up" element={<h1>Follow-up</h1>} />
+          <Route
+            path="/follow-up/:id"
+            element={
+              <>
+                <h1>Follow-up</h1>
+                <Link to="/">Home</Link>
+              </>
+            }
+          />
         </Routes>
       </MemoryRouter>,
     );

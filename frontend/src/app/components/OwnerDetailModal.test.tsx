@@ -95,4 +95,46 @@ describe("OwnerDetailModal", () => {
     expect(screen.getByRole("textbox", { name: "Nombre" })).toHaveValue("Luca");
     expect(screen.getByRole("button", { name: "Editar" })).toBeInTheDocument();
   });
+
+  it("shows a duplicate-email message when saving Wolfgang's email", async () => {
+    const wolfgang: Owner = {
+      ownerId: 7,
+      firstName: "Wolfgang",
+      lastName: "Allendörfer",
+      address: "Musterstraße 1",
+      email: "",
+      phone: "123456789",
+    };
+    const duplicateEmailMessage =
+      "Ya existe un propietario registrado con este correo electrónico.";
+    vi.mocked(updateOwner).mockRejectedValueOnce(
+      new Error(duplicateEmailMessage),
+    );
+
+    render(
+      <OwnerDetailModal
+        open
+        onClose={vi.fn()}
+        onSaved={vi.fn().mockResolvedValue(undefined)}
+        owner={wolfgang}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Editar" }));
+    fireEvent.change(
+      screen.getByRole("textbox", { name: "Correo electrónico" }),
+      { target: { value: "WolfgangAllendoerfer@aol.com" } },
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Guardar" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      duplicateEmailMessage,
+    );
+    expect(updateOwner).toHaveBeenCalledWith(
+      7,
+      expect.objectContaining({
+        email: "WolfgangAllendoerfer@aol.com",
+      }),
+    );
+  });
 });

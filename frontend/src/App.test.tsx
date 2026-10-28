@@ -1,7 +1,11 @@
 import { render, screen } from "@testing-library/react";
-import { expect, it } from "vitest";
+import { expect, it, vi } from "vitest";
 import { MemoryRouter } from "react-router-dom";
 import App from "./App";
+
+vi.mock("./app/types/owners", () => ({
+  getOwners: vi.fn().mockResolvedValue([]),
+}));
 
 describe("Homepage", () => {
   it("renders the home page by default", () => {

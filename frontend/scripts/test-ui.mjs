@@ -13,7 +13,10 @@ function openBrowser(url) {
   browserOpened = true
 
   const [command, args] = process.platform === 'win32'
-    ? ['rundll32.exe', ['url.dll,FileProtocolHandler', url]]
+    ? [
+        process.env.ComSpec || 'cmd.exe',
+        ['/d', '/s', '/c', `start "" "${url.replaceAll('"', '""')}"`],
+      ]
     : process.platform === 'darwin'
       ? ['open', [url]]
       : ['xdg-open', [url]]
