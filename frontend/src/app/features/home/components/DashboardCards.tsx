@@ -5,9 +5,11 @@ import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import { Link } from "react-router-dom";
 import { useOwners } from "../../../hooks/useOwners";
+import { useVets } from "../../../hooks/useVets";
 
 export default function DashboardCards() {
   const { owners } = useOwners();
+  const { vets } = useVets();
 
   const cards = [
     {
@@ -37,6 +39,12 @@ export default function DashboardCards() {
       icon: "👥",
       to: "/owners",
     },
+    {
+      title: "Veterinários",
+      value: vets.length,
+      icon: "👨‍⚕️",
+      to: "/vets",
+    }
   ];
 
   return (
