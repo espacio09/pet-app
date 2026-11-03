@@ -8,7 +8,12 @@ const PetsPage = lazy(() =>
     default: module.PetsPage,
   }))
 );
-const OwnersPage = lazy(() => import("./app/features/owners/pages/OwnersPage"));
+const OwnersPage = lazy(() => 
+  import("./app/features/owners/pages/OwnersPage"));
+
+const VetsPage = lazy(() =>
+  import("./app/features/vets/pages/VetsPage"),
+);
 
 function App() {
   return (
@@ -27,6 +32,14 @@ function App() {
         element={
           <Suspense fallback={<p>Cargando propietarios...</p>}>
             <OwnersPage />
+          </Suspense>
+        }
+      />
+      <Route
+        path="/vets"
+        element={
+          <Suspense fallback={<p>Cargando veterinarios...</p>}>
+            <VetsPage />
           </Suspense>
         }
       />

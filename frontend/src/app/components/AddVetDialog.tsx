@@ -1,6 +1,7 @@
 import { useEffect, useState, type ChangeEvent } from "react";
 import {
   Alert,
+  Box,
   Button,
   Dialog,
   DialogActions,
@@ -8,26 +9,26 @@ import {
   DialogTitle,
   TextField,
 } from "@mui/material";
-import { createOwner, DuplicateOwnerNameError } from "../types/owners";
+import { createVet } from "../types/vets";
 
-type AddOwnerDialogProps = {
+type AddVetDialogProps = {
   open: boolean;
   onClose: () => void;
   onAdded: () => Promise<void>;
 };
 
-export default function AddOwnerDialog({
+export default function AddVetDialog({
   open,
   onClose,
   onAdded,
-}: AddOwnerDialogProps) {
+}: AddVetDialogProps) {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [address, setAddress] = useState("");
+  const [street, setStreet] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const [duplicateNameWarning, setDuplicateNameWarning] = useState("");
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -36,20 +37,24 @@ export default function AddOwnerDialog({
     setFirstName("");
     setLastName("");
     setAddress("");
+    setStreet("");
     setEmail("");
     setPhone("");
     setErrorMessage("");
-    setDuplicateNameWarning("");
   }, [open]);
 
-  const handleSave = async (confirmDuplicateName = false) => {
+  const handleSave = async () => {
     const trimmedFirstName = firstName.trim();
     const trimmedLastName = lastName.trim();
     const trimmedAddress = address.trim();
+    const trimmedStreet = street.trim();
+    const trimmedEmail = email.trim();
     const trimmedPhone = phone.trim();
 
-    if (!trimmedFirstName || !trimmedLastName || !trimmedAddress || !trimmedPhone) {
-      setErrorMessage("Nombre, apellido, dirección y teléfono son obligatorios.");
+    if (!trimmedFirstName || !trimmedLastName || !trimmedEmail || !trimmedPhone) {
+      setErrorMessage(
+        "Nombre, apellido, correo electrónico y teléfono son obligatorios.",
+      );
       return;
     }
 
@@ -60,26 +65,23 @@ export default function AddOwnerDialog({
 
     setSaving(true);
     setErrorMessage("");
-
     try {
-      await createOwner({
-        confirm_duplicate_name: confirmDuplicateName || undefined,
-        first_name: trimmedFirstName,
-        last_name: trimmedLastName,
-        address: trimmedAddress,
-        email: email.trim() || undefined,
-        phone: trimmedPhone,
+      await createVet({
+        firstName: trimmedFirstName,
+        lastName: trimmedLastName,
+        street: trimmedStreet || undefined,
+        address: trimmedAddress || undefined,
+        email: trimmedEmail,
+        phoneNumber: trimmedPhone,
       });
       await onAdded();
       onClose();
     } catch (error) {
-      if (error instanceof DuplicateOwnerNameError) {
-        setDuplicateNameWarning(error.message);
-      } else {
-        setErrorMessage(
-          error instanceof Error ? error.message : "No se pudo crear el propietario.",
-        );
-      }
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "No se pudo crear el veterinario.",
+      );
     } finally {
       setSaving(false);
     }
@@ -89,18 +91,14 @@ export default function AddOwnerDialog({
     event: ChangeEvent<HTMLInputElement>,
   ) => {
     setValue(event.target.value);
-    setDuplicateNameWarning("");
     setErrorMessage("");
   };
 
   return (
     <Dialog open={open} onClose={saving ? undefined : onClose} fullWidth maxWidth="sm">
-      <DialogTitle>Agregar propietario</DialogTitle>
+      <DialogTitle>Agregar veterinario</DialogTitle>
       <DialogContent sx={{ display: "grid", gap: 2, pt: 2 }}>
         {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
-        {duplicateNameWarning && (
-          <Alert severity="warning">{duplicateNameWarning}</Alert>
-        )}
         <TextField
           label="Nombre"
           value={firstName}
@@ -117,19 +115,34 @@ export default function AddOwnerDialog({
           disabled={saving}
           fullWidth
         />
-        <TextField
-          label="Dirección"
-          value={address}
-          onChange={handleFieldChange(setAddress)}
-          required
-          disabled={saving}
-          fullWidth
-        />
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+            gap: 2,
+          }}
+        >
+          <TextField
+            label="Dirección"
+            value={address}
+            onChange={handleFieldChange(setAddress)}
+            disabled={saving}
+            fullWidth
+          />
+          <TextField
+            label="Calle"
+            value={street}
+            onChange={handleFieldChange(setStreet)}
+            disabled={saving}
+            fullWidth
+          />
+        </Box>
         <TextField
           label="Correo electrónico"
           type="email"
           value={email}
           onChange={handleFieldChange(setEmail)}
+          required
           disabled={saving}
           fullWidth
         />
@@ -146,20 +159,12 @@ export default function AddOwnerDialog({
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} disabled={saving}>No</Button>
-        {duplicateNameWarning && (
-          <Button
-            onClick={() => setDuplicateNameWarning("")}
-            disabled={saving}
-          >
-            Revisar datos
-          </Button>
-        )}
         <Button
-          onClick={() => void handleSave(Boolean(duplicateNameWarning))}
+          onClick={() => void handleSave()}
           disabled={saving}
           variant="contained"
         >
-          {duplicateNameWarning ? "Confirmar y guardar" : "Add"}
+          Add
         </Button>
       </DialogActions>
     </Dialog>

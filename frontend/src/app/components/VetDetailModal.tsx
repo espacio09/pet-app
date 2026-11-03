@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Alert from "@mui/material/Alert";
+import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -30,6 +31,7 @@ export default function VetDetailModal({
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [street, setStreet] = useState("");
   const [address, setAddress] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -43,6 +45,7 @@ export default function VetDetailModal({
       setLastName("");
       setEmail("");
       setPhone("");
+      setStreet("");
       setAddress("");
       setIsEditing(false);
       setValidationMessage("");
@@ -54,6 +57,7 @@ export default function VetDetailModal({
     setLastName(vet.lastName ?? vet.last_name ?? "");
     setEmail(vet.email ?? "");
     setPhone(vet.phone ?? vet.phoneNumber ?? "");
+    setStreet(vet.street ?? "");
     setAddress(vet.address ?? "");
     setIsEditing(false);
     setValidationMessage("");
@@ -67,11 +71,13 @@ export default function VetDetailModal({
 
     const trimmedFirstName = firstName.trim();
     const trimmedLastName = lastName.trim();
+    const trimmedEmail = email.trim();
     const trimmedAddress = address.trim();
+    const trimmedStreet = street.trim();
     const trimmedPhone = phone.trim();
 
-    if (!trimmedFirstName || !trimmedLastName || !trimmedAddress || !trimmedPhone) {
-      setValidationMessage("Nombre, apellido, dirección y teléfono son obligatorios.");
+    if (!trimmedFirstName || !trimmedLastName || !trimmedEmail || !trimmedPhone) {
+      setValidationMessage("Nombre, apellido, correo electrónico y teléfono son obligatorios.");
       return;
     }
 
@@ -88,8 +94,9 @@ export default function VetDetailModal({
       await updateVet(vet.vetId, {
         firstName: trimmedFirstName,
         lastName: trimmedLastName,
-        email: email.trim(),
+        email: trimmedEmail,
         phoneNumber: trimmedPhone,
+        street: trimmedStreet,
         address: trimmedAddress,
       });
       await onSaved();
@@ -115,6 +122,7 @@ export default function VetDetailModal({
     setLastName(vet.lastName ?? vet.last_name ?? "");
     setEmail(vet.email ?? "");
     setPhone(vet.phone ?? vet.phoneNumber ?? "");
+    setStreet(vet.street ?? "");
     setAddress(vet.address ?? "");
     setValidationMessage("");
     setSaveErrorMessage("");
@@ -190,6 +198,7 @@ export default function VetDetailModal({
               setSaveErrorMessage("");
             }}
             disabled={!isEditing}
+            required
             fullWidth
           />
           <TextField
@@ -205,18 +214,35 @@ export default function VetDetailModal({
             slotProps={{ htmlInput: { inputMode: "numeric" } }}
             fullWidth
           />
-          <TextField
-            label="Dirección"
-            value={address}
-            onChange={(event) => {
-              setAddress(event.target.value);
-              setValidationMessage("");
-              setSaveErrorMessage("");
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+              gap: 2,
             }}
-            disabled={!isEditing}
-            required
-            fullWidth
-          />
+          >
+            <TextField
+              label="Calle"
+              value={street}
+              onChange={(event) => {
+                setStreet(event.target.value);
+                setSaveErrorMessage("");
+              }}
+              disabled={!isEditing}
+              fullWidth
+            />
+            <TextField
+              label="Dirección"
+              value={address}
+              onChange={(event) => {
+                setAddress(event.target.value);
+                setValidationMessage("");
+                setSaveErrorMessage("");
+              }}
+              disabled={!isEditing}
+              fullWidth
+            />
+          </Box>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} disabled={isSaving}>Cerrar</Button>

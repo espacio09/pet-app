@@ -7,6 +7,7 @@ export interface Vet {
   lastName?: string;
   first_name?: string;
   last_name?: string;
+  street?: string;
   address?: string;
   email?: string;
   phone?: string;
@@ -22,6 +23,7 @@ export interface VetApi {
   lastName?: string;
   first_name?: string;
   last_name?: string;
+  street?: string;
   address?: string;
   email?: string;
   phone?: string;
@@ -31,7 +33,8 @@ export interface VetApi {
 export interface CreateVetRequest {
   firstName: string;
   lastName: string;
-  address: string;
+  street?: string;
+  address?: string;
   email: string;
   phoneNumber: string;
 }

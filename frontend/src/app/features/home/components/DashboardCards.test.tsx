@@ -13,6 +13,14 @@ vi.mock("../../../types/owners", () => ({
   getOwners: vi.fn().mockResolvedValue([]),
 }));
 
+vi.mock("../../../types/vets", () => ({
+  getVets: vi.fn().mockResolvedValue([]),
+}));
+
+vi.mock("../../../types/pets", () => ({
+  getPets: vi.fn().mockResolvedValue([]),
+}));
+
 function CurrentPath() {
   const { pathname } = useLocation();
   return <output aria-label="Ruta actual">{pathname}</output>;
@@ -66,5 +74,21 @@ describe("Navegación por Dashboard", () => {
 
     fireEvent.click(screen.getByRole("link", { name: /proprietarios/i }));
     expect(screen.getByLabelText("Ruta actual")).toHaveTextContent("/owners");
+  });
+
+  it("navigates from the dashboard to veterinarians", () => {
+    render(
+      <MemoryRouter initialEntries={["/"]}>
+        <CurrentPath />
+        <Routes>
+          <Route path="/" element={<DashboardCards />} />
+          <Route path="/vets" element={<h1>Veterinarios</h1>} />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(screen.getByRole("link", { name: /veterinários/i }));
+    expect(screen.getByLabelText("Ruta actual")).toHaveTextContent("/vets");
+    expect(screen.getByRole("heading", { name: "Veterinarios" })).toBeInTheDocument();
   });
 });

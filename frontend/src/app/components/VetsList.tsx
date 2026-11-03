@@ -37,6 +37,7 @@ export default function VetsList({
       vetId: vet.vetId,
       firstName: vet.firstName ?? vet.first_name ?? vet.name ?? "",
       lastName: vet.lastName ?? vet.last_name ?? "",
+      street: vet.street ?? "",
       address: vet.address ?? "",
       phone: vet.phone ?? vet.phoneNumber ?? "",
       email: vet.email ?? "",

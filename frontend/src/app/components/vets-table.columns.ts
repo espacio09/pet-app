@@ -18,6 +18,12 @@ export const VET_TABLE_COLUMNS: GridColDef[] = [
     flex: 1,
   },
   {
+    field: "street",
+    headerName: "Calle",
+    minWidth: 180,
+    flex: 1,
+  },
+  {
     field: "address",
     headerName: "Dirección",
     minWidth: 180,

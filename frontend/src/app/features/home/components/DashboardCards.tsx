@@ -6,10 +6,12 @@ import Typography from "@mui/material/Typography";
 import { Link } from "react-router-dom";
 import { useOwners } from "../../../hooks/useOwners";
 import { useVets } from "../../../hooks/useVets";
+import { usePets } from "../../../hooks/usePets";
 
 export default function DashboardCards() {
   const { owners } = useOwners();
   const { vets } = useVets();
+  const { pets } = usePets();
 
   const cards = [
     {
@@ -24,7 +26,7 @@ export default function DashboardCards() {
     },
     {
       title: "Patients",
-      value: 15,
+      value: pets.length,
       icon: "🐾",
       to: "/pets",
     },
