@@ -18,6 +18,7 @@ import { Link } from "react-router-dom";
 import type { Pet } from "../types/Pet";
 import { usePets } from "../hooks/usePets";
 import { deletePets } from "../types/pets";
+import { getUserFacingErrorMessage } from "../shared/utils/user-facing-error";
 
 import PetsList from "../components/PetsList";
 import PetDetailModal from "../components/PetDetailModal";
@@ -182,9 +183,10 @@ const filteredPets = pets.filter((pet) => {
       setDeleteDialogOpen(false);
     } catch (deleteError) {
       setDeleteError(
-        deleteError instanceof Error
-          ? deleteError.message
-          : "No se pudieron eliminar las mascotas.",
+        getUserFacingErrorMessage(
+          deleteError,
+          "No se pudieron eliminar las mascotas. Inténtalo de nuevo.",
+        ),
       );
     } finally {
       setDeleting(false);

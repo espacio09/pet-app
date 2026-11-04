@@ -21,6 +21,7 @@ import OwnersList from "../../../components/OwnersList";
 import type { Owner } from "../../../types/Owner";
 import { deleteOwners } from "../../../types/owners";
 import { useOwners } from "../../../hooks/useOwners";
+import { getUserFacingErrorMessage } from "../../../shared/utils/user-facing-error";
 
 export const OwnersPage = () => {
   const { owners, loading, error, reloadOwners } = useOwners();
@@ -69,7 +70,10 @@ export const OwnersPage = () => {
       setDeleteDialogOpen(false);
     } catch (error) {
       setDeleteError(
-        error instanceof Error ? error.message : "No se pudo eliminar el propietario.",
+        getUserFacingErrorMessage(
+          error,
+          "No se pudo eliminar el propietario. Inténtalo de nuevo.",
+        ),
       );
       try {
         const currentOwners = await reloadOwners();

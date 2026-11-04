@@ -1,0 +1,61 @@
+import { describe, expect, it } from "vitest";
+import {
+  getUserFacingErrorMessage,
+  getUserFacingHttpErrorMessage,
+} from "./user-facing-error";
+
+describe("getUserFacingHttpErrorMessage", () => {
+  it.each([
+    [
+      400,
+      "No se pudo procesar la solicitud. Revisa los datos e inténtalo de nuevo.",
+    ],
+    [
+      404,
+      "No se encontró la información solicitada. Es posible que ya no esté disponible.",
+    ],
+    [
+      500,
+      "Ocurrió un problema en el servidor. Inténtalo de nuevo más tarde.",
+    ],
+    [
+      503,
+      "Ocurrió un problema en el servidor. Inténtalo de nuevo más tarde.",
+    ],
+  ])("returns a user-friendly message for HTTP %i", async (status, expected) => {
+    const response = new Response(
+      JSON.stringify({ message: "Internal server stack or database details" }),
+      { status },
+    );
+
+    await expect(
+      getUserFacingHttpErrorMessage(response, "Fallback message"),
+    ).resolves.toBe(expected);
+  });
+
+  it("uses a fallback when a response has no user-facing message", async () => {
+    const response = new Response(null, { status: 418 });
+
+    await expect(
+      getUserFacingHttpErrorMessage(response, "Fallback message"),
+    ).resolves.toBe("Fallback message");
+  });
+});
+
+describe("getUserFacingErrorMessage", () => {
+  it.each([
+    ["Bad Request", "No se pudo procesar la solicitud. Revisa los datos e inténtalo de nuevo."],
+    [
+      "Not Found",
+      "No se encontró la información solicitada. Es posible que ya no esté disponible.",
+    ],
+    [
+      "Internal server error",
+      "Fallback message",
+    ],
+  ])("does not show system messages such as %s", (message, expected) => {
+    expect(getUserFacingErrorMessage(new Error(message), "Fallback message")).toBe(
+      expected,
+    );
+  });
+});

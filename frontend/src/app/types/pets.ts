@@ -2,27 +2,15 @@ import type {
   CreatePetRequest,
   UpdatePetRequest,
 } from "../types/Pet";
-
-async function getErrorMessage(response: Response): Promise<string> {
-  try {
-    const body: unknown = await response.json();
-    if (typeof body === "object" && body !== null && "message" in body) {
-      const message = body.message;
-      if (typeof message === "string") return message;
-      if (Array.isArray(message)) return message.join(", ");
-    }
-  } catch {
-    // Fall back to the HTTP status when the response is not JSON.
-  }
-
-  return response.statusText || "Request failed.";
-}
+import { getUserFacingHttpErrorMessage } from "../shared/utils/user-facing-error";
 
 export async function getPets() {
   const res = await fetch("http://localhost:3002/pets");
 
   if (!res.ok) {
-    throw new Error(await getErrorMessage(res));
+    throw new Error(
+      await getUserFacingHttpErrorMessage(res, "No se pudieron cargar las mascotas."),
+    );
   }
   const pets = await res.json();
   console.log("Pets:", pets);
@@ -39,7 +27,9 @@ export async function createPet(pet: CreatePetRequest) {
   });
 
   if (!res.ok) {
-    throw new Error(await getErrorMessage(res));
+    throw new Error(
+      await getUserFacingHttpErrorMessage(res, "No se pudo guardar la mascota."),
+    );
   }
 
   return res.json();
@@ -52,7 +42,9 @@ export async function getBreedId(breedName: string): Promise<number | null> {
   );
 
   if (!res.ok) {
-    throw new Error("Could not look up breed.");
+    throw new Error(
+      await getUserFacingHttpErrorMessage(res, "No se pudo buscar la raza."),
+    );
   }
 
   const result: { breed_id: number | null } = await res.json();
@@ -73,7 +65,12 @@ export async function checkMicrochipAvailability(
   );
 
   if (!res.ok) {
-    throw new Error(await getErrorMessage(res));
+    throw new Error(
+      await getUserFacingHttpErrorMessage(
+        res,
+        "No se pudo comprobar la disponibilidad del microchip.",
+      ),
+    );
   }
 
   const result: { available: boolean } = await res.json();
@@ -93,7 +90,9 @@ export async function updatePet(
   });
 
   if (!res.ok) {
-    throw new Error(await getErrorMessage(res));
+    throw new Error(
+      await getUserFacingHttpErrorMessage(res, "No se pudo actualizar la mascota."),
+    );
   }
 
   return res.json();
@@ -107,7 +106,9 @@ export async function deletePets(petIds: number[]) {
   });
 
   if (!res.ok) {
-    throw new Error(await getErrorMessage(res));
+    throw new Error(
+      await getUserFacingHttpErrorMessage(res, "No se pudieron eliminar las mascotas."),
+    );
   }
 
   return res.json();

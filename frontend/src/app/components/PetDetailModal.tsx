@@ -13,6 +13,7 @@ import Snackbar from "@mui/material/Snackbar";
 import Grid from "@mui/material/Grid";
 import type { Pet } from "../types/Pet";
 import { germanDateFormatter } from "../shared/formatters";
+import { getUserFacingErrorMessage } from "../shared/utils/user-facing-error";
 import { useEffect, useState } from "react";
 import { checkMicrochipAvailability, updatePet } from "../types/pets";
 
@@ -215,8 +216,10 @@ export default function PetDetailModal({
     } catch (error) {
       console.error(error);
       setSnackbarSeverity("error");
-      const message =
-        error instanceof Error ? error.message : "No se pudo guardar la mascota";
+      const message = getUserFacingErrorMessage(
+        error,
+        "No se pudo guardar la mascota. Inténtalo de nuevo.",
+      );
       setSnackbarMessage(message);
       if (message === duplicateMicrochipMessage) setMicrochipError(message);
       setSnackbarOpen(true);

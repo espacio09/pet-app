@@ -11,6 +11,7 @@ import TextField from "@mui/material/TextField";
 import CloseIcon from "@mui/icons-material/Close";
 import type { Owner } from "../types/Owner";
 import { updateOwner } from "../types/owners";
+import { getUserFacingErrorMessage } from "../shared/utils/user-facing-error";
 
 interface OwnerDetailModalProps {
   open: boolean;
@@ -100,9 +101,10 @@ export default function OwnerDetailModal({
     } catch (error) {
       console.error(error);
       setSaveErrorMessage(
-        error instanceof Error
-          ? error.message
-          : "No se pudo guardar el propietario",
+        getUserFacingErrorMessage(
+          error,
+          "No se pudo guardar el propietario. Inténtalo de nuevo.",
+        ),
       );
     } finally {
       setIsSaving(false);

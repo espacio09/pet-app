@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { Pet, PetApi } from "../types/Pet";
 import { getPets } from "../types/pets";
+import { getUserFacingErrorMessage } from "../shared/utils/user-facing-error";
 
 export function usePets() {
   const [pets, setPets] = useState<Pet[]>([]);
@@ -49,7 +50,10 @@ export function usePets() {
   } catch (err) {
     console.error(err);
     setError(
-      err instanceof Error ? err.message : "Error al cargar mascotas.",
+      getUserFacingErrorMessage(
+        err,
+        "No se pudieron cargar las mascotas. Inténtalo de nuevo.",
+      ),
     );
   } finally {
     setLoading(false);

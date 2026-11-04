@@ -9,6 +9,7 @@ import {
   TextField,
 } from "@mui/material";
 import { createOwner, DuplicateOwnerNameError } from "../types/owners";
+import { getUserFacingErrorMessage } from "../shared/utils/user-facing-error";
 
 type AddOwnerDialogProps = {
   open: boolean;
@@ -77,7 +78,10 @@ export default function AddOwnerDialog({
         setDuplicateNameWarning(error.message);
       } else {
         setErrorMessage(
-          error instanceof Error ? error.message : "No se pudo crear el propietario.",
+          getUserFacingErrorMessage(
+            error,
+            "No se pudo crear el propietario. Inténtalo de nuevo.",
+          ),
         );
       }
     } finally {

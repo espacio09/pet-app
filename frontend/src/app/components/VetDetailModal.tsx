@@ -12,6 +12,7 @@ import TextField from "@mui/material/TextField";
 import CloseIcon from "@mui/icons-material/Close";
 import type { Vet } from "../types/Vet";
 import { updateVet } from "../types/vets";
+import { getUserFacingErrorMessage } from "../shared/utils/user-facing-error";
 
 interface VetDetailModalProps {
   open: boolean;
@@ -106,9 +107,10 @@ export default function VetDetailModal({
     } catch (error) {
       console.error(error);
       setSaveErrorMessage(
-        error instanceof Error
-          ? error.message
-          : "No se pudo guardar el veterinario",
+        getUserFacingErrorMessage(
+          error,
+          "No se pudo guardar el veterinario. Inténtalo de nuevo.",
+        ),
       );
     } finally {
       setIsSaving(false);

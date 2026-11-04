@@ -10,6 +10,7 @@ import {
   TextField,
 } from "@mui/material";
 import { createVet } from "../types/vets";
+import { getUserFacingErrorMessage } from "../shared/utils/user-facing-error";
 
 type AddVetDialogProps = {
   open: boolean;
@@ -78,9 +79,10 @@ export default function AddVetDialog({
       onClose();
     } catch (error) {
       setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : "No se pudo crear el veterinario.",
+        getUserFacingErrorMessage(
+          error,
+          "No se pudo crear el veterinario. Inténtalo de nuevo.",
+        ),
       );
     } finally {
       setSaving(false);

@@ -2,40 +2,21 @@ import type {
   CreateOwnerRequest,
   UpdateOwnerRequest,
 } from "../types/Owner";
-
+import { getUserFacingHttpErrorMessage } from "../shared/utils/user-facing-error";
 
 export async function getOwners() {
-  try {
-   
-
-    const res = await fetch("http://localhost:3002/owners");
-
-    console.log("Status:", res.status);
-    console.log("OK:", res.ok);
-
-    const text = await res.text();
-
-    console.log("Respuesta RAW:", text);
-
-    return JSON.parse(text);
-  } catch (error) {
-    console.error("ERROR FETCH OWNERS:", error);
-    throw error;
-  }
-}
-
-
-/*export async function getOwners() {
   const res = await fetch("http://localhost:3002/owners");
-
   if (!res.ok) {
-    throw new Error("API error: " + res.statusText);
+    throw new Error(
+      await getUserFacingHttpErrorMessage(
+        res,
+        "No se pudieron cargar los propietarios.",
+      ),
+    );
   }
 
   return res.json();
 }
-*/
-
 
 export async function createOwner(owner: CreateOwnerRequest) {
   const res = await fetch("http://localhost:3002/owners", {
@@ -54,9 +35,17 @@ export async function createOwner(owner: CreateOwnerRequest) {
       "code" in body &&
       body.code === "DUPLICATE_OWNER_NAME"
     ) {
-      throw new DuplicateOwnerNameError(getApiErrorMessageFromBody(body));
+      throw new DuplicateOwnerNameError(
+        "Ya existe un propietario con ese nombre. Comprueba los datos e inténtalo de nuevo.",
+      );
     }
-    throw new Error(getApiErrorMessageFromBody(body));
+    throw new Error(
+      await getUserFacingHttpErrorMessage(
+        res,
+        "No se pudo guardar el propietario.",
+        body,
+      ),
+    );
   }
 
   return res.json();
@@ -81,7 +70,13 @@ export async function updateOwner(
   const responseBody: unknown = await res.json().catch(() => null);
 
   if (!res.ok) {
-    throw new Error(getApiErrorMessageFromBody(responseBody));
+    throw new Error(
+      await getUserFacingHttpErrorMessage(
+        res,
+        "No se pudo actualizar el propietario.",
+        responseBody,
+      ),
+    );
   }
 
   return responseBody;
@@ -93,7 +88,9 @@ export async function deleteOwner(ownerId: number) {
   });
 
   if (!res.ok) {
-    throw new Error(await getApiErrorMessage(res));
+    throw new Error(
+      await getUserFacingHttpErrorMessage(res, "No se pudo eliminar el propietario."),
+    );
   }
 
   return res.json().catch(() => null);
@@ -107,23 +104,10 @@ export async function deleteOwners(ownerIds: number[]) {
   });
 
   if (!res.ok) {
-    throw new Error(await getApiErrorMessage(res));
+    throw new Error(
+      await getUserFacingHttpErrorMessage(res, "No se pudieron eliminar los propietarios."),
+    );
   }
 
   return res.json();
-}
-
-async function getApiErrorMessage(response: Response) {
-  const body: unknown = await response.json().catch(() => null);
-  return getApiErrorMessageFromBody(body);
-}
-
-function getApiErrorMessageFromBody(body: unknown) {
-  if (body && typeof body === "object" && "message" in body) {
-    const message = body.message;
-    if (Array.isArray(message)) return message.join(" ");
-    if (typeof message === "string") return message;
-  }
-
-  return "No se pudo guardar el propietario.";
 }

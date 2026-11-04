@@ -1,31 +1,17 @@
 import type { CreateVetRequest, UpdateVetRequest, VetApi } from "./Vet";
+import { getUserFacingHttpErrorMessage } from "../shared/utils/user-facing-error";
 
 const API_URL = "http://localhost:3002/vets";
 
-async function getApiErrorMessage(response: Response): Promise<string> {
-  try {
-    const body: unknown = await response.json();
-    if (typeof body === "object" && body !== null && "message" in body) {
-      const message = body.message;
-      if (typeof message === "string") return message;
-      if (Array.isArray(message)) return message.join(", ");
-    }
-  } catch {
-    // The response may not contain JSON.
-  }
-
-  return response.statusText || "Error en la solicitud de veterinarios.";
-}
-
-async function ensureOk(response: Response): Promise<void> {
+async function ensureOk(response: Response, fallback: string): Promise<void> {
   if (!response.ok) {
-    throw new Error(await getApiErrorMessage(response));
+    throw new Error(await getUserFacingHttpErrorMessage(response, fallback));
   }
 }
 
 export async function getVets(): Promise<VetApi[]> {
   const response = await fetch(API_URL);
-  await ensureOk(response);
+  await ensureOk(response, "No se pudieron cargar los veterinarios.");
   return response.json();
 }
 
@@ -35,7 +21,7 @@ export async function createVet(vet: CreateVetRequest) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(vet),
   });
-  await ensureOk(response);
+  await ensureOk(response, "No se pudo guardar el veterinario.");
   return response.json();
 }
 
@@ -45,12 +31,12 @@ export async function updateVet(vetId: number, vet: UpdateVetRequest) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(vet),
   });
-  await ensureOk(response);
+  await ensureOk(response, "No se pudo actualizar el veterinario.");
   return response.json();
 }
 
 export async function deleteVet(vetId: number) {
   const response = await fetch(`${API_URL}/${vetId}`, { method: "DELETE" });
-  await ensureOk(response);
+  await ensureOk(response, "No se pudo eliminar el veterinario.");
   return response.json();
 }

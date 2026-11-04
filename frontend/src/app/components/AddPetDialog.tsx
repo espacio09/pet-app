@@ -18,6 +18,7 @@ import {
   createPet,
   getBreedId,
 } from "../types/pets";
+import { getUserFacingErrorMessage } from "../shared/utils/user-facing-error";
 
 const duplicateMicrochipMessage =
   "¡El número de microchip ya existe! Verifique su entrada.";
@@ -147,8 +148,10 @@ export default function AddPetDialog({
       await onPetAdded();
       onClose();
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Could not create pet.";
+      const message = getUserFacingErrorMessage(
+        error,
+        "No se pudo crear la mascota. Inténtalo de nuevo.",
+      );
       setErrorMessage(message);
       if (message === duplicateMicrochipMessage) setMicrochipError(message);
     }

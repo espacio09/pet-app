@@ -137,4 +137,26 @@ describe("OwnerDetailModal", () => {
       }),
     );
   });
+
+  it("shows a clear message when the server returns an internal error", async () => {
+    vi.mocked(updateOwner).mockRejectedValueOnce(
+      new Error("Internal server error"),
+    );
+
+    render(
+      <OwnerDetailModal
+        open
+        onClose={vi.fn()}
+        onSaved={vi.fn().mockResolvedValue(undefined)}
+        owner={owner}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Editar" }));
+    fireEvent.click(screen.getByRole("button", { name: "Guardar" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "No se pudo guardar el propietario. Inténtalo de nuevo.",
+    );
+  });
 });

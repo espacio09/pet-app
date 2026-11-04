@@ -21,6 +21,7 @@ import VetsList from "../../../components/VetsList";
 import type { Vet } from "../../../types/Vet";
 import { deleteVet } from "../../../types/vets";
 import { useVets } from "../../../hooks/useVets";
+import { getUserFacingErrorMessage } from "../../../shared/utils/user-facing-error";
 
 export default function VetsPage() {
   const { vets, loading, error, reloadVets } = useVets();
@@ -77,10 +78,12 @@ export default function VetsPage() {
       if (failedDeletes.length > 0) {
         const firstFailure = failedDeletes[0];
         setDeleteError(
-          firstFailure.status === "rejected" &&
-            firstFailure.reason instanceof Error
-            ? firstFailure.reason.message
-            : `No se pudieron eliminar ${failedDeletes.length} veterinarios.`,
+          firstFailure.status === "rejected"
+            ? getUserFacingErrorMessage(
+                firstFailure.reason,
+                `No se pudieron eliminar ${failedDeletes.length} veterinarios. Inténtalo de nuevo.`,
+              )
+            : `No se pudieron eliminar ${failedDeletes.length} veterinarios. Inténtalo de nuevo.`,
         );
         return;
       }
@@ -89,9 +92,10 @@ export default function VetsPage() {
       setDeleteDialogOpen(false);
     } catch (deleteError) {
       setDeleteError(
-        deleteError instanceof Error
-          ? deleteError.message
-          : "No se pudieron eliminar los veterinarios.",
+        getUserFacingErrorMessage(
+          deleteError,
+          "No se pudieron eliminar los veterinarios. Inténtalo de nuevo.",
+        ),
       );
       try {
         const refreshedVets = await reloadVets();
