@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import type { Pet } from "../types/Pet";
 import { updatePet } from "../types/pets";
@@ -40,7 +40,15 @@ describe("PetDetailModal", () => {
       />,
     );
 
+    await waitFor(() =>
+      expect(screen.getByText("Name:")).toBeInTheDocument(),
+    );
     fireEvent.click(screen.getByRole("button", { name: "Edit" }));
+    await waitFor(() =>
+      expect(screen.getByRole("textbox", { name: "Name" })).toHaveValue(
+        "Minnie",
+      ),
+    );
     fireEvent.click(screen.getByRole("button", { name: "Save" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent(

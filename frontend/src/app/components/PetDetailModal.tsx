@@ -56,6 +56,7 @@ export default function PetDetailModal({
     "success" | "error"
   >("success");
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [saveErrorMessage, setSaveErrorMessage] = useState("");
 
   useEffect(() => {
     if (!pet) return;
@@ -70,6 +71,7 @@ export default function PetDetailModal({
       setWeight(String(pet.weight ?? ""));
       setMicrochipNo(String(pet.microchip_no ?? ""));
       setMicrochipError("");
+      setSaveErrorMessage("");
       setNotes(pet.notes ?? "");
       setOwnerNameInput(
         pet.ownerName ||
@@ -120,6 +122,8 @@ export default function PetDetailModal({
   const breedName = displayedPet.breedName || displayedPet.breed_name;
 
   const handleSave = async () => {
+    setSaveErrorMessage("");
+
     const weightValue = Number(weight);
     const birthdateValue = birthdate ? new Date(birthdate) : undefined;
 
@@ -215,14 +219,12 @@ export default function PetDetailModal({
       setIsEditing(false);
     } catch (error) {
       console.error(error);
-      setSnackbarSeverity("error");
       const message = getUserFacingErrorMessage(
         error,
         "No se pudo guardar la mascota. Inténtalo de nuevo.",
       );
-      setSnackbarMessage(message);
+      setSaveErrorMessage(message);
       if (message === duplicateMicrochipMessage) setMicrochipError(message);
-      setSnackbarOpen(true);
     }
   };
 
@@ -262,6 +264,11 @@ export default function PetDetailModal({
 
         </DialogTitle>
         <DialogContent>
+          {saveErrorMessage && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {saveErrorMessage}
+            </Alert>
+          )}
           <Grid container spacing={1} sx={{ pt: 2 }}>
             {/* Row 1 */}
             <Grid size={{ xs: 12, sm: 6 }}>

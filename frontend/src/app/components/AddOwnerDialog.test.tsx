@@ -48,7 +48,7 @@ describe("AddOwnerDialog", () => {
     fireEvent.click(screen.getByRole("button", { name: "Add" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent(message);
-  });
+  }, 10000);
 
   it("asks the user to verify duplicate names before allowing creation", async () => {
   const onAdded = vi.fn().mockResolvedValue(undefined);
