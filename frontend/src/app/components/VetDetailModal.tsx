@@ -96,7 +96,7 @@ export default function VetDetailModal({
         firstName: trimmedFirstName,
         lastName: trimmedLastName,
         email: trimmedEmail,
-        phoneNumber: trimmedPhone,
+        phone: trimmedPhone,
         street: trimmedStreet,
         address: trimmedAddress,
       });

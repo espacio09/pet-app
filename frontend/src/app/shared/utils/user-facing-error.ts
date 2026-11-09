@@ -45,9 +45,11 @@ export async function getUserFacingHttpErrorMessage(
   fallback: string,
   responseBody?: unknown,
 ): Promise<string> {
-  const statusMessage = getStatusMessage(response.status);
-  if (statusMessage) {
-    return statusMessage;
+  if (response.status >= 500) {
+    return HTTP_ERROR_MESSAGES[500];
+  }
+  if (response.status === 404) {
+    return HTTP_ERROR_MESSAGES[404];
   }
 
   let body = responseBody;
@@ -57,6 +59,23 @@ export async function getUserFacingHttpErrorMessage(
     } catch {
       body = null;
     }
+  }
+
+  if (
+    response.status === 400 &&
+    typeof body === "object" &&
+    body !== null &&
+    "message" in body &&
+    Array.isArray(body.message)
+  ) {
+    const validationMessage = body.message
+      .filter((message): message is string => typeof message === "string")
+      .join(", ");
+    return validationMessage || HTTP_ERROR_MESSAGES[400];
+  }
+
+  if (response.status === 400) {
+    return HTTP_ERROR_MESSAGES[400];
   }
 
   if (typeof body === "object" && body !== null && "message" in body) {
@@ -70,6 +89,11 @@ export async function getUserFacingHttpErrorMessage(
     if (errorMessage.trim()) {
       return getUserFacingErrorMessage(new Error(errorMessage), fallback);
     }
+  }
+
+  const statusMessage = getStatusMessage(response.status);
+  if (statusMessage) {
+    return statusMessage;
   }
 
   if (response.statusText) {

@@ -7,7 +7,7 @@ export interface Vet {
   lastName?: string;
   first_name?: string;
   last_name?: string;
-  street?: string;
+  street?: string | null;
   address?: string;
   email?: string;
   phone?: string;
@@ -23,7 +23,7 @@ export interface VetApi {
   lastName?: string;
   first_name?: string;
   last_name?: string;
-  street?: string;
+  street?: string | null;
   address?: string;
   email?: string;
   phone?: string;
@@ -36,7 +36,7 @@ export interface CreateVetRequest {
   street?: string;
   address?: string;
   email: string;
-  phoneNumber: string;
+  phone: string;
 }
 
 export type UpdateVetRequest = Partial<CreateVetRequest>;

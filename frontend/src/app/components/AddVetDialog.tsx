@@ -73,7 +73,7 @@ export default function AddVetDialog({
         street: trimmedStreet || undefined,
         address: trimmedAddress || undefined,
         email: trimmedEmail,
-        phoneNumber: trimmedPhone,
+        phone: trimmedPhone,
       });
       await onAdded();
       onClose();

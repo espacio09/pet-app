@@ -32,10 +32,24 @@ describe("VetDetailModal", () => {
     );
 
     fireEvent.click(screen.getByRole("button", { name: "Editar" }));
+    fireEvent.change(screen.getByRole("textbox", { name: "Calle" }), {
+      target: { value: "New Street 9" },
+    });
+    fireEvent.change(screen.getByRole("textbox", { name: "Dirección" }), {
+      target: { value: "Berlin" },
+    });
     fireEvent.click(screen.getByRole("button", { name: "Guardar" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "No se pudo guardar el veterinario. Inténtalo de nuevo.",
+    );
+    expect(updateVet).toHaveBeenCalledWith(
+      vet.vetId,
+      expect.objectContaining({
+        phone: "12345",
+        street: "New Street 9",
+        address: "Berlin",
+      }),
     );
   });
 });

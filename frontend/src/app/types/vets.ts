@@ -26,6 +26,11 @@ export async function createVet(vet: CreateVetRequest) {
 }
 
 export async function updateVet(vetId: number, vet: UpdateVetRequest) {
+
+  console.log("vet:", vet);
+  console.log("json:", JSON.stringify(vet));
+  
+
   const response = await fetch(`${API_URL}/${vetId}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
@@ -33,6 +38,7 @@ export async function updateVet(vetId: number, vet: UpdateVetRequest) {
   });
   await ensureOk(response, "No se pudo actualizar el veterinario.");
   return response.json();
+
 }
 
 export async function deleteVet(vetId: number) {

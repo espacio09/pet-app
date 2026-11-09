@@ -39,7 +39,7 @@ describe("AddVetDialog", () => {
         street: undefined,
         address: undefined,
         email: "ada@example.com",
-        phoneNumber: "12345",
+        phone: "12345",
       });
     });
     expect(onAdded).toHaveBeenCalledOnce();

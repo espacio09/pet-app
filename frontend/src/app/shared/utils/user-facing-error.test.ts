@@ -40,6 +40,21 @@ describe("getUserFacingHttpErrorMessage", () => {
       getUserFacingHttpErrorMessage(response, "Fallback message"),
     ).resolves.toBe("Fallback message");
   });
+
+  it("shows validation details returned by the server for HTTP 400", async () => {
+    const response = new Response(
+      JSON.stringify({
+        message: ["property phone should not exist"],
+        error: "Bad Request",
+        statusCode: 400,
+      }),
+      { status: 400 },
+    );
+
+    await expect(
+      getUserFacingHttpErrorMessage(response, "Fallback message"),
+    ).resolves.toBe("property phone should not exist");
+  });
 });
 
 describe("getUserFacingErrorMessage", () => {
