@@ -24,20 +24,30 @@ export const VET_TABLE_COLUMNS: GridColDef[] = [
     flex: 1,
   },
   {
-    field: "address",
-    headerName: "Dirección",
-    minWidth: 180,
-    flex: 1,
+    field: "houseNumber",
+    headerName: "Número",
+    width: 110,
   },
   {
-    field: "email",
-    headerName: "Correo electrónico",
-    minWidth: 200,
+    field: "postalCode",
+    headerName: "Código postal",
+    minWidth: 130,
+  },
+  {
+    field: "city",
+    headerName: "Ciudad",
+    minWidth: 150,
     flex: 1,
   },
   {
     field: "phone",
     headerName: "Teléfono",
     minWidth: 140,
+  },
+  {
+    field: "email",
+    headerName: "Correo electrónico",
+    minWidth: 200,
+    flex: 1,
   },
 ];

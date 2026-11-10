@@ -1,14 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
 import type { Vet, VetApi } from "../types/Vet";
 import { getVets } from "../types/vets";
+import { getUserFacingErrorMessage } from "../shared/utils/user-facing-error";
 
 export function useVets() {
   const [vets, setVets] = useState<Vet[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const reloadVets = useCallback(async () => {
-    setError(false);
+    setError(null);
 
     try {
       const data: VetApi[] = await getVets();
@@ -23,7 +24,12 @@ export function useVets() {
       setVets(mappedVets);
       return mappedVets;
     } catch (err) {
-      setError(true);
+      setError(
+        getUserFacingErrorMessage(
+          err,
+          "No se pudieron cargar los veterinarios. Inténtalo de nuevo.",
+        ),
+      );
       throw err;
     } finally {
       setLoading(false);

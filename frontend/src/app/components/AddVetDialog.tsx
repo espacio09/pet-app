@@ -25,8 +25,10 @@ export default function AddVetDialog({
 }: AddVetDialogProps) {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [address, setAddress] = useState("");
   const [street, setStreet] = useState("");
+  const [houseNumber, setHouseNumber] = useState("");
+  const [postalCode, setPostalCode] = useState("");
+  const [city, setCity] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -37,8 +39,10 @@ export default function AddVetDialog({
 
     setFirstName("");
     setLastName("");
-    setAddress("");
     setStreet("");
+    setHouseNumber("");
+    setPostalCode("");
+    setCity("");
     setEmail("");
     setPhone("");
     setErrorMessage("");
@@ -47,8 +51,10 @@ export default function AddVetDialog({
   const handleSave = async () => {
     const trimmedFirstName = firstName.trim();
     const trimmedLastName = lastName.trim();
-    const trimmedAddress = address.trim();
     const trimmedStreet = street.trim();
+    const trimmedHouseNumber = houseNumber.trim();
+    const trimmedPostalCode = postalCode.trim();
+    const trimmedCity = city.trim();
     const trimmedEmail = email.trim();
     const trimmedPhone = phone.trim();
 
@@ -71,7 +77,9 @@ export default function AddVetDialog({
         firstName: trimmedFirstName,
         lastName: trimmedLastName,
         street: trimmedStreet || undefined,
-        address: trimmedAddress || undefined,
+        houseNumber: trimmedHouseNumber || undefined,
+        postalCode: trimmedPostalCode || undefined,
+        city: trimmedCity || undefined,
         email: trimmedEmail,
         phone: trimmedPhone,
       });
@@ -125,35 +133,49 @@ export default function AddVetDialog({
           }}
         >
           <TextField
-            label="Dirección"
-            value={address}
-            onChange={handleFieldChange(setAddress)}
-            disabled={saving}
-            fullWidth
-          />
-          <TextField
             label="Calle"
             value={street}
             onChange={handleFieldChange(setStreet)}
             disabled={saving}
             fullWidth
           />
+          <TextField
+            label="Número"
+            value={houseNumber}
+            onChange={handleFieldChange(setHouseNumber)}
+            disabled={saving}
+            fullWidth
+          />
+          <TextField
+            label="Código postal"
+            value={postalCode}
+            onChange={handleFieldChange(setPostalCode)}
+            disabled={saving}
+            fullWidth
+          />
+          <TextField
+            label="Ciudad"
+            value={city}
+            onChange={handleFieldChange(setCity)}
+            disabled={saving}
+            fullWidth
+          />
         </Box>
-        <TextField
-          label="Correo electrónico"
-          type="email"
-          value={email}
-          onChange={handleFieldChange(setEmail)}
-          required
-          disabled={saving}
-          fullWidth
-        />
         <TextField
           label="Teléfono"
           type="tel"
           value={phone}
           onChange={handleFieldChange(setPhone)}
           slotProps={{ htmlInput: { inputMode: "numeric" } }}
+          required
+          disabled={saving}
+          fullWidth
+        />
+        <TextField
+          label="Correo electrónico"
+          type="email"
+          value={email}
+          onChange={handleFieldChange(setEmail)}
           required
           disabled={saving}
           fullWidth

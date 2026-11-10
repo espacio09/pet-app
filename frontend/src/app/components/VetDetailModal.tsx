@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type HTMLAttributes } from "react";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -9,10 +9,61 @@ import DialogTitle from "@mui/material/DialogTitle";
 import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
 import CloseIcon from "@mui/icons-material/Close";
 import type { Vet } from "../types/Vet";
 import { updateVet } from "../types/vets";
 import { getUserFacingErrorMessage } from "../shared/utils/user-facing-error";
+
+interface VetFieldProps {
+  id: string;
+  label: string;
+  value: string | number;
+  disabled: boolean;
+  required?: boolean;
+  fullWidthRow?: boolean;
+  type?: string;
+  inputMode?: HTMLAttributes<HTMLInputElement>["inputMode"];
+  onChange?: (value: string) => void;
+}
+
+function VetField({
+  id,
+  label,
+  value,
+  disabled,
+  required = false,
+  fullWidthRow = false,
+  type = "text",
+  inputMode,
+  onChange,
+}: VetFieldProps) {
+  return (
+    <Box sx={{ minWidth: 0, gridColumn: fullWidthRow ? "1 / -1" : undefined }}>
+      <Typography
+        component="label"
+        htmlFor={id}
+        variant="body2"
+        sx={{ display: "block", mb: 0.5, fontWeight: 400 }}
+      >
+        {label}
+        {required && " *"}
+      </Typography>
+      <TextField
+        id={id}
+        value={value}
+        onChange={
+          onChange ? (event) => onChange(event.target.value) : undefined
+        }
+        disabled={disabled}
+        required={required}
+        type={type}
+        fullWidth
+        slotProps={inputMode ? { htmlInput: { inputMode } } : undefined}
+      />
+    </Box>
+  );
+}
 
 interface VetDetailModalProps {
   open: boolean;
@@ -33,7 +84,9 @@ export default function VetDetailModal({
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [street, setStreet] = useState("");
-  const [address, setAddress] = useState("");
+  const [houseNumber, setHouseNumber] = useState("");
+  const [postalCode, setPostalCode] = useState("");
+  const [city, setCity] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -47,7 +100,9 @@ export default function VetDetailModal({
       setEmail("");
       setPhone("");
       setStreet("");
-      setAddress("");
+      setHouseNumber("");
+      setPostalCode("");
+      setCity("");
       setIsEditing(false);
       setValidationMessage("");
       setSaveErrorMessage("");
@@ -59,7 +114,9 @@ export default function VetDetailModal({
     setEmail(vet.email ?? "");
     setPhone(vet.phone ?? vet.phoneNumber ?? "");
     setStreet(vet.street ?? "");
-    setAddress(vet.address ?? "");
+    setHouseNumber(vet.houseNumber ?? "");
+    setPostalCode(vet.postalCode ?? "");
+    setCity(vet.city ?? "");
     setIsEditing(false);
     setValidationMessage("");
     setSaveErrorMessage("");
@@ -73,8 +130,10 @@ export default function VetDetailModal({
     const trimmedFirstName = firstName.trim();
     const trimmedLastName = lastName.trim();
     const trimmedEmail = email.trim();
-    const trimmedAddress = address.trim();
     const trimmedStreet = street.trim();
+    const trimmedHouseNumber = houseNumber.trim();
+    const trimmedPostalCode = postalCode.trim();
+    const trimmedCity = city.trim();
     const trimmedPhone = phone.trim();
 
     if (!trimmedFirstName || !trimmedLastName || !trimmedEmail || !trimmedPhone) {
@@ -98,7 +157,9 @@ export default function VetDetailModal({
         email: trimmedEmail,
         phone: trimmedPhone,
         street: trimmedStreet,
-        address: trimmedAddress,
+        houseNumber: trimmedHouseNumber,
+        postalCode: trimmedPostalCode,
+        city: trimmedCity,
       });
       await onSaved();
       setIsEditing(false);
@@ -125,7 +186,9 @@ export default function VetDetailModal({
     setEmail(vet.email ?? "");
     setPhone(vet.phone ?? vet.phoneNumber ?? "");
     setStreet(vet.street ?? "");
-    setAddress(vet.address ?? "");
+    setHouseNumber(vet.houseNumber ?? "");
+    setPostalCode(vet.postalCode ?? "");
+    setCity(vet.city ?? "");
     setValidationMessage("");
     setSaveErrorMessage("");
     onClose();
@@ -135,7 +198,7 @@ export default function VetDetailModal({
 
   return (
     <>
-      <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
+      <Dialog open={open} onClose={handleClose} fullWidth maxWidth="lg">
         <DialogTitle>
           {vetName}
           <IconButton
@@ -150,8 +213,8 @@ export default function VetDetailModal({
         <DialogContent
           sx={{
             display: "grid",
-            gap: 2,
-            pt: 3,
+            gap: 1.5,
+            pt: 2,
             "& .MuiInputBase-input.Mui-disabled": {
               WebkitTextFillColor: "#000",
             },
@@ -166,83 +229,114 @@ export default function VetDetailModal({
           {saveErrorMessage && (
             <Alert severity="error">{saveErrorMessage}</Alert>
           )}
-          <TextField
-            label="Nombre"
-            value={firstName}
-            onChange={(event) => {
-              setFirstName(event.target.value);
-              setValidationMessage("");
-              setSaveErrorMessage("");
-            }}
-            disabled={!isEditing}
-            required
-            fullWidth
-            sx={{ mt: 1 }}
-          />
-          <TextField
-            label="Apellido"
-            value={lastName}
-            onChange={(event) => {
-              setLastName(event.target.value);
-              setValidationMessage("");
-              setSaveErrorMessage("");
-            }}
-            disabled={!isEditing}
-            required
-            fullWidth
-          />
-          <TextField
-            label="Correo electrónico"
-            type="email"
-            value={email}
-            onChange={(event) => {
-              setEmail(event.target.value);
-              setSaveErrorMessage("");
-            }}
-            disabled={!isEditing}
-            required
-            fullWidth
-          />
-          <TextField
-            label="Teléfono"
-            value={phone}
-            onChange={(event) => {
-              setPhone(event.target.value);
-              setValidationMessage("");
-              setSaveErrorMessage("");
-            }}
-            disabled={!isEditing}
-            required
-            slotProps={{ htmlInput: { inputMode: "numeric" } }}
-            fullWidth
-          />
           <Box
+            role="group"
+            aria-label="Datos del veterinario"
             sx={{
               display: "grid",
-              gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-              gap: 2,
+              gridTemplateColumns: {
+                xs: "minmax(0, 1fr)",
+                sm: "repeat(2, minmax(0, 1fr))",
+                lg: "repeat(3, minmax(0, 1fr))",
+              },
+              gap: 1.5,
             }}
           >
-            <TextField
-              label="Calle"
-              value={street}
-              onChange={(event) => {
-                setStreet(event.target.value);
-                setSaveErrorMessage("");
-              }}
-              disabled={!isEditing}
-              fullWidth
+            <VetField
+              id="vet-id"
+              label="ID"
+              value={vet.vetId}
+              disabled
+              fullWidthRow
             />
-            <TextField
-              label="Dirección"
-              value={address}
-              onChange={(event) => {
-                setAddress(event.target.value);
+            <VetField
+              id="vet-first-name"
+              label="Nombre"
+              value={firstName}
+              onChange={(value) => {
+                setFirstName(value);
                 setValidationMessage("");
                 setSaveErrorMessage("");
               }}
               disabled={!isEditing}
-              fullWidth
+              required
+            />
+            <VetField
+              id="vet-last-name"
+              label="Apellido"
+              value={lastName}
+              onChange={(value) => {
+                setLastName(value);
+                setValidationMessage("");
+                setSaveErrorMessage("");
+              }}
+              disabled={!isEditing}
+              required
+            />
+            <VetField
+              id="vet-street"
+              label="Calle"
+              value={street}
+              onChange={(value) => {
+                setStreet(value);
+                setSaveErrorMessage("");
+              }}
+              disabled={!isEditing}
+            />
+            <VetField
+              id="vet-house-number"
+              label="Número"
+              value={houseNumber}
+              onChange={(value) => {
+                setHouseNumber(value);
+                setSaveErrorMessage("");
+              }}
+              disabled={!isEditing}
+            />
+            <VetField
+              id="vet-postal-code"
+              label="Código postal"
+              value={postalCode}
+              onChange={(value) => {
+                setPostalCode(value);
+                setSaveErrorMessage("");
+              }}
+              disabled={!isEditing}
+            />
+            <VetField
+              id="vet-city"
+              label="Ciudad"
+              value={city}
+              onChange={(value) => {
+                setCity(value);
+                setSaveErrorMessage("");
+              }}
+              disabled={!isEditing}
+            />
+            <VetField
+              id="vet-phone"
+              label="Teléfono"
+              value={phone}
+              onChange={(value) => {
+                setPhone(value);
+                setValidationMessage("");
+                setSaveErrorMessage("");
+              }}
+              disabled={!isEditing}
+              required
+              inputMode="numeric"
+            />
+            <VetField
+              id="vet-email"
+              label="Correo electrónico"
+              value={email}
+              onChange={(value) => {
+                setEmail(value);
+                setSaveErrorMessage("");
+              }}
+              disabled={!isEditing}
+              required
+              type="email"
             />
           </Box>
         </DialogContent>

@@ -116,7 +116,26 @@ export default function VetsPage() {
   }
 
   if (error) {
-    return <Typography>Error al cargar veterinarios.</Typography>;
+    return (
+      <Alert
+        severity="error"
+        action={
+          <Button
+            color="inherit"
+            size="small"
+            onClick={() => {
+              void reloadVets().catch((retryError) => {
+                console.error("No se pudieron cargar los veterinarios.", retryError);
+              });
+            }}
+          >
+            Reintentar
+          </Button>
+        }
+      >
+        {error}
+      </Alert>
+    );
   }
 
   return (

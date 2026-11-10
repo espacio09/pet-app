@@ -8,7 +8,7 @@ vi.mock("../types/vets", () => ({
 }));
 
 describe("AddVetDialog", () => {
-  it("submits optional street and address separately to the vets API", async () => {
+  it("submits optional address fields to the vets API", async () => {
     const onAdded = vi.fn().mockResolvedValue(undefined);
     const onClose = vi.fn();
     vi.mocked(createVet).mockResolvedValue({});
@@ -37,7 +37,9 @@ describe("AddVetDialog", () => {
         firstName: "Ada",
         lastName: "Lovelace",
         street: undefined,
-        address: undefined,
+        houseNumber: undefined,
+        postalCode: undefined,
+        city: undefined,
         email: "ada@example.com",
         phone: "12345",
       });
@@ -46,7 +48,7 @@ describe("AddVetDialog", () => {
     expect(onClose).toHaveBeenCalledOnce();
   });
 
-  it("submits provided street and address as separate fields", async () => {
+  it("submits the separate address fields", async () => {
     vi.mocked(createVet).mockResolvedValue({});
     render(
       <AddVetDialog
@@ -64,9 +66,15 @@ describe("AddVetDialog", () => {
       target: { value: "Lovelace" },
     });
     fireEvent.change(screen.getByLabelText(/Calle/), {
-      target: { value: "Main Street 1" },
+      target: { value: "Main Street" },
     });
-    fireEvent.change(screen.getByLabelText(/Dirección/), {
+    fireEvent.change(screen.getByLabelText(/Número/), {
+      target: { value: "1" },
+    });
+    fireEvent.change(screen.getByLabelText(/Código postal/), {
+      target: { value: "60311" },
+    });
+    fireEvent.change(screen.getByLabelText(/Ciudad/), {
       target: { value: "Frankfurt" },
     });
     fireEvent.change(screen.getByLabelText(/Correo electrónico/), {
@@ -80,8 +88,10 @@ describe("AddVetDialog", () => {
     await waitFor(() => {
       expect(createVet).toHaveBeenCalledWith(
         expect.objectContaining({
-          street: "Main Street 1",
-          address: "Frankfurt",
+          street: "Main Street",
+          houseNumber: "1",
+          postalCode: "60311",
+          city: "Frankfurt",
         }),
       );
     });
@@ -107,11 +117,11 @@ describe("AddVetDialog", () => {
     fireEvent.change(screen.getByLabelText(/Apellido/), {
       target: { value: "Lovelace" },
     });
-    fireEvent.change(screen.getByLabelText(/Dirección/), {
+    fireEvent.change(screen.getByLabelText(/Ciudad/), {
       target: { value: "Frankfurt" },
     });
     fireEvent.change(screen.getByLabelText(/Calle/), {
-      target: { value: "Main Street 1" },
+      target: { value: "Main Street" },
     });
     fireEvent.change(screen.getByLabelText(/Correo electrónico/), {
       target: { value: "ada@example.com" },
