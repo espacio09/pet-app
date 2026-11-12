@@ -40,6 +40,16 @@ export const VET_TABLE_COLUMNS: GridColDef[] = [
     flex: 1,
   },
   {
+    field: "country",
+    headerName: "País",
+    minWidth: 140,
+  },
+  {
+    field: "phoneCountryCode",
+    headerName: "Código país teléfono",
+    minWidth: 170,
+  },
+  {
     field: "phone",
     headerName: "Teléfono",
     minWidth: 140,
@@ -48,6 +58,17 @@ export const VET_TABLE_COLUMNS: GridColDef[] = [
     field: "email",
     headerName: "Correo electrónico",
     minWidth: 200,
+    flex: 1,
+  },
+  {
+    field: "specialization",
+    headerName: "Especialización",
+    minWidth: 170,
+  },
+  {
+    field: "notes",
+    headerName: "Notas",
+    minWidth: 220,
     flex: 1,
   },
 ];

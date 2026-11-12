@@ -24,6 +24,9 @@ describe("AddVetDialog", () => {
     fireEvent.change(screen.getByLabelText(/Apellido/), {
       target: { value: "Lovelace" },
     });
+    fireEvent.change(screen.getByLabelText(/País/), {
+      target: { value: "Germany" },
+    });
     fireEvent.change(screen.getByLabelText(/Correo electrónico/), {
       target: { value: "ada@example.com" },
     });
@@ -40,6 +43,10 @@ describe("AddVetDialog", () => {
         houseNumber: undefined,
         postalCode: undefined,
         city: undefined,
+        country: "Germany",
+        phoneCountryCode: undefined,
+        specialization: undefined,
+        notes: undefined,
         email: "ada@example.com",
         phone: "12345",
       });
@@ -65,6 +72,9 @@ describe("AddVetDialog", () => {
     fireEvent.change(screen.getByLabelText(/Apellido/), {
       target: { value: "Lovelace" },
     });
+    fireEvent.change(screen.getByLabelText(/País/), {
+      target: { value: "Germany" },
+    });
     fireEvent.change(screen.getByLabelText(/Calle/), {
       target: { value: "Main Street" },
     });
@@ -76,6 +86,15 @@ describe("AddVetDialog", () => {
     });
     fireEvent.change(screen.getByLabelText(/Ciudad/), {
       target: { value: "Frankfurt" },
+    });
+    fireEvent.change(screen.getByLabelText(/Código de país del teléfono/), {
+      target: { value: "+49" },
+    });
+    fireEvent.change(screen.getByLabelText(/Especialización/), {
+      target: { value: "Cardiology" },
+    });
+    fireEvent.change(screen.getByLabelText(/Notas/), {
+      target: { value: "Available on weekends" },
     });
     fireEvent.change(screen.getByLabelText(/Correo electrónico/), {
       target: { value: "ada@example.com" },
@@ -92,9 +111,43 @@ describe("AddVetDialog", () => {
           houseNumber: "1",
           postalCode: "60311",
           city: "Frankfurt",
+          country: "Germany",
+          phoneCountryCode: "+49",
+          specialization: "Cardiology",
+          notes: "Available on weekends",
         }),
       );
     });
+  });
+
+  it("requires a country before creating a vet", async () => {
+    render(
+      <AddVetDialog
+        open
+        onClose={vi.fn()}
+        onAdded={vi.fn().mockResolvedValue(undefined)}
+      />,
+    );
+
+    await screen.findByLabelText(/Nombre/);
+    fireEvent.change(screen.getByLabelText(/Nombre/), {
+      target: { value: "Ada" },
+    });
+    fireEvent.change(screen.getByLabelText(/Apellido/), {
+      target: { value: "Lovelace" },
+    });
+    fireEvent.change(screen.getByLabelText(/Correo electrónico/), {
+      target: { value: "ada@example.com" },
+    });
+    fireEvent.change(screen.getByLabelText(/Teléfono/), {
+      target: { value: "12345" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Add" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "Nombre, apellido, correo electrónico, teléfono y país son obligatorios.",
+    );
+    expect(createVet).not.toHaveBeenCalled();
   });
 
   it("shows a duplicate contact error returned by the API", async () => {
@@ -116,6 +169,9 @@ describe("AddVetDialog", () => {
     });
     fireEvent.change(screen.getByLabelText(/Apellido/), {
       target: { value: "Lovelace" },
+    });
+    fireEvent.change(screen.getByLabelText(/País/), {
+      target: { value: "Germany" },
     });
     fireEvent.change(screen.getByLabelText(/Ciudad/), {
       target: { value: "Frankfurt" },

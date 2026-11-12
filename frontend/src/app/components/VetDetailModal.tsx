@@ -87,6 +87,10 @@ export default function VetDetailModal({
   const [houseNumber, setHouseNumber] = useState("");
   const [postalCode, setPostalCode] = useState("");
   const [city, setCity] = useState("");
+  const [country, setCountry] = useState("");
+  const [phoneCountryCode, setPhoneCountryCode] = useState("");
+  const [specialization, setSpecialization] = useState("");
+  const [notes, setNotes] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -103,6 +107,10 @@ export default function VetDetailModal({
       setHouseNumber("");
       setPostalCode("");
       setCity("");
+      setCountry("");
+      setPhoneCountryCode("");
+      setSpecialization("");
+      setNotes("");
       setIsEditing(false);
       setValidationMessage("");
       setSaveErrorMessage("");
@@ -117,6 +125,10 @@ export default function VetDetailModal({
     setHouseNumber(vet.houseNumber ?? "");
     setPostalCode(vet.postalCode ?? "");
     setCity(vet.city ?? "");
+    setCountry(vet.country ?? "");
+    setPhoneCountryCode(vet.phoneCountryCode ?? "");
+    setSpecialization(vet.specialization ?? vet.specialty ?? "");
+    setNotes(vet.notes ?? "");
     setIsEditing(false);
     setValidationMessage("");
     setSaveErrorMessage("");
@@ -134,10 +146,22 @@ export default function VetDetailModal({
     const trimmedHouseNumber = houseNumber.trim();
     const trimmedPostalCode = postalCode.trim();
     const trimmedCity = city.trim();
+    const trimmedCountry = country.trim();
+    const trimmedPhoneCountryCode = phoneCountryCode.trim();
+    const trimmedSpecialization = specialization.trim();
+    const trimmedNotes = notes.trim();
     const trimmedPhone = phone.trim();
 
-    if (!trimmedFirstName || !trimmedLastName || !trimmedEmail || !trimmedPhone) {
-      setValidationMessage("Nombre, apellido, correo electrónico y teléfono son obligatorios.");
+    if (
+      !trimmedFirstName ||
+      !trimmedLastName ||
+      !trimmedEmail ||
+      !trimmedPhone ||
+      !trimmedCountry
+    ) {
+      setValidationMessage(
+        "Nombre, apellido, correo electrónico, teléfono y país son obligatorios.",
+      );
       return;
     }
 
@@ -160,6 +184,10 @@ export default function VetDetailModal({
         houseNumber: trimmedHouseNumber,
         postalCode: trimmedPostalCode,
         city: trimmedCity,
+        country: trimmedCountry,
+        phoneCountryCode: trimmedPhoneCountryCode,
+        specialization: trimmedSpecialization,
+        notes: trimmedNotes,
       });
       await onSaved();
       setIsEditing(false);
@@ -189,6 +217,10 @@ export default function VetDetailModal({
     setHouseNumber(vet.houseNumber ?? "");
     setPostalCode(vet.postalCode ?? "");
     setCity(vet.city ?? "");
+    setCountry(vet.country ?? "");
+    setPhoneCountryCode(vet.phoneCountryCode ?? "");
+    setSpecialization(vet.specialization ?? vet.specialty ?? "");
+    setNotes(vet.notes ?? "");
     setValidationMessage("");
     setSaveErrorMessage("");
     onClose();
@@ -247,7 +279,6 @@ export default function VetDetailModal({
               label="ID"
               value={vet.vetId}
               disabled
-              fullWidthRow
             />
             <VetField
               id="vet-first-name"
@@ -314,6 +345,27 @@ export default function VetDetailModal({
               disabled={!isEditing}
             />
             <VetField
+              id="vet-country"
+              label="País"
+              value={country}
+              onChange={(value) => {
+                setCountry(value);
+                setSaveErrorMessage("");
+              }}
+              disabled={!isEditing}
+              required
+            />
+            <VetField
+              id="vet-phone-country-code"
+              label="Código de país del teléfono"
+              value={phoneCountryCode}
+              onChange={(value) => {
+                setPhoneCountryCode(value);
+                setSaveErrorMessage("");
+              }}
+              disabled={!isEditing}
+            />
+            <VetField
               id="vet-phone"
               label="Teléfono"
               value={phone}
@@ -338,6 +390,38 @@ export default function VetDetailModal({
               required
               type="email"
             />
+            <VetField
+              id="vet-specialization"
+              label="Especialización"
+              value={specialization}
+              onChange={(value) => {
+                setSpecialization(value);
+                setSaveErrorMessage("");
+              }}
+              disabled={!isEditing}
+            />
+            <Box sx={{ minWidth: 0, gridColumn: "1 / -1" }}>
+              <Typography
+                component="label"
+                htmlFor="vet-notes"
+                variant="body2"
+                sx={{ display: "block", mb: 0.5, fontWeight: 400 }}
+              >
+                Notas
+              </Typography>
+              <TextField
+                id="vet-notes"
+                value={notes}
+                onChange={(event) => {
+                  setNotes(event.target.value);
+                  setSaveErrorMessage("");
+                }}
+                disabled={!isEditing}
+                fullWidth
+                multiline
+                minRows={3}
+              />
+            </Box>
           </Box>
         </DialogContent>
         <DialogActions>

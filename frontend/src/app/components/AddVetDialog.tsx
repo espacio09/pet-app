@@ -29,6 +29,10 @@ export default function AddVetDialog({
   const [houseNumber, setHouseNumber] = useState("");
   const [postalCode, setPostalCode] = useState("");
   const [city, setCity] = useState("");
+  const [country, setCountry] = useState("");
+  const [phoneCountryCode, setPhoneCountryCode] = useState("");
+  const [specialization, setSpecialization] = useState("");
+  const [notes, setNotes] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -43,6 +47,10 @@ export default function AddVetDialog({
     setHouseNumber("");
     setPostalCode("");
     setCity("");
+    setCountry("");
+    setPhoneCountryCode("");
+    setSpecialization("");
+    setNotes("");
     setEmail("");
     setPhone("");
     setErrorMessage("");
@@ -55,12 +63,22 @@ export default function AddVetDialog({
     const trimmedHouseNumber = houseNumber.trim();
     const trimmedPostalCode = postalCode.trim();
     const trimmedCity = city.trim();
+    const trimmedCountry = country.trim();
+    const trimmedPhoneCountryCode = phoneCountryCode.trim();
+    const trimmedSpecialization = specialization.trim();
+    const trimmedNotes = notes.trim();
     const trimmedEmail = email.trim();
     const trimmedPhone = phone.trim();
 
-    if (!trimmedFirstName || !trimmedLastName || !trimmedEmail || !trimmedPhone) {
+    if (
+      !trimmedFirstName ||
+      !trimmedLastName ||
+      !trimmedEmail ||
+      !trimmedPhone ||
+      !trimmedCountry
+    ) {
       setErrorMessage(
-        "Nombre, apellido, correo electrónico y teléfono son obligatorios.",
+        "Nombre, apellido, correo electrónico, teléfono y país son obligatorios.",
       );
       return;
     }
@@ -80,6 +98,10 @@ export default function AddVetDialog({
         houseNumber: trimmedHouseNumber || undefined,
         postalCode: trimmedPostalCode || undefined,
         city: trimmedCity || undefined,
+        country: trimmedCountry,
+        phoneCountryCode: trimmedPhoneCountryCode || undefined,
+        specialization: trimmedSpecialization || undefined,
+        notes: trimmedNotes || undefined,
         email: trimmedEmail,
         phone: trimmedPhone,
       });
@@ -160,7 +182,46 @@ export default function AddVetDialog({
             disabled={saving}
             fullWidth
           />
+          <TextField
+            label="País"
+            value={country}
+            onChange={handleFieldChange(setCountry)}
+            required
+            disabled={saving}
+            fullWidth
+          />
         </Box>
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+            gap: 2,
+          }}
+        >
+          <TextField
+            label="Código de país del teléfono"
+            value={phoneCountryCode}
+            onChange={handleFieldChange(setPhoneCountryCode)}
+            disabled={saving}
+            fullWidth
+          />
+          <TextField
+            label="Especialización"
+            value={specialization}
+            onChange={handleFieldChange(setSpecialization)}
+            disabled={saving}
+            fullWidth
+          />
+        </Box>
+        <TextField
+          label="Notas"
+          value={notes}
+          onChange={handleFieldChange(setNotes)}
+          disabled={saving}
+          fullWidth
+          multiline
+          minRows={3}
+        />
         <TextField
           label="Teléfono"
           type="tel"

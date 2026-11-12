@@ -41,8 +41,12 @@ export default function VetsList({
       houseNumber: vet.houseNumber ?? "",
       postalCode: vet.postalCode ?? "",
       city: vet.city ?? "",
+      country: vet.country ?? "",
+      phoneCountryCode: vet.phoneCountryCode ?? "",
       phone: vet.phone ?? vet.phoneNumber ?? "",
       email: vet.email ?? "",
+      specialization: vet.specialization ?? vet.specialty ?? "",
+      notes: vet.notes ?? "",
     }));
   const columns = [
     {

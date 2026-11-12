@@ -3,6 +3,7 @@ export interface Vet {
   id?: number;
   name?: string;
   specialty?: string;
+  specialization?: string | null;
   firstName?: string;
   lastName?: string;
   first_name?: string;
@@ -11,9 +12,12 @@ export interface Vet {
   houseNumber?: string | null;
   postalCode?: string | null;
   city?: string | null;
+  country?: string | null;
+  phoneCountryCode?: string | null;
   email?: string;
   phone?: string;
   phoneNumber?: string;
+  notes?: string | null;
 }
 
 export interface VetApi {
@@ -21,6 +25,7 @@ export interface VetApi {
   vetId?: number;
   name?: string;
   specialty?: string;
+  specialization?: string | null;
   firstName?: string;
   lastName?: string;
   first_name?: string;
@@ -29,9 +34,12 @@ export interface VetApi {
   houseNumber?: string | null;
   postalCode?: string | null;
   city?: string | null;
+  country?: string | null;
+  phoneCountryCode?: string | null;
   email?: string;
   phone?: string;
   phoneNumber?: string;
+  notes?: string | null;
 }
 
 export interface CreateVetRequest {
@@ -41,8 +49,12 @@ export interface CreateVetRequest {
   houseNumber?: string;
   postalCode?: string;
   city?: string;
+  country: string;
   email: string;
   phone: string;
+  phoneCountryCode?: string;
+  specialization?: string;
+  notes?: string;
 }
 
 export type UpdateVetRequest = Partial<CreateVetRequest>;

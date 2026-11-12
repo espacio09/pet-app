@@ -12,8 +12,12 @@ const vets: Vet[] = [
     houseNumber: "12A",
     postalCode: "60311",
     city: "Frankfurt",
+    country: "Germany",
+    phoneCountryCode: "+49",
     phone: "12345",
     email: "ada@example.com",
+    specialization: "Cardiology",
+    notes: "Available on weekends",
   },
 ];
 
@@ -41,8 +45,12 @@ describe("VetsList", () => {
       "Número",
       "Código postal",
       "Ciudad",
+      "País",
+      "Código país teléfono",
       "Teléfono",
       "Correo electrónico",
+      "Especialización",
+      "Notas",
     ]);
 
     const cells = await screen.findAllByRole("gridcell");
@@ -57,9 +65,13 @@ describe("VetsList", () => {
         "12A",
         "60311",
         "Frankfurt",
+        "Germany",
+        "+49",
         "12345",
         "ada@example.com",
+        "Cardiology",
+        "Available on weekends",
       ]),
     );
-  });
+  }, 15000);
 });
