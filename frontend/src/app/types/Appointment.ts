@@ -7,6 +7,7 @@ export interface Appointment {
   appointmentDate: string;
   reason: string;
   status: AppointmentStatus;
+  notes?: string | null;
   vet?: string;
   petName?: string;
   ownerName?: string | null;
@@ -18,4 +19,5 @@ export interface CreateAppointmentRequest {
   appointmentDate: string;
   reason: string;
   status: AppointmentStatus;
+  notes?: string;
 }

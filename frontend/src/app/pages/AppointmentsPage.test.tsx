@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { MemoryRouter } from "react-router-dom";
 import AppointmentsPage from "./AppointmentsPage";
@@ -6,6 +6,11 @@ import { getAppointments } from "../types/appointments";
 
 vi.mock("../types/appointments", () => ({
   getAppointments: vi.fn(),
+}));
+
+vi.mock("../components/AddAppointmentDialog", () => ({
+  default: ({ open }: { open: boolean }) =>
+    open ? <div role="dialog">Add appointment</div> : null,
 }));
 
 describe("AppointmentsPage", () => {
@@ -34,5 +39,7 @@ describe("AppointmentsPage", () => {
     expect(screen.getByText("Tatjana Klatyik")).toBeInTheDocument();
     expect(screen.getByText("Dr. Smith")).toBeInTheDocument();
     expect(screen.getByText("Annual vaccination")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Add" }));
+    expect(screen.getByRole("dialog")).toHaveTextContent("Add appointment");
   });
 });
