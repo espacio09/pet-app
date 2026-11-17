@@ -21,13 +21,26 @@ vi.mock("../../../types/pets", () => ({
   getPets: vi.fn().mockResolvedValue([]),
 }));
 
+vi.mock("../../../types/appointments", () => ({
+  getAppointments: vi.fn().mockResolvedValue([
+    {
+      appointmentId: 1,
+      petId: 15,
+      vetId: 3,
+      appointmentDate: "2026-11-25T10:00:00.000Z",
+      reason: "Annual vaccination",
+      status: "SCHEDULED",
+    },
+  ]),
+}));
+
 function CurrentPath() {
   const { pathname } = useLocation();
   return <output aria-label="Ruta actual">{pathname}</output>;
 }
 
 describe("Navegación por Dashboard", () => {
-  it("navigates from the dashboard to pets and owners", () => {
+  it("navigates from the dashboard to pets and owners", async () => {
     render(
       <MemoryRouter initialEntries={["/"]}>
         <CurrentPath />
@@ -42,7 +55,15 @@ describe("Navegación por Dashboard", () => {
               </>
             }
           />
-          <Route path="/appointments" element={<h1>Appointments</h1>} />
+          <Route
+            path="/appointments"
+            element={
+              <>
+                <h1>Appointments</h1>
+                <Link to="/">Home</Link>
+              </>
+            }
+          />
           <Route
             path="/appointments/:id"
             element={
@@ -72,6 +93,16 @@ describe("Navegación por Dashboard", () => {
     fireEvent.click(screen.getByRole("link", { name: /home/i }));
     expect(screen.getByLabelText("Ruta actual")).toHaveTextContent("/");
 
+    await screen.findByRole("link", { name: /1 appointments/i });
+    fireEvent.click(screen.getByRole("link", { name: /appointments/i }));
+    expect(screen.getByLabelText("Ruta actual")).toHaveTextContent(
+      "/appointments",
+    );
+    expect(
+      screen.getByRole("heading", { name: "Appointments" }),
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("link", { name: /home/i }));
     fireEvent.click(screen.getByRole("link", { name: /proprietarios/i }));
     expect(screen.getByLabelText("Ruta actual")).toHaveTextContent("/owners");
   });

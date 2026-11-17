@@ -7,6 +7,12 @@ vi.mock("./app/types/owners", () => ({
   getOwners: vi.fn().mockResolvedValue([]),
 }));
 
+vi.mock("./app/types/appointments", () => ({
+  getAppointments: vi.fn().mockResolvedValue([]),
+  getPetAppointments: vi.fn().mockResolvedValue([]),
+  createAppointment: vi.fn(),
+}));
+
 describe("Homepage", () => {
   it("renders the home page by default", () => {
     render(
@@ -24,5 +30,17 @@ describe("Homepage", () => {
       </MemoryRouter>,
     );
     expect(screen.getByText(/Proprietarios/i)).toBeInTheDocument();
+  });
+
+  it("opens the appointments list route", async () => {
+    render(
+      <MemoryRouter initialEntries={["/appointments"]}>
+        <App />
+      </MemoryRouter>,
+    );
+
+    expect(
+      await screen.findByRole("heading", { name: "Appointments" }),
+    ).toBeInTheDocument();
   });
 });

@@ -9,6 +9,10 @@ vi.mock("../types/pets", () => ({
   updatePet: vi.fn(),
 }));
 
+vi.mock("./PetAppointments", () => ({
+  default: () => null,
+}));
+
 const pet: Pet = {
   petId: 3,
   petName: "Minnie",

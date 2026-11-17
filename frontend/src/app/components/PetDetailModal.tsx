@@ -16,6 +16,7 @@ import { germanDateFormatter } from "../shared/formatters";
 import { getUserFacingErrorMessage } from "../shared/utils/user-facing-error";
 import { useEffect, useState } from "react";
 import { checkMicrochipAvailability, updatePet } from "../types/pets";
+import PetAppointments from "./PetAppointments";
 
 const duplicateMicrochipMessage =
   "¡El número de microchip ya existe! Verifique su entrada.";
@@ -454,7 +455,9 @@ export default function PetDetailModal({
                 </Typography>
               )}
             </Grid>
-           
+            <Grid size={{ xs: 12 }}>
+              <PetAppointments petId={displayedPet.petId} />
+            </Grid>
           </Grid>
         </DialogContent>
         <DialogActions>
