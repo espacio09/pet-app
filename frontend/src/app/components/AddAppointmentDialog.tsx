@@ -13,8 +13,9 @@ import {
 import type { AppointmentStatus } from "../types/Appointment";
 import { createAppointment } from "../types/appointments";
 import { usePets } from "../hooks/usePets";
+import { useOwners } from "../hooks/useOwners";
 import { useVets } from "../hooks/useVets";
-import type { Pet } from "../types/Pet";
+import type { Owner } from "../types/Owner";
 import type { Vet } from "../types/Vet";
 
 interface AddAppointmentDialogProps {
@@ -40,11 +41,35 @@ const appointmentStatuses: AppointmentStatus[] = [
   "CANCELLED",
 ];
 
-function getOwnerName(pet: Pet | undefined): string {
-  return (
-    pet?.ownerName ??
-    [pet?.ownerFirstName, pet?.ownerLastName].filter(Boolean).join(" ")
-  );
+interface OwnerOption {
+  ownerId: number;
+  ownerIds: number[];
+  firstName: string;
+  lastName: string;
+}
+
+function getOwnerFirstName(owner: Owner): string {
+  return (owner.firstName ?? owner.first_name ?? "").trim().replace(/\s+/g, " ");
+}
+
+function getOwnerLastName(owner: Owner): string {
+  return (owner.lastName ?? owner.last_name ?? "").trim().replace(/\s+/g, " ");
+}
+
+function getOwnerName(
+  owner: { firstName: string; lastName: string } | undefined,
+): string {
+  return owner
+    ? [owner.firstName, owner.lastName]
+        .filter(Boolean)
+        .join(" ")
+    : "";
+}
+
+function getOwnerKey(firstName: string, lastName: string): string {
+  return [lastName, firstName]
+    .map((name) => name.toLocaleLowerCase())
+    .join("|");
 }
 
 function getVetName(vet: Vet | undefined): string {
@@ -62,7 +87,13 @@ function AppointmentForm({
   onCreated,
 }: Omit<AddAppointmentDialogProps, "open">) {
   const { pets, loading: petsLoading, error: petsError } = usePets();
+  const {
+    owners,
+    loading: ownersLoading,
+    error: ownersError,
+  } = useOwners();
   const { vets, loading: vetsLoading, error: vetsError } = useVets();
+  const [ownerId, setOwnerId] = useState("");
   const [petId, setPetId] = useState("");
   const [vetId, setVetId] = useState("");
   const [date, setDate] = useState("");
@@ -75,15 +106,71 @@ function AppointmentForm({
   const [errorMessage, setErrorMessage] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
-  const selectedPet = pets.find((pet) => String(pet.petId) === petId);
+  const sortedOwners = [...owners].sort((firstOwner, secondOwner) => {
+    const lastNameOrder = getOwnerLastName(firstOwner).localeCompare(
+      getOwnerLastName(secondOwner),
+      undefined,
+      { sensitivity: "base" },
+    );
+
+    return (
+      lastNameOrder ||
+      getOwnerFirstName(firstOwner).localeCompare(
+        getOwnerFirstName(secondOwner),
+        undefined,
+        { sensitivity: "base" },
+      ) ||
+      firstOwner.ownerId - secondOwner.ownerId
+    );
+  });
+  const ownerOptions = sortedOwners.reduce<OwnerOption[]>((options, owner) => {
+    const key = getOwnerKey(
+      getOwnerFirstName(owner),
+      getOwnerLastName(owner),
+    );
+    const existingOwner = options.find(
+      (option) => getOwnerKey(option.firstName, option.lastName) === key,
+    );
+
+    if (existingOwner) {
+      existingOwner.ownerIds.push(owner.ownerId);
+    } else {
+      options.push({
+        ownerId: owner.ownerId,
+        ownerIds: [owner.ownerId],
+        firstName: getOwnerFirstName(owner),
+        lastName: getOwnerLastName(owner),
+      });
+    }
+
+    return options;
+  }, []);
+  const selectedOwner = ownerOptions.find(
+    (owner) => String(owner.ownerId) === ownerId,
+  );
+  const ownerPets = pets
+    .filter((pet) => selectedOwner?.ownerIds.includes(pet.ownerId))
+    .sort((firstPet, secondPet) =>
+      firstPet.petName.localeCompare(secondPet.petName, undefined, {
+        sensitivity: "base",
+      }),
+    );
+  const selectedPet = ownerPets.find((pet) => String(pet.petId) === petId);
   const selectedVet = vets.find((vet) => String(vet.vetId) === vetId);
-  const ownerName = getOwnerName(selectedPet);
+  const ownerName = getOwnerName(selectedOwner);
   const submittedReason = reason === "Other" ? otherReason.trim() : reason;
 
   const handleSubmit = async () => {
-    if (!selectedPet || !selectedVet || !date || !time || !submittedReason) {
+    if (
+      !selectedOwner ||
+      !selectedPet ||
+      !selectedVet ||
+      !date ||
+      !time ||
+      !submittedReason
+    ) {
       setValidationMessage(
-        "Selecciona paciente, veterinario, fecha, hora y motivo.",
+        "Selecciona propietario, paciente, veterinario, fecha, hora y motivo.",
       );
       return;
     }
@@ -117,8 +204,11 @@ function AppointmentForm({
     }
   };
 
-  const loading = petsLoading || vetsLoading;
-  const loadError = petsError || vetsError;
+  const loading = petsLoading || ownersLoading || vetsLoading;
+  const loadError =
+    petsError ||
+    (ownersError ? "No se pudieron cargar los propietarios." : "") ||
+    vetsError;
 
   return (
     <Dialog
@@ -157,13 +247,42 @@ function AppointmentForm({
           )}
           <TextField
             select
+            label="Owner"
+            value={ownerId}
+            onChange={(event) => {
+              setOwnerId(event.target.value);
+              setPetId("");
+            }}
+            disabled={loading || Boolean(ownersError)}
+            required
+          >
+            {ownerOptions.map((owner) => (
+              <MenuItem key={owner.ownerId} value={String(owner.ownerId)}>
+                {owner.lastName}, {owner.firstName} — {owner.ownerId}
+              </MenuItem>
+            ))}
+          </TextField>
+          <TextField
+            select
             label="Patient"
             value={petId}
             onChange={(event) => setPetId(event.target.value)}
-            disabled={loading || Boolean(petsError)}
+            disabled={
+              loading ||
+              Boolean(petsError) ||
+              !selectedOwner ||
+              ownerPets.length === 0
+            }
+            helperText={
+              !selectedOwner
+                ? "Select an owner first."
+                : ownerPets.length === 0
+                  ? "No patients are registered for this owner."
+                  : undefined
+            }
             required
           >
-            {pets.map((pet) => (
+            {ownerPets.map((pet) => (
               <MenuItem key={pet.petId} value={String(pet.petId)}>
                 {pet.petId} — {pet.petName}
               </MenuItem>
@@ -226,6 +345,7 @@ function AppointmentForm({
             label="Visit reason"
             value={reason}
             onChange={(event) => setReason(event.target.value)}
+            sx={{ gridColumn: "1 / -1" }}
             required
           >
             {appointmentReasons.map((appointmentReason) => (
@@ -239,6 +359,7 @@ function AppointmentForm({
               label="Specify reason"
               value={otherReason}
               onChange={(event) => setOtherReason(event.target.value)}
+              sx={{ gridColumn: "1 / -1" }}
               required
             />
           )}

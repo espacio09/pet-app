@@ -48,9 +48,6 @@ export async function getUserFacingHttpErrorMessage(
   if (response.status >= 500) {
     return HTTP_ERROR_MESSAGES[500];
   }
-  if (response.status === 404) {
-    return HTTP_ERROR_MESSAGES[404];
-  }
 
   let body = responseBody;
   if (body === undefined) {
@@ -59,6 +56,26 @@ export async function getUserFacingHttpErrorMessage(
     } catch {
       body = null;
     }
+  }
+
+  if (response.status === 404) {
+    const message =
+      typeof body === "object" && body !== null && "message" in body
+        ? body.message
+        : undefined;
+    if (
+      typeof message === "string" &&
+      /^Cannot PATCH \/appointments(?:\/\d+)?$/i.test(message)
+    ) {
+      return "El backend no reconoce la ruta para actualizar citas. Reinícialo con la versión actual e inténtalo de nuevo.";
+    }
+    if (
+      typeof message === "string" &&
+      /^Cita \d+ no encontrada\.?$/i.test(message)
+    ) {
+      return "La cita ya no existe en el servidor. Recarga la lista e inténtalo de nuevo.";
+    }
+    return HTTP_ERROR_MESSAGES[404];
   }
 
   if (

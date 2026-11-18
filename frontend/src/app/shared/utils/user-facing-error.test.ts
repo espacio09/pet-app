@@ -41,6 +41,40 @@ describe("getUserFacingHttpErrorMessage", () => {
     ).resolves.toBe("Fallback message");
   });
 
+  it("explains when the running backend does not have the appointment update route", async () => {
+    const response = new Response(
+      JSON.stringify({
+        message: "Cannot PATCH /appointments/12",
+        error: "Not Found",
+        statusCode: 404,
+      }),
+      { status: 404 },
+    );
+
+    await expect(
+      getUserFacingHttpErrorMessage(response, "Fallback message"),
+    ).resolves.toBe(
+      "El backend no reconoce la ruta para actualizar citas. Reinícialo con la versión actual e inténtalo de nuevo.",
+    );
+  });
+
+  it("explains when the appointment no longer exists", async () => {
+    const response = new Response(
+      JSON.stringify({
+        message: "Cita 12 no encontrada.",
+        error: "Not Found",
+        statusCode: 404,
+      }),
+      { status: 404 },
+    );
+
+    await expect(
+      getUserFacingHttpErrorMessage(response, "Fallback message"),
+    ).resolves.toBe(
+      "La cita ya no existe en el servidor. Recarga la lista e inténtalo de nuevo.",
+    );
+  });
+
   it("shows validation details returned by the server for HTTP 400", async () => {
     const response = new Response(
       JSON.stringify({

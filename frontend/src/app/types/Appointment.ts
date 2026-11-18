@@ -21,3 +21,14 @@ export interface CreateAppointmentRequest {
   status: AppointmentStatus;
   notes?: string;
 }
+
+export interface UpdateAppointmentRequest {
+  appointmentDate: string;
+  reason: string;
+  status: AppointmentStatus;
+  notes?: string;
+}
+
+export interface DeleteAppointmentsRequest {
+  appointmentIds: number[];
+}
