@@ -36,7 +36,7 @@ describe("CreateVisitDialog", () => {
       medication: "None",
       visitNotes: "Follow up next year",
       indication: "Return in 12 months",
-      status: "COMPLETED",
+      status: "SCHEDULED",
     });
     const onCreated = vi.fn().mockResolvedValue(undefined);
     const appointmentDate = new Date("2026-12-03T14:45").toISOString();
