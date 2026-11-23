@@ -20,6 +20,10 @@ vi.mock("../types/appointments", () => ({
   updateAppointment: vi.fn(),
 }));
 
+vi.mock("../types/visits", () => ({
+  createVisit: vi.fn(),
+}));
+
 vi.mock("../components/AddAppointmentDialog", () => ({
   default: ({ open }: { open: boolean }) =>
     open ? <div role="dialog">Add appointment</div> : null,
@@ -87,10 +91,39 @@ describe("AppointmentsPage", () => {
     );
   });
 
+  it("opens the create visit modal from appointment details", async () => {
+    vi.mocked(getAppointments).mockResolvedValue([appointment]);
+
+    render(
+      <MemoryRouter>
+        <AppointmentsPage />
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(
+      await screen.findByRole("row", {
+        name: "Open appointment 1 details",
+      }),
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Crear Visit" }));
+
+    const createVisitDialog = screen.getByRole("dialog", {
+      name: "Crear Visit",
+    });
+    expect(createVisitDialog).toBeInTheDocument();
+    expect(within(createVisitDialog).getByLabelText("Appointment ID")).toHaveValue(
+      "1",
+    );
+    expect(within(createVisitDialog).getByLabelText("Visit ID")).toBeDisabled();
+    expect(within(createVisitDialog).getByLabelText("Billing ID")).toBeDisabled();
+  });
+
   it("saves appointment changes from the details modal", async () => {
+    const appointmentDate = new Date("2026-12-03T14:45").toISOString();
     const updatedAppointment = {
       ...appointment,
-      reason: "Updated examination",
+      appointmentDate,
+      reason: "Vaccination",
       status: "COMPLETED" as const,
       notes: "Updated notes",
     };
@@ -111,9 +144,30 @@ describe("AppointmentsPage", () => {
       }),
     );
     fireEvent.click(screen.getByRole("button", { name: "Edit" }));
-    fireEvent.change(screen.getByLabelText(/Visit reason/), {
-      target: { value: "Updated examination" },
+    fireEvent.change(screen.getByLabelText(/Date/), {
+      target: { value: "2026-12-03" },
     });
+    fireEvent.change(screen.getByLabelText(/Time/), {
+      target: { value: "14:45" },
+    });
+    fireEvent.mouseDown(
+      screen.getByRole("combobox", { name: "Visit reason" }),
+    );
+    expect(
+      (await screen.findAllByRole("option")).map((option) => option.textContent),
+    ).toEqual([
+      "Examinacion defecacion",
+      "Vaccination",
+      "Eye Examination",
+      "Dientes",
+      "General Check-up",
+      "Consultation",
+      "Injury",
+      "Illness",
+      "Surgery Follow-up",
+      "Emergency",
+    ]);
+    fireEvent.click(screen.getByRole("option", { name: "Vaccination" }));
     fireEvent.change(screen.getByLabelText("Notes"), {
       target: { value: "Updated notes" },
     });
@@ -123,11 +177,12 @@ describe("AppointmentsPage", () => {
     expect(
       await screen.findByText("Appointment changes saved."),
     ).toBeInTheDocument();
-    expect(screen.getByText("Updated examination")).toBeInTheDocument();
+    expect(screen.getByText("Vaccination")).toBeInTheDocument();
     expect(updateAppointment).toHaveBeenCalledWith(
       1,
       expect.objectContaining({
-        reason: "Updated examination",
+        appointmentDate,
+        reason: "Vaccination",
         status: "SCHEDULED",
         notes: "Updated notes",
       }),

@@ -10,9 +10,19 @@ import {
   TextField,
 } from "@mui/material";
 import { useState } from "react";
-import type { Appointment, AppointmentStatus } from "../types/Appointment";
+import {
+  APPOINTMENT_REASONS,
+  APPOINTMENT_STATUSES,
+  type Appointment,
+  type AppointmentStatus,
+} from "../types/Appointment";
 import { updateAppointment } from "../types/appointments";
 import { getUserFacingErrorMessage } from "../shared/utils/user-facing-error";
+import {
+  getLocalDateTimeISOString,
+  getLocalDateTimeValues,
+} from "../shared/utils/appointment-date-time";
+import CreateVisitDialog from "./CreateVisitDialog";
 
 interface AppointmentDetailsDialogProps {
   open: boolean;
@@ -20,12 +30,6 @@ interface AppointmentDetailsDialogProps {
   onClose: () => void;
   onSaved: () => Promise<void>;
 }
-
-const appointmentStatuses: AppointmentStatus[] = [
-  "SCHEDULED",
-  "COMPLETED",
-  "CANCELLED",
-];
 
 function formatAppointmentDate(value: string): string {
   const date = new Date(value);
@@ -35,17 +39,6 @@ function formatAppointmentDate(value: string): string {
         dateStyle: "medium",
         timeStyle: "short",
       }).format(date);
-}
-
-function getLocalDateTimeValues(value: string) {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return { date: "", time: "" };
-
-  const pad = (part: number) => String(part).padStart(2, "0");
-  return {
-    date: `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`,
-    time: `${pad(date.getHours())}:${pad(date.getMinutes())}`,
-  };
 }
 
 export default function AppointmentDetailsDialog({
@@ -63,6 +56,7 @@ export default function AppointmentDetailsDialog({
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [isCreateVisitOpen, setIsCreateVisitOpen] = useState(false);
 
   if (!open || !appointment) return null;
 
@@ -82,9 +76,9 @@ export default function AppointmentDetailsDialog({
 
   const handleSave = async () => {
     const trimmedReason = reason.trim();
-    const appointmentDate = date && time ? new Date(`${date}T${time}`) : null;
+    const appointmentDate = getLocalDateTimeISOString(date, time);
 
-    if (!trimmedReason || !appointmentDate || Number.isNaN(appointmentDate.getTime())) {
+    if (!trimmedReason || !appointmentDate) {
       setErrorMessage("Introduce una fecha, hora y motivo válidos.");
       return;
     }
@@ -93,7 +87,7 @@ export default function AppointmentDetailsDialog({
     setErrorMessage("");
     try {
       await updateAppointment(appointment.appointmentId, {
-        appointmentDate: appointmentDate.toISOString(),
+        appointmentDate,
         reason: trimmedReason,
         status,
         notes: notes.trim(),
@@ -119,10 +113,12 @@ export default function AppointmentDetailsDialog({
     setIsEditing(false);
     setErrorMessage("");
     setSuccessMessage("");
+    setIsCreateVisitOpen(false);
     onClose();
   };
 
   return (
+    <>
     <Dialog
       open={open}
       onClose={handleClose}
@@ -189,18 +185,33 @@ export default function AppointmentDetailsDialog({
                 required
               />
               <TextField
+                select
                 label="Visit reason"
                 value={reason}
                 onChange={(event) => setReason(event.target.value)}
                 sx={{ gridColumn: "1 / -1" }}
                 required
-              />
+              >
+                {!APPOINTMENT_REASONS.some(
+                  (appointmentReason) =>
+                    appointmentReason === appointment.reason,
+                ) && (
+                  <MenuItem value={appointment.reason}>
+                    {appointment.reason}
+                  </MenuItem>
+                )}
+                {APPOINTMENT_REASONS.map((appointmentReason) => (
+                  <MenuItem key={appointmentReason} value={appointmentReason}>
+                    {appointmentReason}
+                  </MenuItem>
+                ))}
+              </TextField>
               <TextField
                 select
                 label="Status"
                 value={status}
                 onChange={(event) => {
-                  const nextStatus = appointmentStatuses.find(
+                  const nextStatus = APPOINTMENT_STATUSES.find(
                     (appointmentStatus) =>
                       appointmentStatus === event.target.value,
                   );
@@ -208,7 +219,7 @@ export default function AppointmentDetailsDialog({
                 }}
                 required
               >
-                {appointmentStatuses.map((appointmentStatus) => (
+                {APPOINTMENT_STATUSES.map((appointmentStatus) => (
                   <MenuItem key={appointmentStatus} value={appointmentStatus}>
                     {appointmentStatus}
                   </MenuItem>
@@ -248,32 +259,49 @@ export default function AppointmentDetailsDialog({
           )}
         </Box>
       </DialogContent>
-      <DialogActions>
-        {isEditing ? (
-          <>
-            <Button
-              onClick={() => setIsEditing(false)}
-              disabled={isSaving}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={() => void handleSave()}
-              disabled={isSaving}
-              variant="contained"
-            >
-              {isSaving ? "Saving..." : "Save"}
-            </Button>
-          </>
-        ) : (
-          <>
-            <Button onClick={handleClose}>Close</Button>
-            <Button onClick={handleStartEditing} variant="contained">
-              Edit
-            </Button>
-          </>
-        )}
+      <DialogActions sx={{ justifyContent: "space-between" }}>
+        <Button
+          onClick={() => setIsCreateVisitOpen(true)}
+          disabled={isEditing || isSaving}
+        >
+          Crear Visit
+        </Button>
+        <Box sx={{ display: "flex", gap: 1 }}>
+          {isEditing ? (
+            <>
+              <Button
+                onClick={() => setIsEditing(false)}
+                disabled={isSaving}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={() => void handleSave()}
+                disabled={isSaving}
+                variant="contained"
+              >
+                {isSaving ? "Saving..." : "Save"}
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button onClick={handleClose}>Close</Button>
+              <Button onClick={handleStartEditing} variant="contained">
+                Edit
+              </Button>
+            </>
+          )}
+        </Box>
       </DialogActions>
     </Dialog>
+    {isCreateVisitOpen && (
+      <CreateVisitDialog
+        open
+        appointment={appointment}
+        onClose={() => setIsCreateVisitOpen(false)}
+        onCreated={onSaved}
+      />
+    )}
+    </>
   );
 }
