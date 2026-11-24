@@ -34,6 +34,21 @@ vi.mock("../../../types/appointments", () => ({
   ]),
 }));
 
+vi.mock("../../../types/visits", () => ({
+  getVisits: vi.fn().mockResolvedValue([
+    { visitId: 1, visitStatus: "OPEN" },
+    { visitId: 2, visitStatus: "COMPLETED" },
+  ]),
+}));
+
+vi.mock("../../../types/billings", () => ({
+  getBillings: vi.fn().mockResolvedValue([
+    { billingId: 1, billingStatus: "OPEN" },
+    { billingId: 2, billingStatus: "IN_PROGRESS" },
+    { billingId: 3, billingStatus: "COMPLETED" },
+  ]),
+}));
+
 function CurrentPath() {
   const { pathname } = useLocation();
   return <output aria-label="Ruta actual">{pathname}</output>;
@@ -73,6 +88,24 @@ describe("Navegación por Dashboard", () => {
               </>
             }
           />
+          <Route
+            path="/visits"
+            element={
+              <>
+                <h1>Visits</h1>
+                <Link to="/">Home</Link>
+              </>
+            }
+          />
+          <Route
+            path="/billing"
+            element={
+              <>
+                <h1>Billing</h1>
+                <Link to="/">Home</Link>
+              </>
+            }
+          />
           <Route path="/follow-up" element={<h1>Follow-up</h1>} />
           <Route
             path="/follow-up/:id"
@@ -105,6 +138,44 @@ describe("Navegación por Dashboard", () => {
     fireEvent.click(screen.getByRole("link", { name: /home/i }));
     fireEvent.click(screen.getByRole("link", { name: /proprietarios/i }));
     expect(screen.getByLabelText("Ruta actual")).toHaveTextContent("/owners");
+  });
+
+  it("shows all visits and only unfinished billings in the dashboard counts", async () => {
+    render(
+      <MemoryRouter initialEntries={["/"]}>
+        <CurrentPath />
+        <Routes>
+          <Route path="/" element={<DashboardCards />} />
+          <Route
+            path="/visits"
+            element={
+              <>
+                <h1>Visits</h1>
+                <Link to="/">Home</Link>
+              </>
+            }
+          />
+          <Route
+            path="/billing"
+            element={
+              <>
+                <h1>Billing</h1>
+                <Link to="/">Home</Link>
+              </>
+            }
+          />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    const visitsLink = await screen.findByRole("link", { name: /2 visits/i });
+    await screen.findByRole("link", { name: /2 billing/i });
+
+    fireEvent.click(visitsLink);
+    expect(screen.getByLabelText("Ruta actual")).toHaveTextContent("/visits");
+    fireEvent.click(screen.getByRole("link", { name: /home/i }));
+    fireEvent.click(await screen.findByRole("link", { name: /2 billing/i }));
+    expect(screen.getByLabelText("Ruta actual")).toHaveTextContent("/billing");
   });
 
   it("navigates from the dashboard to veterinarians", () => {

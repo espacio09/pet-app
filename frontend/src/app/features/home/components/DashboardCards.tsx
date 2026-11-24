@@ -9,6 +9,8 @@ import { useOwners } from "../../../hooks/useOwners";
 import { useVets } from "../../../hooks/useVets";
 import { usePets } from "../../../hooks/usePets";
 import { useAppointments } from "../../../hooks/useAppointments";
+import { useVisits } from "../../../hooks/useVisits";
+import { useBillings } from "../../../hooks/useBillings";
 
 export default function DashboardCards() {
   const { owners } = useOwners();
@@ -19,6 +21,15 @@ export default function DashboardCards() {
     loading: appointmentsLoading,
     error: appointmentsError,
   } = useAppointments();
+  const { visits, loading: visitsLoading, error: visitsError } = useVisits();
+  const {
+    billings,
+    loading: billingsLoading,
+    error: billingsError,
+  } = useBillings();
+  const activeBillings = billings.filter(
+    (billing) => billing.billingStatus !== "COMPLETED",
+  );
 
   const cards = [
     {
@@ -30,6 +41,22 @@ export default function DashboardCards() {
           : appointments.length,
       icon: "📅",
       to: "/appointments",
+    },
+    {
+      title: "Visits",
+      value: visitsLoading ? "..." : visitsError ? "!" : visits.length,
+      icon: "🩺",
+      to: "/visits",
+    },
+    {
+      title: "Billing",
+      value: billingsLoading
+        ? "..."
+        : billingsError
+          ? "!"
+          : activeBillings.length,
+      icon: "💳",
+      to: "/billing",
     },
     {
       title: "Vaccinations",
@@ -66,6 +93,16 @@ export default function DashboardCards() {
       {appointmentsError && (
         <Alert severity="error" sx={{ mb: 2 }}>
           {appointmentsError}
+        </Alert>
+      )}
+      {visitsError && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {visitsError}
+        </Alert>
+      )}
+      {billingsError && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {billingsError}
         </Alert>
       )}
       <Grid container spacing={3}>

@@ -1,17 +1,17 @@
 import type { UpdateAppointmentRequest } from "./Appointment";
 
 export const VISIT_STATUSES = [
-  "SCHEDULED",
+  "OPEN",
   "IN_PROGRESS",
   "COMPLETED",
-  "CANCELLED",
+  "FOLLOW_UP_REQUIRED",
 ] as const;
 
 export type VisitStatus = (typeof VISIT_STATUSES)[number];
 
 export interface Visit {
   visitId: number;
-  appointmentId: number;
+  appointmentId: number | null;
   billingId: number | null;
   reason: string;
   diagnosis: string | null;
@@ -19,7 +19,15 @@ export interface Visit {
   medication: string | null;
   visitNotes: string | null;
   indication: string | null;
-  status: VisitStatus;
+  visitStatus: VisitStatus;
+}
+
+export interface VisitListItem extends Visit {
+  visitDate: string;
+  petId: number;
+  petName: string | null;
+  ownerName: string | null;
+  vet: string | null;
 }
 
 export interface CreateVisitRequest {
@@ -30,5 +38,5 @@ export interface CreateVisitRequest {
   medication: string;
   visitNotes: string;
   indication: string;
-  status: VisitStatus;
+  visitStatus: VisitStatus;
 }

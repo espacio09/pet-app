@@ -55,8 +55,9 @@ export default function CreateVisitDialog({
   const [medication, setMedication] = useState("");
   const [visitNotes, setVisitNotes] = useState("");
   const [indication, setIndication] = useState("");
-  const [status, setStatus] = useState<VisitStatus>("SCHEDULED");
+  const [visitStatus, setVisitStatus] = useState<VisitStatus>("OPEN");
   const [visitId, setVisitId] = useState<number | null>(null);
+  const [billingId, setBillingId] = useState<number | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [isSaving, setIsSaving] = useState(false);
@@ -86,10 +87,13 @@ export default function CreateVisitDialog({
         medication: medication.trim(),
         visitNotes: visitNotes.trim(),
         indication: indication.trim(),
-        status,
+        visitStatus,
       });
       setVisitId(createdVisit.visitId);
-      setSuccessMessage(`Visit ${createdVisit.visitId} created.`);
+      setBillingId(createdVisit.billingId);
+      setSuccessMessage(
+        `Visit ${createdVisit.visitId} and Billing ${createdVisit.billingId} created.`,
+      );
 
       try {
         await onCreated();
@@ -245,8 +249,8 @@ export default function CreateVisitDialog({
           />
           <TextField
             label="Billing ID"
-            value=""
-            placeholder="Not assigned"
+            value={billingId ?? ""}
+            placeholder="Assigned when saved"
             disabled
           />
           <TextField
@@ -259,12 +263,12 @@ export default function CreateVisitDialog({
           <TextField
             select
             label="Visit status"
-            value={status}
+            value={visitStatus}
             onChange={(event) => {
               const nextStatus = VISIT_STATUSES.find(
                 (visitStatus) => visitStatus === event.target.value,
               );
-              if (nextStatus) setStatus(nextStatus);
+              if (nextStatus) setVisitStatus(nextStatus);
             }}
             disabled={isDisabled}
             required

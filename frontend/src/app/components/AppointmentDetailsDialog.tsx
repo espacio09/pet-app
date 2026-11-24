@@ -259,10 +259,17 @@ export default function AppointmentDetailsDialog({
           )}
         </Box>
       </DialogContent>
-      <DialogActions sx={{ justifyContent: "space-between" }}>
+      <DialogActions sx={{ justifyContent: "space-between", pb: 2 }}>
         <Button
           onClick={() => setIsCreateVisitOpen(true)}
           disabled={isEditing || isSaving}
+          variant="contained"
+          disableElevation
+          sx={{
+            bgcolor: "#e3f2fd",
+            color: "#1565c0",
+            "&:hover": { bgcolor: "#bbdefb" },
+          }}
         >
           Crear Visit
         </Button>

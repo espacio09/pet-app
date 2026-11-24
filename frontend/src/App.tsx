@@ -17,6 +17,8 @@ const VetsPage = lazy(() =>
 const AppointmentsPage = lazy(() =>
   import("./app/pages/AppointmentsPage"),
 );
+const VisitsPage = lazy(() => import("./app/pages/VisitsPage"));
+const BillingPage = lazy(() => import("./app/pages/BillingPage"));
 
 function App() {
   return (
@@ -51,6 +53,22 @@ function App() {
         element={
           <Suspense fallback={<p>Loading appointments...</p>}>
             <AppointmentsPage />
+          </Suspense>
+        }
+      />
+      <Route
+        path="/visits"
+        element={
+          <Suspense fallback={<p>Loading visits...</p>}>
+            <VisitsPage />
+          </Suspense>
+        }
+      />
+      <Route
+        path="/billing"
+        element={
+          <Suspense fallback={<p>Loading billings...</p>}>
+            <BillingPage />
           </Suspense>
         }
       />

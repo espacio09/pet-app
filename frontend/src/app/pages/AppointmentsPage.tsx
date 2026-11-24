@@ -106,6 +106,9 @@ export default function AppointmentsPage() {
             <Button component={Link} to="/" variant="outlined">
               Home
             </Button>
+            <Button component={Link} to="/visits" variant="outlined">
+              Visits
+            </Button>
             <Button
               variant="contained"
               onClick={() => setIsAddDialogOpen(true)}

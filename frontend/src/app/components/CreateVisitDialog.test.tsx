@@ -29,14 +29,14 @@ describe("CreateVisitDialog", () => {
     vi.mocked(createVisit).mockResolvedValue({
       visitId: 8,
       appointmentId: 1,
-      billingId: null,
+      billingId: 12,
       reason: "Annual check",
       diagnosis: "Healthy",
       treatment: "No treatment needed",
       medication: "None",
       visitNotes: "Follow up next year",
       indication: "Return in 12 months",
-      status: "SCHEDULED",
+      visitStatus: "OPEN",
     });
     const onCreated = vi.fn().mockResolvedValue(undefined);
     const appointmentDate = new Date("2026-12-03T14:45").toISOString();
@@ -89,11 +89,13 @@ describe("CreateVisitDialog", () => {
       medication: "None",
       visitNotes: "Follow up next year",
       indication: "Return in 12 months",
-      status: "SCHEDULED",
+      visitStatus: "OPEN",
     });
-    expect(await screen.findByText("Visit 8 created.")).toBeInTheDocument();
+    expect(
+      await screen.findByText("Visit 8 and Billing 12 created."),
+    ).toBeInTheDocument();
     expect(screen.getByLabelText("Visit ID")).toHaveValue("8");
-    expect(screen.getByLabelText("Billing ID")).toHaveValue("");
+    expect(screen.getByLabelText("Billing ID")).toHaveValue("12");
     expect(onCreated).toHaveBeenCalledOnce();
   }, 10000);
 });

@@ -1,4 +1,4 @@
-import type { CreateVisitRequest, Visit } from "./Visit";
+import type { CreateVisitRequest, Visit, VisitListItem } from "./Visit";
 import { getUserFacingHttpErrorMessage } from "../shared/utils/user-facing-error";
 
 const API_URL = "http://localhost:3002";
@@ -20,6 +20,19 @@ export async function createVisit(
       await getUserFacingHttpErrorMessage(
         response,
         "No se pudo crear la visita.",
+      ),
+    );
+  }
+  return response.json();
+}
+
+export async function getVisits(): Promise<VisitListItem[]> {
+  const response = await fetch(`${API_URL}/visits`);
+  if (!response.ok) {
+    throw new Error(
+      await getUserFacingHttpErrorMessage(
+        response,
+        "No se pudieron cargar las visitas.",
       ),
     );
   }
