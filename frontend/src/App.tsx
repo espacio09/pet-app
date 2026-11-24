@@ -19,6 +19,7 @@ const AppointmentsPage = lazy(() =>
 );
 const VisitsPage = lazy(() => import("./app/pages/VisitsPage"));
 const BillingPage = lazy(() => import("./app/pages/BillingPage"));
+const FollowUpsPage = lazy(() => import("./app/pages/FollowUpsPage"));
 
 function App() {
   return (
@@ -69,6 +70,14 @@ function App() {
         element={
           <Suspense fallback={<p>Loading billings...</p>}>
             <BillingPage />
+          </Suspense>
+        }
+      />
+      <Route
+        path="/follow-ups"
+        element={
+          <Suspense fallback={<p>Loading follow-ups...</p>}>
+            <FollowUpsPage />
           </Suspense>
         }
       />

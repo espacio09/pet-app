@@ -30,6 +30,9 @@ export default function DashboardCards() {
   const activeBillings = billings.filter(
     (billing) => billing.billingStatus !== "COMPLETED",
   );
+  const followUps = visits.filter(
+    (visit) => visit.visitStatus === "FOLLOW_UP_REQUIRED",
+  );
 
   const cards = [
     {
@@ -71,8 +74,9 @@ export default function DashboardCards() {
     },
     {
       title: "Follow-Ups",
-      value: 1,
+      value: visitsLoading ? "..." : visitsError ? "!" : followUps.length,
       icon: "⚠️",
+      to: "/follow-ups",
     },
     {
       title: "Proprietarios",

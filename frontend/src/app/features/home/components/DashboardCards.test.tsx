@@ -38,6 +38,7 @@ vi.mock("../../../types/visits", () => ({
   getVisits: vi.fn().mockResolvedValue([
     { visitId: 1, visitStatus: "OPEN" },
     { visitId: 2, visitStatus: "COMPLETED" },
+    { visitId: 3, visitStatus: "FOLLOW_UP_REQUIRED" },
   ]),
 }));
 
@@ -106,6 +107,15 @@ describe("Navegación por Dashboard", () => {
               </>
             }
           />
+          <Route
+            path="/follow-ups"
+            element={
+              <>
+                <h1>Follow-Ups</h1>
+                <Link to="/">Home</Link>
+              </>
+            }
+          />
           <Route path="/follow-up" element={<h1>Follow-up</h1>} />
           <Route
             path="/follow-up/:id"
@@ -164,11 +174,20 @@ describe("Navegación por Dashboard", () => {
               </>
             }
           />
+          <Route
+            path="/follow-ups"
+            element={
+              <>
+                <h1>Follow-Ups</h1>
+                <Link to="/">Home</Link>
+              </>
+            }
+          />
         </Routes>
       </MemoryRouter>,
     );
 
-    const visitsLink = await screen.findByRole("link", { name: /2 visits/i });
+    const visitsLink = await screen.findByRole("link", { name: /3 visits/i });
     await screen.findByRole("link", { name: /2 billing/i });
 
     fireEvent.click(visitsLink);
@@ -176,6 +195,13 @@ describe("Navegación por Dashboard", () => {
     fireEvent.click(screen.getByRole("link", { name: /home/i }));
     fireEvent.click(await screen.findByRole("link", { name: /2 billing/i }));
     expect(screen.getByLabelText("Ruta actual")).toHaveTextContent("/billing");
+    fireEvent.click(screen.getByRole("link", { name: /home/i }));
+    fireEvent.click(
+      await screen.findByRole("link", { name: /1 follow-ups/i }),
+    );
+    expect(screen.getByLabelText("Ruta actual")).toHaveTextContent(
+      "/follow-ups",
+    );
   });
 
   it("navigates from the dashboard to veterinarians", () => {
